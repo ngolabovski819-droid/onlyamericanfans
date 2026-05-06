@@ -2,27 +2,26 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { regions } from '@/config/regions';
-import { cities } from '@/config/cities';
+import { states } from '@/config/states';
+import { popularCategories } from '@/config/categories';
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
-  { label: 'Search', href: '/search' },
+  { label: 'Search', href: '/onlyfans-search' },
 ];
-
-const POPULAR_CITIES = cities.slice(0, 8);
 
 export default function Nav() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [regionsOpen, setRegionsOpen] = useState(false);
+  const [statesOpen, setStatesOpen] = useState(false);
+  const [catsOpen, setCatsOpen] = useState(false);
 
   return (
     <header className="nav-wrapper">
       {/* Row 1 — logo + main links */}
       <div className="nav-row1">
         <Link href="/" className="nav-logo">
-          <span className="nav-logo-flag">🇬🇧</span>
-          <span className="nav-logo-text">OnlyBritishFans</span>
+          <span className="nav-logo-flag">🇺🇸</span>
+          <span className="nav-logo-text">OnlyAmericanFans</span>
         </Link>
 
         {/* Desktop nav */}
@@ -33,23 +32,47 @@ export default function Nav() {
             </Link>
           ))}
 
-          {/* Regions dropdown */}
+          {/* States dropdown */}
           <div
             className="nav-dropdown-wrap"
-            onMouseEnter={() => setRegionsOpen(true)}
-            onMouseLeave={() => setRegionsOpen(false)}
+            onMouseEnter={() => setStatesOpen(true)}
+            onMouseLeave={() => setStatesOpen(false)}
           >
             <button className="nav-link nav-dropdown-btn">
-              Regions ▾
+              States ▾
             </button>
-            {regionsOpen && (
-              <div className="nav-dropdown">
-                {regions.map((r) => (
-                  <Link key={r.slug} href={`/${r.urlSlug}/`} className="nav-dropdown-item">
-                    <span className="nav-dropdown-abbr">{r.abbr}</span>
-                    {r.label}
+            {statesOpen && (
+              <div className="nav-dropdown nav-dropdown--states">
+                {states.map((s) => (
+                  <Link key={s.slug} href={`/${s.urlSlug}/`} className="nav-dropdown-item">
+                    <span className="nav-dropdown-abbr">{s.abbr}</span>
+                    {s.label}
                   </Link>
                 ))}
+              </div>
+            )}
+          </div>
+
+          {/* Categories dropdown */}
+          <div
+            className="nav-dropdown-wrap"
+            onMouseEnter={() => setCatsOpen(true)}
+            onMouseLeave={() => setCatsOpen(false)}
+          >
+            <button className="nav-link nav-dropdown-btn">
+              Categories ▾
+            </button>
+            {catsOpen && (
+              <div className="nav-dropdown nav-dropdown--wide">
+                {popularCategories.map((c) => (
+                  <Link key={c.slug} href={`/categories/${c.slug}/`} className="nav-dropdown-item">
+                    {c.emoji && <span>{c.emoji} </span>}
+                    {c.label}
+                  </Link>
+                ))}
+                <Link href="/categories/" className="nav-dropdown-item nav-dropdown-item--all">
+                  View All Categories →
+                </Link>
               </div>
             )}
           </div>
@@ -77,16 +100,16 @@ export default function Nav() {
               {l.label}
             </Link>
           ))}
-          <div className="nav-mobile-section">Regions</div>
-          {regions.map((r) => (
-            <Link key={r.slug} href={`/${r.urlSlug}/`} className="nav-mobile-link" onClick={() => setMobileOpen(false)}>
-              {r.abbr} — {r.label}
+          <div className="nav-mobile-section">States</div>
+          {states.map((s) => (
+            <Link key={s.slug} href={`/${s.urlSlug}/`} className="nav-mobile-link" onClick={() => setMobileOpen(false)}>
+              {s.abbr} — {s.label}
             </Link>
           ))}
-          <div className="nav-mobile-section">Cities</div>
-          {POPULAR_CITIES.map((c) => (
-            <Link key={c.slug} href={`/${c.urlSlug}/`} className="nav-mobile-link" onClick={() => setMobileOpen(false)}>
-              {c.label}
+          <div className="nav-mobile-section">Categories</div>
+          {popularCategories.map((c) => (
+            <Link key={c.slug} href={`/categories/${c.slug}/`} className="nav-mobile-link" onClick={() => setMobileOpen(false)}>
+              {c.emoji} {c.label}
             </Link>
           ))}
           <Link href="/blog" className="nav-mobile-link" onClick={() => setMobileOpen(false)}>Blog</Link>

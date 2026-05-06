@@ -1,180 +1,250 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import Link from 'next/link';
 import { fetchCreators } from '@/lib/supabase';
-import { regions } from '@/config/regions';
+import { states } from '@/config/states';
 import CreatorGrid from '@/components/CreatorGrid';
 import CreatorGridSkeleton from '@/components/CreatorGridSkeleton';
-import StatsBar from '@/components/StatsBar';
+import FAQ from '@/components/FAQ';
+import { homepageFaqs } from '@/lib/faqs';
 import { Suspense } from 'react';
 
 export const revalidate = 300;
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlybritishfans.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlyamericanfans.com';
 
 export const metadata: Metadata = {
-  title: 'OnlyBritishFans — Find the Best British OnlyFans Creators',
+  title: 'OnlyAmericanFans — Find the Best American OnlyFans Creators',
   description:
-    'Discover top British OnlyFans creators sorted by popularity. Search by city, region and price. Thousands of verified UK creators.',
+    'Discover top American OnlyFans creators sorted by popularity. Search by state, city and price. Thousands of verified US creators.',
   alternates: { canonical: SITE_URL },
   openGraph: {
-    title: 'OnlyBritishFans — #1 British OnlyFans Search Engine',
-    description: 'Find top British OnlyFans creators by location & price.',
+    title: 'OnlyAmericanFans — #1 American OnlyFans Search Engine',
+    description: 'Find top US OnlyFans creators by state, city & price.',
     url: SITE_URL,
     images: [{ url: `${SITE_URL}/og-default.svg`, width: 1200, height: 630 }],
   },
 };
 
-// UK location terms for homepage feed
-const UK_TERMS = [
-  'uk', 'united kingdom', 'british', 'england', 'english',
-  'london', 'manchester', 'birmingham', 'glasgow', 'liverpool',
-  'edinburgh', 'bristol', 'leeds', 'sheffield', 'cardiff',
-  'newcastle', 'nottingham', 'southampton', 'leicester', 'brighton',
-  'aberdeen', 'swansea', 'belfast', 'scotland', 'scottish',
-  'wales', 'welsh', 'northern ireland',
+// US location terms for homepage feed
+const US_TERMS = [
+  'usa', 'us', 'united states', 'america', 'american',
+  'new york', 'los angeles', 'chicago', 'houston', 'phoenix',
+  'miami', 'dallas', 'san diego', 'las vegas', 'atlanta',
+  'seattle', 'boston', 'denver', 'nashville', 'austin',
+  'san francisco', 'philadelphia', 'portland', 'minneapolis',
+  'california', 'texas', 'florida', 'new york state',
 ];
 
 async function TrendingCreators() {
-  const { creators, total, hasMore } = await fetchCreators({ pageSize: 20, sort: 'popular', revalidate: 300, locationTerms: UK_TERMS });
+  const { creators, total, hasMore } = await fetchCreators({ pageSize: 20, sort: 'popular', revalidate: 300, locationTerms: US_TERMS });
   return (
     <CreatorGrid
       initialCreators={creators}
       initialTotal={total}
       initialHasMore={hasMore}
-      locationTerms={UK_TERMS}
+      locationTerms={US_TERMS}
       />
   );
 }
 
 const QUICK_TABS = [
-  { label: 'All Creators', href: '/search' },
-  { label: 'Free OnlyFans', href: '/search?price=free' },
-  { label: 'Verified Only', href: '/search?verified=true' },
-  { label: 'Newest Creators', href: '/search?sort=newest' },
+  { label: 'All Creators', href: '/onlyfans-search' },
+  { label: 'Free OnlyFans', href: '/onlyfans-search?price=free' },
+  { label: 'Verified Only', href: '/onlyfans-search?verified=true' },
+  { label: 'Newest Creators', href: '/onlyfans-search?sort=newest' },
 ];
 
 const REVIEWS = [
-  { text: "Found my favourite London creator in under 30 seconds. The filters are actually useful!", author: "User from Manchester" },
-  { text: "Finally a search site specifically for British creators. Much better than scrolling Reddit!", author: "Edinburgh fan" },
-  { text: "The location filter is brilliant. Found Birmingham creators I never knew existed.", author: "Bristol user" },
+  { text: "Found my favorite New York creator in under 30 seconds. The filters are actually useful!", author: "User from Los Angeles" },
+  { text: "Finally a search site specifically for American creators. Much better than scrolling Reddit!", author: "Miami fan" },
+  { text: "The state filter is brilliant. Found Texas creators I never knew existed.", author: "Chicago user" },
 ];
+
+// Popular states to show on homepage (sample)
+const POPULAR_STATES = states.slice(0, 20);
 
 export default async function HomePage() {
   return (
     <>
-      {/* ── Hero ── */}
-      <section className="hero">
-        <p className="hero-eyebrow">🇬🇧 Britain&apos;s #1 OnlyFans Directory</p>
-        <h1 className="hero-title">
-          Find the Best{' '}
-          <span className="hero-title-gradient">British OnlyFans</span>{' '}
-          Creators
-        </h1>
-        <p className="hero-subtitle">
-          Search thousands of verified UK creators by location and price.
-          Updated daily with the latest profiles.
-        </p>
+      {/* — Hero — */}
+      <div className="page-container" style={{ paddingTop: '0.5rem' }}>
+        <section className="hero-shell starfield">
+          <div className="hero-shell-inner">
+            <p className="eyebrow-pill">America&apos;s #1 OnlyFans Directory</p>
+            <h1 className="display-h1 display-h1--lg">
+              Find the Best <span className="gradient-accent">American</span> OnlyFans Creators
+            </h1>
+            <p className="display-sub">
+              Search thousands of verified US creators by state, city and price.
+              Updated daily with the latest profiles — 100% American, always.
+            </p>
 
-        {/* Hero search */}
-        <form action="/search" method="GET">
-          <div className="hero-search">
-            <input
-              type="text"
-              name="q"
-              className="hero-search-input"
-              placeholder="Search by name, city or keyword…"
-              aria-label="Search creators"
-            />
-            <button type="submit" className="hero-search-btn">Search</button>
+            <form action="/onlyfans-search" method="GET">
+              <div className="search-mega">
+                <svg className="search-mega-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input
+                  type="text"
+                  name="q"
+                  className="search-mega-input"
+                  placeholder="Search by name, city or state…"
+                  aria-label="Search creators"
+                />
+                <button type="submit" className="search-mega-btn">Search</button>
+              </div>
+            </form>
+
+            <div className="chip-rail">
+              {QUICK_TABS.map(t => (
+                <Link key={t.href} href={t.href} className="chip-glass">{t.label}</Link>
+              ))}
+            </div>
+
+            <div style={{ marginTop: '2.25rem', display: 'flex', justifyContent: 'center' }}>
+              <div className="glass-stats">
+                <div className="glass-stat">
+                  <div className="glass-stat-num">500K+</div>
+                  <div className="glass-stat-label">US Creators</div>
+                </div>
+                <div className="glass-stat">
+                  <div className="glass-stat-num">50</div>
+                  <div className="glass-stat-label">States</div>
+                </div>
+                <div className="glass-stat">
+                  <div className="glass-stat-num">Daily</div>
+                  <div className="glass-stat-label">Updates</div>
+                </div>
+                <div className="glass-stat">
+                  <div className="glass-stat-num">Free</div>
+                  <div className="glass-stat-label">To Browse</div>
+                </div>
+              </div>
+            </div>
           </div>
-        </form>
+        </section>
+      </div>
 
-        {/* Quick tabs */}
-        <div className="hero-quick-tabs">
-          {QUICK_TABS.map(t => (
-            <Link key={t.href} href={t.href} className="hero-quick-tab">{t.label}</Link>
-          ))}
+      {/* — Trust strip — */}
+      <div className="page-container">
+        <div className="trust-strip">
+          <span className="trust-item"><span className="trust-item-icon">✓</span> 100% Verified American Profiles</span>
+          <span className="trust-item"><span className="trust-item-icon">✓</span> No Sign-Up Required</span>
+          <span className="trust-item"><span className="trust-item-icon">✓</span> Updated Daily</span>
+          <span className="trust-item"><span className="trust-item-icon">✓</span> 18+ Adults Only</span>
         </div>
-      </section>
+      </div>
 
-      {/* ── Stats Bar ── */}
-      <StatsBar />
-
-      {/* ── Browse by Region ── */}
-      <section style={{ padding: '2.5rem 1.5rem 0', maxWidth: 1400, margin: '0 auto' }}>
-        <h2 className="section-heading">Browse by UK Region</h2>
+      {/* — Browse by State — */}
+      <section className="page-container" style={{ paddingBottom: 0 }}>
+        <div className="section-rail">
+          <h2 className="section-rail-title">Browse by State</h2>
+          <Link href="/browse-by-state" className="section-rail-link">View all 50 states →</Link>
+        </div>
         <div className="chips-row chips-row--wrap">
-          {regions.map(r => (
-            <Link key={r.slug} href={`/${r.urlSlug}/`} className="location-chip location-chip--state">
-              {r.abbr} — {r.label}
+          {POPULAR_STATES.map(s => (
+            <Link key={s.slug} href={`/${s.urlSlug}/`} className="chip-glass">
+              <strong style={{ color: 'var(--accent-light)' }}>{s.abbr}</strong> {s.label}
             </Link>
           ))}
         </div>
       </section>
 
-      {/* ── Trending Creators ── */}
-      <section style={{ padding: '2.5rem 1.5rem', maxWidth: 1400, margin: '0 auto' }}>
-        <h2 className="section-heading">🔥 Trending British Creators</h2>
+      {/* — Trending Creators — */}
+      <section className="page-container" style={{ paddingTop: '1rem' }}>
+        <div className="section-rail">
+          <h2 className="section-rail-title">🔥 Trending Now</h2>
+          <Link href="/onlyfans-search?sort=popular" className="section-rail-link">See all trending →</Link>
+        </div>
         <Suspense fallback={<CreatorGridSkeleton />}>
           <TrendingCreators />
         </Suspense>
       </section>
 
-      {/* ── Popular Cities ── */}
-      <section style={{ padding: '0 1.5rem 3rem', maxWidth: 1400, margin: '0 auto' }}>
-        <h2 className="section-heading">Popular Cities</h2>
+      {/* — Popular Cities — */}
+      <section className="page-container" style={{ paddingTop: '0.5rem' }}>
+        <div className="section-rail">
+          <h2 className="section-rail-title">Popular Cities</h2>
+        </div>
         <div className="chips-row chips-row--wrap">
           {[
-            { label: 'London OnlyFans', href: '/london-onlyfans/' },
-            { label: 'Manchester OnlyFans', href: '/manchester-onlyfans/' },
-            { label: 'Birmingham OnlyFans', href: '/birmingham-onlyfans/' },
-            { label: 'Glasgow OnlyFans', href: '/glasgow-onlyfans/' },
-            { label: 'Liverpool OnlyFans', href: '/liverpool-onlyfans/' },
-            { label: 'Edinburgh OnlyFans', href: '/edinburgh-onlyfans/' },
-            { label: 'Bristol OnlyFans', href: '/bristol-onlyfans/' },
-            { label: 'Cardiff OnlyFans', href: '/cardiff-onlyfans/' },
+            { label: 'New York', href: '/new-york-onlyfans/' },
+            { label: 'Los Angeles', href: '/los-angeles-onlyfans/' },
+            { label: 'Miami', href: '/miami-onlyfans/' },
+            { label: 'Chicago', href: '/chicago-onlyfans/' },
+            { label: 'Las Vegas', href: '/las-vegas-onlyfans/' },
+            { label: 'Atlanta', href: '/atlanta-onlyfans/' },
+            { label: 'Houston', href: '/houston-onlyfans/' },
+            { label: 'Dallas', href: '/dallas-onlyfans/' },
+            { label: 'Seattle', href: '/seattle-onlyfans/' },
+            { label: 'Boston', href: '/boston-onlyfans/' },
           ].map(c => (
-            <Link key={c.href} href={c.href} className="location-chip">{c.label}</Link>
+            <Link key={c.href} href={c.href} className="chip-glass">{c.label}</Link>
           ))}
         </div>
       </section>
 
-      {/* ── How it Works ── */}
-      <section className="how-it-works">
-        <h2 className="how-it-works-title">How OnlyBritishFans Works</h2>
-        <p className="how-it-works-sub">Finding your favourite British creator is quick and easy.</p>
-        <div className="how-it-works-steps">
-          <div className="how-step">
-            <div className="how-step-num">01</div>
-            <h3>Search or Browse</h3>
-            <p>Use our search bar or browse by region or city to find creators.</p>
+      {/* — How it Works — */}
+      <section className="page-container">
+        <div className="section-rail">
+          <h2 className="section-rail-title">How It Works</h2>
+        </div>
+        <div className="category-tile-grid">
+          <div className="feature-card-2026">
+            <span className="feature-num">01</span>
+            <div className="feature-icon-2026">🔎</div>
+            <h3 className="feature-title" style={{ fontSize: '1.05rem', marginBottom: '0.4rem' }}>Search or Browse</h3>
+            <p className="feature-desc">Find creators by name, state or city — or explore curated categories.</p>
           </div>
-          <div className="how-step">
-            <div className="how-step-num">02</div>
-            <h3>Filter Results</h3>
-            <p>Narrow down by price, verified status, content type and more with our advanced filters.</p>
+          <div className="feature-card-2026">
+            <span className="feature-num">02</span>
+            <div className="feature-icon-2026">🎯</div>
+            <h3 className="feature-title" style={{ fontSize: '1.05rem', marginBottom: '0.4rem' }}>Filter Results</h3>
+            <p className="feature-desc">Narrow by price, verified status, free content, bundles and sort by popular or newest.</p>
           </div>
-          <div className="how-step">
-            <div className="how-step-num">03</div>
-            <h3>Visit Their Page</h3>
-            <p>Click any creator card to visit their official OnlyFans profile and subscribe.</p>
+          <div className="feature-card-2026">
+            <span className="feature-num">03</span>
+            <div className="feature-icon-2026">⭐</div>
+            <h3 className="feature-title" style={{ fontSize: '1.05rem', marginBottom: '0.4rem' }}>Visit Their Page</h3>
+            <p className="feature-desc">Tap any card to jump straight to their official OnlyFans profile.</p>
           </div>
         </div>
       </section>
 
-      {/* ── Social Proof ── */}
-      <section className="social-proof">
-        <h2 className="social-proof-title">Loved by British Fans</h2>
-        <p className="social-proof-rating">⭐⭐⭐⭐⭐  4.9 out of 5 from fan reviews</p>
-        <div className="review-grid">
+      {/* — Conversion strip — */}
+      <div className="page-container">
+        <div className="conversion-strip">
+          <div className="conversion-strip-text">
+            <h3>Ready to find your favorite American creator?</h3>
+            <p>Use our advanced search to filter 500,000+ verified US creators by state, city, price, and more.</p>
+          </div>
+          <div className="conversion-strip-cta">
+            <Link href="/onlyfans-search" className="btn-glow">Start Searching →</Link>
+          </div>
+        </div>
+      </div>
+
+      {/* — Social Proof — */}
+      <section className="page-container" style={{ paddingBottom: '2rem' }}>
+        <div className="section-rail">
+          <h2 className="section-rail-title">Loved by American Fans</h2>
+          <span className="section-rail-link" style={{ color: 'var(--text-muted)' }}>★★★★★ 4.9/5</span>
+        </div>
+        <div className="category-tile-grid">
           {REVIEWS.map((r, i) => (
-            <div key={i} className="review-card">
-              <div className="review-stars">★★★★★</div>
-              <p className="review-text">"{r.text}"</p>
-              <p className="review-author">— {r.author}</p>
+            <div key={i} className="feature-card-2026">
+              <div className="review-stars" style={{ color: '#fbbf24', marginBottom: '0.6rem', fontSize: '0.9rem', letterSpacing: '0.1em' }}>★★★★★</div>
+              <p className="review-text" style={{ color: 'var(--text)', fontSize: '0.95rem', lineHeight: 1.65, marginBottom: '0.85rem' }}>&ldquo;{r.text}&rdquo;</p>
+              <p className="review-author" style={{ color: 'var(--text-muted)', fontSize: '0.82rem', fontWeight: 600 }}>— {r.author}</p>
             </div>
           ))}
         </div>
+      </section>
+
+      {/* — FAQ — */}
+      <section className="page-container" style={{ paddingBottom: '4rem' }}>
+        <FAQ faqs={homepageFaqs} heading="Frequently Asked Questions" />
       </section>
     </>
   );

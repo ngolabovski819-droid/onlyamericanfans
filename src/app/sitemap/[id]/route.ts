@@ -3,7 +3,7 @@ import { regions } from '@/config/regions';
 import { cities } from '@/config/cities';
 import { getAllPosts } from '@/lib/blog';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlybritishfans.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlyamericanfans.com';
 
 function url(path: string, priority = 0.7, freq = 'weekly'): string {
   return `<url><loc>${SITE_URL}${path}</loc><changefreq>${freq}</changefreq><priority>${priority}</priority></url>`;
@@ -30,7 +30,7 @@ export async function GET(_req: Request, { params }: Params) {
   if (id === '0') {
     const staticUrls = [
       url('/', 1.0, 'daily'),
-      url('/search/', 0.9, 'daily'),
+      url('/onlyfans-search/', 0.9, 'daily'),
       url('/blog/', 0.8, 'weekly'),
       url('/about/', 0.5, 'monthly'),
       url('/privacy/', 0.3, 'monthly'),

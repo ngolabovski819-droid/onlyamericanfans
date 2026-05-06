@@ -1,90 +1,111 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
+﻿import type { Metadata } from 'next';
 import { fetchCreators } from '@/lib/supabase';
-import { regions } from '@/config/regions';
-import { cities } from '@/config/cities';
+import SearchFilters from '@/components/SearchFilters';
 import CreatorGrid from '@/components/CreatorGrid';
-import StatsBar from '@/components/StatsBar';
+import FAQ from '@/components/FAQ';
+import { searchPageFaqs } from '@/lib/faqs';
 
-export const revalidate = 3600;
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlybritishfans.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlyamericanfans.com';
 
 export const metadata: Metadata = {
-  title: 'British OnlyFans Search Engine — Find UK Creators by City & Region',
+  title: 'OnlyFans Search — Find American Creators by Name, City & State',
   description:
-    'The best British OnlyFans search engine. Browse thousands of verified UK creators by city and region. London, Manchester, Glasgow, Birmingham and more.',
+    'The best American OnlyFans search engine. Search thousands of verified US creators by name, city, state, price and more. Updated daily.',
   alternates: { canonical: `${SITE_URL}/onlyfans-search/` },
   openGraph: {
-    title: 'British OnlyFans Search Engine',
-    description: 'Find verified UK OnlyFans creators by city & price.',
+    title: 'American OnlyFans Search Engine',
+    description: 'Find verified US OnlyFans creators by name, city & price.',
     url: `${SITE_URL}/onlyfans-search/`,
   },
 };
 
-const POPULAR_CITIES = ['london', 'manchester', 'birmingham', 'glasgow', 'liverpool', 'edinburgh', 'bristol', 'cardiff'];
+interface Props {
+  searchParams: Promise<{
+    q?: string;
+    verified?: string;
+    price?: string;
+    sort?: string;
+    page?: string;
+    filter_groups?: string;
+  }>;
+}
 
-export default async function OnlyFansSearchPage() {
-  const { creators, total, hasMore } = await fetchCreators({ pageSize: 20, sort: 'popular', revalidate: 3600 });
+function parseFilterGroups(raw?: string): Record<string, string[]> | undefined {
+  if (!raw) return undefined;
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      return parsed as Record<string, string[]>;
+    }
+  } catch {}
+  return undefined;
+}
+
+export default async function OnlyFansSearchPage({ searchParams }: Props) {
+  const sp = await searchParams;
+  const q        = sp.q ?? '';
+  const verified = sp.verified === 'true';
+  const price    = (sp.price as 'free' | 'under5' | 'under10' | 'any') ?? 'any';
+  const sort     = (sp.sort as 'popular' | 'newest') ?? 'popular';
+  const filterGroups = parseFilterGroups(sp.filter_groups);
+
+  const { creators, total, hasMore } = await fetchCreators({
+    q: q || undefined,
+    verified: verified || undefined,
+    price: price !== 'any' ? price : undefined,
+    sort,
+    filterGroups,
+    pageSize: 24,
+    skipLocationFilter: true,
+    revalidate: 30,
+  });
 
   return (
-    <div className="page-container" style={{ paddingTop: '2rem', paddingBottom: '3rem' }}>
-      <h1 style={{ fontSize: 'clamp(1.6rem, 4vw, 2.4rem)', fontWeight: 800, marginBottom: '0.75rem' }}>
-        British OnlyFans Search Engine
-      </h1>
-      <p style={{ color: 'var(--text-muted)', fontSize: '1rem', maxWidth: 700, marginBottom: '2rem', lineHeight: 1.7 }}>
-        Welcome to OnlyBritishFans — the UK&apos;s leading directory of British OnlyFans creators.
-        Search by city or region and filter by price to find your perfect British creator.
-      </p>
-
-      <StatsBar />
-
-      <section style={{ margin: '2.5rem 0' }}>
-        <h2 className="section-heading">Browse by Region</h2>
-        <div className="chips-row chips-row--wrap">
-          {regions.map(r => (
-            <Link key={r.slug} href={`/${r.urlSlug}/`} className="location-chip location-chip--state">
-              <strong style={{ color: 'var(--accent-light)', marginRight: 4 }}>{r.abbr}</strong>
-              {r.label}
-            </Link>
-          ))}
+    <div className="page-container" style={{ paddingTop: '0.5rem', paddingBottom: '3rem' }}>
+      <section className="hero-shell hero-shell--compact starfield" style={{ marginBottom: '2rem' }}>
+        <div className="hero-shell-inner">
+          <p className="eyebrow-pill">OnlyFans Search</p>
+          <h1 className="display-h1">
+            {q ? <>Results for <span className="gradient-accent">&ldquo;{q}&rdquo;</span></> : <>All <span className="gradient-accent">American</span> OnlyFans Creators</>}
+          </h1>
+          <p className="display-sub">
+            <strong style={{ color: 'var(--text)' }}>{total.toLocaleString()}</strong> verified American creators · filter by price, sort, and verification status.
+          </p>
+          <form action="/onlyfans-search" method="GET">
+            <div className="search-mega">
+              <svg className="search-mega-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" name="q" defaultValue={q} className="search-mega-input" placeholder="Search by name, city or state…" aria-label="Search creators" />
+              <button type="submit" className="search-mega-btn">Search</button>
+            </div>
+          </form>
         </div>
       </section>
 
-      <section style={{ margin: '2.5rem 0' }}>
-        <h2 className="section-heading">Popular Cities</h2>
-        <div className="chips-row chips-row--wrap">
-          {cities.filter(c => POPULAR_CITIES.includes(c.slug)).map(c => (
-            <Link key={c.slug} href={`/${c.urlSlug}/`} className="location-chip">
-              {c.label}
-            </Link>
-          ))}
-        </div>
-      </section>
+      <div className="search-layout">
+        <aside className="search-sidebar">
+          <SearchFilters />
+        </aside>
 
-      <section style={{ margin: '2.5rem 0' }}>
-        <h2 className="section-heading">All British Creators</h2>
-        <CreatorGrid
-          initialCreators={creators}
-          initialTotal={total}
-          initialHasMore={hasMore}
+        <div>
+          <CreatorGrid
+            initialCreators={creators}
+            initialTotal={total}
+            initialHasMore={hasMore}
+            q={q || undefined}
+            verified={verified || undefined}
+            price={price !== 'any' ? price : undefined}
+            sort={sort}
+            filterGroups={filterGroups}
+            skipLocationFilter={true}
           />
-      </section>
+        </div>
+      </div>
 
-      {/* SEO text block */}
-      <section style={{ marginTop: '3rem', padding: '2rem', background: 'var(--surface)', borderRadius: 'var(--radius-lg)', maxWidth: 800 }}>
-        <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--accent-light)' }}>
-          About OnlyBritishFans
-        </h2>
-        <p style={{ color: 'var(--text-muted)', lineHeight: 1.8, marginBottom: '1rem', fontSize: '0.95rem' }}>
-          OnlyBritishFans is Britain&apos;s dedicated OnlyFans search engine, helping fans discover
-          British content creators quickly and easily. Our platform is built specifically for finding
-          UK OnlyFans creators — from London, Manchester, Birmingham, Glasgow, Liverpool and everywhere in between.
-        </p>
-        <p style={{ color: 'var(--text-muted)', lineHeight: 1.8, fontSize: '0.95rem' }}>
-          Our database is updated regularly with new British creators. Use our advanced filters to find
-          verified creators, free OnlyFans pages, or creators in your local city.
-        </p>
+      <section style={{ marginTop: '3rem' }}>
+        <FAQ faqs={searchPageFaqs} heading="Frequently Asked Questions" />
       </section>
     </div>
   );

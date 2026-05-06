@@ -13,16 +13,16 @@
   <!-- Decorative glows -->
   <circle cx="120" cy="120" r="240" fill="#C8102E" opacity="0.06"/>
   <circle cx="1080" cy="510" r="280" fill="#012169" opacity="0.08"/>
-  <!-- Union Jack bottom bar -->
-  <rect x="0"   y="600" width="400" height="30" fill="#C8102E"/>
+  <!-- Stars & Stripes bottom bar (red, white, blue) -->
+  <rect x="0"   y="600" width="400" height="30" fill="#B22234"/>
   <rect x="400" y="600" width="400" height="30" fill="#fff" opacity="0.9"/>
-  <rect x="800" y="600" width="400" height="30" fill="#012169"/>
+  <rect x="800" y="600" width="400" height="30" fill="#3C3B6E"/>
   <!-- Flag emoji hint -->
-  <text x="600" y="220" font-family="sans-serif" font-size="64" text-anchor="middle">🇬🇧</text>
+  <text x="600" y="220" font-family="sans-serif" font-size="64" text-anchor="middle">🇺🇸</text>
   <!-- Logo text -->
-  <text x="600" y="320" font-family="Georgia, serif" font-weight="bold" font-size="76" fill="url(#txt)" text-anchor="middle">OnlyBritishFans</text>
+  <text x="600" y="320" font-family="Georgia, serif" font-weight="bold" font-size="76" fill="url(#txt)" text-anchor="middle">OnlyAmericanFans</text>
   <!-- Tagline -->
-  <text x="600" y="400" font-family="sans-serif" font-size="30" fill="#7a8399" text-anchor="middle">Britain&#39;s #1 OnlyFans Creator Directory</text>
+  <text x="600" y="400" font-family="sans-serif" font-size="30" fill="#7a8399" text-anchor="middle">America&#39;s #1 OnlyFans Creator Directory</text>
   <!-- Sub-tagline -->
-  <text x="600" y="450" font-family="sans-serif" font-size="22" fill="#555e78" text-anchor="middle">Find British creators by location, price &amp; more</text>
+  <text x="600" y="450" font-family="sans-serif" font-size="22" fill="#555e78" text-anchor="middle">Find American creators by state, price &amp; more</text>
 </svg>

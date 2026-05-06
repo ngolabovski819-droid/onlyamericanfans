@@ -17,9 +17,11 @@ interface Props {
   q?: string;
   /** When true, load-more skips the AU location filter (used for category pages) */
   skipLocationFilter?: boolean;
+  /** Page size used for SSR; load-more reuses it so offsets align. Defaults to 20. */
+  pageSize?: number;
 }
 
-const PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 20;
 
 export default function CreatorGrid({
   initialCreators,
@@ -33,7 +35,9 @@ export default function CreatorGrid({
   sort,
   q,
   skipLocationFilter,
+  pageSize,
 }: Props) {
+  const effectivePageSize = pageSize ?? DEFAULT_PAGE_SIZE;
   const [creators, setCreators] = useState<Creator[]>(initialCreators);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -50,19 +54,23 @@ export default function CreatorGrid({
       if (price && price !== 'any') params.set('price', price);
       if (sort) params.set('sort', sort);
       params.set('page', String(nextPage));
-      params.set('page_size', String(PAGE_SIZE));
+      params.set('page_size', String(effectivePageSize));
       if (locationTerms?.length) params.set('location_terms', locationTerms.join(','));
       if (categoryTerms?.length) params.set('category_terms', categoryTerms.join(','));
       if (filterGroups && Object.keys(filterGroups).length) {
         params.set('filter_groups', JSON.stringify(filterGroups));
       }
-      // Skip UK location filter when on a category page (matches SSR behaviour)
+      // Skip US location filter when on a category page (matches SSR behaviour)
       if (skipLocationFilter) params.set('skip_location_filter', 'true');
 
       const res = await fetch(`/api/search?${params.toString()}`);
       if (!res.ok) throw new Error('Fetch failed');
       const data = await res.json();
-      setCreators((prev) => [...prev, ...data.creators]);
+      setCreators((prev) => {
+        const existingIds = new Set(prev.map((c) => c.id));
+        const newOnes = (data.creators as Creator[]).filter((c) => !existingIds.has(c.id));
+        return [...prev, ...newOnes];
+      });
       setHasMore(data.hasMore);
       setPage(nextPage);
     } catch (e) {
@@ -70,13 +78,13 @@ export default function CreatorGrid({
     } finally {
       setLoading(false);
     }
-  }, [loading, hasMore, page, q, verified, price, sort, locationTerms, categoryTerms, filterGroups]);
+  }, [loading, hasMore, page, q, verified, price, sort, locationTerms, categoryTerms, filterGroups, skipLocationFilter, effectivePageSize]);
 
   if (creators.length === 0) {
     return (
       <div className="empty-state">
-        <p>No British creators found matching your filters.</p>
-        <a href="/search" className="empty-state-link">Try a broader search</a>
+        <p>No American creators found matching your filters.</p>
+        <a href="/onlyfans-search" className="empty-state-link">Try a broader search</a>
       </div>
     );
   }
@@ -84,7 +92,7 @@ export default function CreatorGrid({
   return (
     <div>
       <p className="results-count">
-        Showing <strong>{creators.length}</strong>{initialTotal > creators.length ? ` of ${initialTotal.toLocaleString()}` : ''} British creators
+        Showing <strong>{creators.length}</strong>{initialTotal > creators.length ? ` of ${initialTotal.toLocaleString()}` : ''} American creators
       </p>
       <div className="creator-grid">
         {creators.map((c, i) => (

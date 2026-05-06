@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { DM_Sans, Playfair_Display } from 'next/font/google';
+import { DM_Sans, Oswald } from 'next/font/google';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import './globals.css';
 import Nav from '@/components/Nav';
@@ -9,28 +9,28 @@ import AgeGate from '@/components/AgeGate';
 const GA_ID = 'G-JMC006C5K7';
 
 const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-dm-sans', display: 'swap', weight: ['400', '500', '600', '700'] });
-const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair', display: 'swap', weight: ['700', '800', '900'] });
+const oswald = Oswald({ subsets: ['latin'], variable: '--font-oswald', display: 'swap', weight: ['400', '500', '600', '700'] });
 
-const SITE_URL  = process.env.NEXT_PUBLIC_SITE_URL  ?? 'https://onlybritishfans.com';
-const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME ?? 'OnlyBritishFans';
+const SITE_URL  = process.env.NEXT_PUBLIC_SITE_URL  ?? 'https://onlyamericanfans.com';
+const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME ?? 'OnlyAmericanFans';
 
 export const metadata: Metadata = {
   title: {
-    default: 'OnlyBritishFans — #1 British OnlyFans Search Engine',
-    template: '%s | OnlyBritishFans',
+    default: 'OnlyAmericanFans — #1 American OnlyFans Search Engine',
+    template: '%s | OnlyAmericanFans',
   },
   description:
-    'Find the best British OnlyFans creators. Search by location, price and more. Thousands of verified UK creators — updated daily.',
+    'Find the best American OnlyFans creators. Search by state, city, price and more. Thousands of verified US creators — updated daily.',
   metadataBase: new URL(SITE_URL),
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
   openGraph: {
     siteName: SITE_NAME,
-    locale: 'en_GB',
+    locale: 'en_US',
     type: 'website',
   },
   alternates: {
     canonical: SITE_URL,
-    languages: { 'en-GB': SITE_URL },
+    languages: { 'en-US': SITE_URL },
   },
   other: {
     rating: 'adult',
@@ -46,11 +46,16 @@ const websiteSchema = {
       '@id': `${SITE_URL}/#website`,
       url: SITE_URL,
       name: SITE_NAME,
-      description: 'The #1 British OnlyFans search engine — find UK creators by location and price.',
-      inLanguage: 'en-GB',
+      alternateName: ['Only American Fans', 'OAF'],
+      description: 'The #1 American OnlyFans search engine — find US creators by state, city and price.',
+      inLanguage: 'en-US',
+      publisher: { '@id': `${SITE_URL}/#organization` },
       potentialAction: {
         '@type': 'SearchAction',
-        target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/search?q={search_term_string}` },
+        target: {
+          '@type': 'EntryPoint',
+          urlTemplate: `${SITE_URL}/onlyfans-search?q={search_term_string}`,
+        },
         'query-input': 'required name=search_term_string',
       },
     },
@@ -59,19 +64,27 @@ const websiteSchema = {
       '@id': `${SITE_URL}/#organization`,
       url: SITE_URL,
       name: SITE_NAME,
-      logo: { '@type': 'ImageObject', url: `${SITE_URL}/logo.png` },
+      alternateName: 'Only American Fans',
+      description: 'Search engine for American OnlyFans creators — browse by state, city, category and price.',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/og-image.png`,
+        width: 1200,
+        height: 630,
+      },
+      sameAs: [],
     },
   ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-GB" className={`${dmSans.variable} ${playfair.variable}`}>
+    <html lang="en-US" className={`${dmSans.variable} ${oswald.variable}`}>
       <head>
         <meta name="rating" content="adult" />
-        <meta name="DC.language" content="en-GB" />
+        <meta name="DC.language" content="en-US" />
         <link rel="preconnect" href="https://images.weserv.nl" />
-        <link rel="alternate" hrefLang="en-GB" href={SITE_URL} />
+        <link rel="alternate" hrefLang="en-US" href={SITE_URL} />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="icon" href="/favicon.svg" sizes="any" />
         <script

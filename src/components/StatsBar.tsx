@@ -8,9 +8,9 @@ interface Props {
 }
 
 const DEFAULT_STATS: Stat[] = [
-  { value: '100k+', label: 'British Creators' },
+  { value: '500k+', label: 'American Creators' },
   { value: 'Daily', label: 'Updated' },
-  { value: '100%', label: 'British' },
+  { value: '100%', label: 'US Based' },
   { value: 'Free', label: 'To Browse' },
 ];
 

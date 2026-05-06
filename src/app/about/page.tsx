@@ -1,23 +1,23 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlybritishfans.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlyamericanfans.com';
 
 export const metadata: Metadata = {
-  title: 'About OnlyBritishFans — Britain\'s #1 OnlyFans Directory',
-  description: 'Learn about OnlyBritishFans, Britain\'s dedicated OnlyFans search engine. Discover how we index and organise British creators.',
+  title: 'About OnlyAmericanFans — America\'s #1 OnlyFans Directory',
+  description: 'Learn about OnlyAmericanFans, America\'s dedicated OnlyFans search engine. Discover how we index and organize American creators.',
   alternates: { canonical: `${SITE_URL}/about/` },
 };
 
 export default function AboutPage() {
   return (
     <div className="legal-page">
-      <h1>About OnlyBritishFans</h1>
-      <p className="legal-page-date">Britain&apos;s #1 OnlyFans Search Engine</p>
+      <h1>About OnlyAmericanFans</h1>
+      <p className="legal-page-date">America&apos;s #1 OnlyFans Search Engine</p>
 
       <h2>What We Do</h2>
       <p>
-        OnlyBritishFans is Britain&apos;s dedicated OnlyFans search engine and creator directory.
-        We index British OnlyFans creators to help fans discover content from local creators
+        OnlyAmericanFans is America&apos;s dedicated OnlyFans search engine and creator directory.
+        We index American OnlyFans creators to help fans discover content from local creators
         that matches their interests and budget.
       </p>
       <p>
@@ -27,24 +27,24 @@ export default function AboutPage() {
 
       <h2>Our Mission</h2>
       <p>
-        We believe British fans deserve a dedicated, high-quality search tool built specifically
+        We believe American fans deserve a dedicated, high-quality search tool built specifically
         for discovering local content creators. Our goal is to make it easy to find verified
-        British OnlyFans creators without having to scroll endlessly through generic directories.
+        American OnlyFans creators without having to scroll endlessly through generic directories.
       </p>
 
       <h2>How We Work</h2>
       <ul>
         <li>We index publicly available creator information from OnlyFans</li>
         <li>Creator profiles are updated regularly to reflect current pricing and status</li>
-        <li>All creators listed have British location indicators in their profiles</li>
+        <li>All creators listed have American location indicators in their profiles</li>
         <li>We do not manage, operate or take fees from any OnlyFans creator</li>
       </ul>
 
       <h2>Content Policy</h2>
       <p>
-        OnlyBritishFans is an adult content directory. All creators listed on our platform are 18+
+        OnlyAmericanFans is an adult content directory. All creators listed on our platform are 18+
         and have agreed to OnlyFans&apos; terms of service. We do not host any adult content directly
-        on our platform â€” we link to external OnlyFans profiles only.
+        on our platform — we link to external OnlyFans profiles only.
       </p>
 
       <h2>Contact</h2>

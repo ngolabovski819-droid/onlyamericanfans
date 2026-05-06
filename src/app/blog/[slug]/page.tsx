@@ -5,7 +5,7 @@ import { getPostBySlug, getAllPosts } from '@/lib/blog';
 
 export const revalidate = 3600;
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlybritishfans.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlyamericanfans.com';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -54,14 +54,14 @@ export default async function BlogPostPage({ params }: Props) {
     headline: post.title,
     datePublished: post.date,
     description: post.description,
-    publisher: { '@type': 'Organization', name: 'OnlyBritishFans', url: SITE_URL },
+    publisher: { '@type': 'Organization', name: 'OnlyAmericanFans', url: SITE_URL },
   };
 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
 
-      <article className="blog-post">
+      <article className="blog-post page-container">
         <nav className="breadcrumb" style={{ marginBottom: '1.5rem' }} aria-label="Breadcrumb">
           <Link href="/">Home</Link>
           <span className="breadcrumb-sep">›</span>
@@ -70,10 +70,19 @@ export default async function BlogPostPage({ params }: Props) {
           <span className="breadcrumb-current">{post.title}</span>
         </nav>
 
-        <h1>{post.title}</h1>
-        <p className="blog-post-meta">
-          Published {new Date(post.date).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
-        </p>
+        <section className="detail-hero starfield" style={{ marginBottom: '2rem' }}>
+          <div className="detail-hero-inner">
+            <p className="eyebrow-pill">Article</p>
+            <h1 style={{ fontSize: 'clamp(1.8rem, 4.2vw, 3rem)' }}>
+              <span className="gradient-accent">{post.title}</span>
+            </h1>
+            <p className="display-sub" style={{ margin: '0.5rem 0 0', maxWidth: 700 }}>{post.description}</p>
+            <div className="detail-hero-meta">
+              <span className="detail-hero-meta-item">📅 {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              <span className="detail-hero-meta-item">🗂️ Blog</span>
+            </div>
+          </div>
+        </section>
 
         <div
           className="blog-post-content"

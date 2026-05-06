@@ -1,19 +1,17 @@
-﻿import { ImageResponse } from 'next/og';
-import { getStateByUrlSlug } from '@/config/states';
-import { getCityByUrlSlug } from '@/config/cities';
+import { ImageResponse } from 'next/og';
+import { getCategoryBySlug } from '@/config/categories';
 
 export const runtime = 'edge';
 export const size    = { width: 1200, height: 630 };
 
 interface Props {
-  params: Promise<{ locationSlug: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 export default async function OGImage({ params }: Props) {
-  const { locationSlug } = await params;
-  const state = getStateByUrlSlug(locationSlug);
-  const city  = !state ? getCityByUrlSlug(locationSlug) : null;
-  const label = state?.label ?? city?.label ?? locationSlug.replace(/-onlyfans$/, '').replace(/-/g, ' ');
+  const { slug } = await params;
+  const cat = getCategoryBySlug(slug);
+  const label = cat?.label ?? slug;
 
   return new ImageResponse(
     (
@@ -28,19 +26,19 @@ export default async function OGImage({ params }: Props) {
         }}
       >
         <div style={{ fontSize: 24, color: '#8888aa', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-          🇦🇺  OnlyAmericanFans
+          🇺🇸  OnlyAmericanFans
         </div>
         <div style={{
-          fontSize: 68, fontWeight: 800,
+          fontSize: 72, fontWeight: 800,
           background: 'linear-gradient(135deg,#7c3aed,#ec4899)',
           backgroundClip: 'text', color: 'transparent',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           textAlign: 'center',
         }}>
-          {label}
+          {label} OnlyFans
         </div>
         <div style={{ fontSize: 28, color: '#8888aa' }}>
-          Best Australian OnlyFans Creators
+          Best American {label} Creators
         </div>
       </div>
     ),

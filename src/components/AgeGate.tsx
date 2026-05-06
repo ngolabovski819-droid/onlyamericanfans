@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-const AGE_KEY = 'britishonly_age_confirmed';
+const AGE_KEY = 'americanonly_age_confirmed';
 
 export default function AgeGate() {
   const [show, setShow] = useState(false);
@@ -27,7 +27,7 @@ export default function AgeGate() {
   return (
     <div className="age-gate-overlay" role="dialog" aria-modal="true" aria-labelledby="age-gate-title">
       <div className="age-gate-modal">
-        <div className="age-gate-logo">🇬🇧 OnlyBritishFans</div>
+        <div className="age-gate-logo">ðŸ‡¬ðŸ‡§ OnlyAmericanFans</div>
         <h1 id="age-gate-title" className="age-gate-title">Adults Only</h1>
         <p className="age-gate-text">
           This website contains adult content intended for persons aged <strong>18 years and over</strong>.

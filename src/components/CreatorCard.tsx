@@ -9,7 +9,7 @@ interface Props {
 function formatPrice(price: number | null): string {
   if (price === null || price === undefined) return 'Free';
   if (price === 0) return 'FREE';
-  return `£${price.toFixed(2)}/mo`;
+  return `$${price.toFixed(2)}/mo`;
 }
 
 function getBestBundle(creator: Creator): string | null {

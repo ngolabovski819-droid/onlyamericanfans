@@ -1,54 +1,65 @@
-import Link from 'next/link';
-import { regions } from '@/config/regions';
-import { cities } from '@/config/cities';
+﻿import Link from 'next/link';
+import { states } from '@/config/states';
+import { popularCategories } from '@/config/categories';
 
-const TOP_CITIES = cities.slice(0, 8);
+// Four largest US states by population
+const FOOTER_STATE_SLUGS = ['california', 'texas', 'florida', 'new-york'];
 
 export default function Footer() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlybritishfans.com';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlyamericanfans.com';
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="footer">
+    <footer className="footer footer-wrapper">
       <div className="footer-inner">
         <div className="footer-grid">
           {/* Brand column */}
           <div className="footer-brand">
-            <Link href="/" className="footer-logo">🇬🇧 OnlyBritishFans</Link>
+            <Link href="/" className="footer-logo">OnlyAmericanFans</Link>
             <p className="footer-tagline">
-              Britain&apos;s largest OnlyFans creator directory. Find free and premium UK creators updated daily.
+              America&apos;s largest OnlyFans creator directory. Find free and premium American creators updated daily.
             </p>
             <p className="footer-disclaimer">
-              OnlyBritishFans.com is not affiliated with or endorsed by OnlyFans or Fenix International Limited.
+              onlyamericanfans.com is not affiliated with or endorsed by OnlyFans or Fenix International Limited.
               All profiles linked are publicly listed. This site is for adults 18+ only.
             </p>
           </div>
 
-          {/* Regions */}
+          {/* States */}
           <div className="footer-col">
-            <h3 className="footer-heading">Browse by Region</h3>
+            <h3 className="footer-heading">Browse by State</h3>
             <ul className="footer-list">
-              {regions.map((r) => (
-                <li key={r.slug}>
-                  <Link href={`/${r.urlSlug}/`} className="footer-link">
-                    {r.label} ({r.abbr})
-                  </Link>
-                </li>
-              ))}
+              {FOOTER_STATE_SLUGS.map((slug) => {
+                const s = states.find((st) => st.slug === slug);
+                if (!s) return null;
+                return (
+                  <li key={s.slug}>
+                    <Link href={`/${s.urlSlug}/`} className="footer-link">
+                      {s.label} ({s.abbr})
+                    </Link>
+                  </li>
+                );
+              })}
+              <li>
+                <Link href="/browse-by-state/" className="footer-link">Browse all states →</Link>
+              </li>
             </ul>
           </div>
 
-          {/* Top Cities */}
+          {/* Categories */}
           <div className="footer-col">
-            <h3 className="footer-heading">Top Cities</h3>
+            <h3 className="footer-heading">Top Categories</h3>
             <ul className="footer-list">
-              {TOP_CITIES.map((c) => (
+              {popularCategories.slice(0, 8).map((c) => (
                 <li key={c.slug}>
-                  <Link href={`/${c.urlSlug}/`} className="footer-link">
+                  <Link href={`/categories/${c.slug}/`} className="footer-link">
                     {c.label}
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link href="/categories/" className="footer-link">All Categories →</Link>
+              </li>
             </ul>
           </div>
 
@@ -58,7 +69,7 @@ export default function Footer() {
             <ul className="footer-list">
               <li><Link href="/about" className="footer-link">About Us</Link></li>
               <li><Link href="/blog" className="footer-link">Blog</Link></li>
-              <li><Link href="/search" className="footer-link">Search Creators</Link></li>
+              <li><Link href="/onlyfans-search" className="footer-link">Search Creators</Link></li>
             </ul>
             <h3 className="footer-heading" style={{ marginTop: '1rem' }}>Legal</h3>
             <ul className="footer-list">
@@ -70,7 +81,7 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <p>© {currentYear} OnlyBritishFans. All rights reserved.</p>
+          <p>© {currentYear} OnlyAmericanFans. All rights reserved.</p>
           <p className="footer-compliance">
             This website contains adult content and is intended for persons aged 18 and over.
             By using this site you confirm you are 18+.{' '}
@@ -78,7 +89,7 @@ export default function Footer() {
             <Link href="/terms" className="footer-link">Terms of Use</Link>
           </p>
           <p className="footer-hreflang">
-            <link rel="alternate" hrefLang="en-GB" href={siteUrl} />
+            <link rel="alternate" hrefLang="en-US" href={siteUrl} />
           </p>
         </div>
       </div>

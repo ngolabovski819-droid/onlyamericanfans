@@ -129,8 +129,8 @@ export const filterGroups: FilterGroup[] = [
     type: 'price',
     options: [
       { label: 'Free', terms: ['free'] },
-      { label: 'Under £5', terms: ['under5'] },
-      { label: 'Under £10', terms: ['under10'] },
+      { label: 'Under $5', terms: ['under5'] },
+      { label: 'Under $10', terms: ['under10'] },
       { label: 'Any Price', terms: ['any'] },
     ],
   },

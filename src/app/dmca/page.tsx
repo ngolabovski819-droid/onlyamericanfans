@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlybritishfans.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlyamericanfans.com';
 
 export const metadata: Metadata = {
-  title: 'DMCA & Content Removal â€” OnlyBritishFans',
-  description: 'Submit a DMCA takedown notice or request content removal from OnlyBritishFans.',
+  title: 'DMCA & Content Removal — OnlyAmericanFans',
+  description: 'Submit a DMCA takedown notice or request content removal from OnlyAmericanFans.',
   alternates: { canonical: `${SITE_URL}/dmca/` },
 };
 
@@ -14,7 +14,7 @@ export default function DMCAPage() {
       <h1>DMCA &amp; Content Removal</h1>
       <p className="legal-page-date">We respect intellectual property rights and respond to valid DMCA notices.</p>
 
-      <h2>For Creators â€” Remove Your Profile</h2>
+      <h2>For Creators — Remove Your Profile</h2>
       <p>
         If you are an OnlyFans creator and wish to have your profile removed from our directory,
         please contact us with the following information:
@@ -25,7 +25,7 @@ export default function DMCAPage() {
         <li>Your preferred contact email for confirmation</li>
       </ul>
       <p>
-        We will remove your listing within 48 hours of a verified request. Removals are permanent â€”
+        We will remove your listing within 48 hours of a verified request. Removals are permanent —
         your profile will not be re-added to our index.
       </p>
 
@@ -45,7 +45,7 @@ export default function DMCAPage() {
 
       <h2>How to Submit</h2>
       <p>
-        Note: OnlyBritishFans is a search directory that links to OnlyFans. We do not host creator
+        Note: OnlyAmericanFans is a search directory that links to OnlyFans. We do not host creator
         content directly. For images returned from the OnlyFans platform, the correct venue for
         DMCA notices is OnlyFans directly. We only display publicly available profile metadata.
       </p>

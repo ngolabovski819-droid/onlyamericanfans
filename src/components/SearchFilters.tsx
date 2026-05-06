@@ -14,7 +14,17 @@ export default function SearchFilters({ onFiltersChange }: Props) {
   const searchParams = useSearchParams();
 
   const [open, setOpen] = useState<Record<string, boolean>>({});
-  const [selected, setSelected] = useState<Record<string, string[]>>({});
+  const [selected, setSelected] = useState<Record<string, string[]>>(() => {
+    const raw = searchParams.get('filter_groups');
+    if (!raw) return {};
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        return parsed as Record<string, string[]>;
+      }
+    } catch {}
+    return {};
+  });
   const [verified, setVerified] = useState(searchParams.get('verified') === 'true');
   const [price, setPrice] = useState(searchParams.get('price') ?? 'any');
   const [sort, setSort] = useState(searchParams.get('sort') ?? 'popular');
@@ -63,7 +73,7 @@ export default function SearchFilters({ onFiltersChange }: Props) {
     if (price !== 'any') current.set('price', price);
     if (sort !== 'popular') current.set('sort', sort);
 
-    router.push(`/search?${current.toString()}`);
+    router.push(`/onlyfans-search?${current.toString()}`);
     setMobileOpen(false);
     onFiltersChange?.(current);
   }, [selected, verified, price, sort, router, searchParams, onFiltersChange]);
@@ -187,8 +197,8 @@ export default function SearchFilters({ onFiltersChange }: Props) {
             {[
               { label: 'Any Price', value: 'any' },
               { label: 'Free', value: 'free' },
-              { label: 'Under A$5', value: 'under5' },
-              { label: 'Under A$10', value: 'under10' },
+              { label: 'Under $5', value: 'under5' },
+              { label: 'Under $10', value: 'under10' },
             ].map((p) => (
               <label key={p.value} className="filter-option">
                 <input type="radio" name="price" checked={price === p.value} onChange={() => setPrice(p.value)} />

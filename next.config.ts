@@ -4,13 +4,13 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: '/onlyfans-search',
-        destination: '/search',
+        source: '/search',
+        destination: '/onlyfans-search',
         permanent: true,
       },
       {
-        source: '/onlyfans-search/:path*',
-        destination: '/search',
+        source: '/search/:path*',
+        destination: '/onlyfans-search',
         permanent: true,
       },
     ];
