@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-/** Minimal Markdown → HTML (headings, paragraphs, bold, links — no external dep) */
+/** Minimal Markdown → HTML (headings, paragraphs, bold, links, lists — passes through block-level HTML for tables/charts/infographics) */
 function renderMarkdown(md: string): string {
   return md
     .replace(/^### (.+)$/gm, '<h3>$1</h3>')
@@ -37,8 +37,11 @@ function renderMarkdown(md: string): string {
     .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
     .split(/\n{2,}/)
     .map(block => {
-      if (block.startsWith('<h') || block.startsWith('<ul') || block.startsWith('<ol')) return block;
-      return `<p>${block.trim().replace(/\n/g, '<br>')}</p>`;
+      const t = block.trim();
+      // Pass-through for any HTML block-level element so tables/figures/divs render verbatim
+      if (/^<(h[1-6]|ul|ol|li|table|thead|tbody|tr|td|th|figure|figcaption|div|section|aside|blockquote|pre|hr|p)\b/i.test(t)) return block;
+      if (t === '') return '';
+      return `<p>${t.replace(/\n/g, '<br>')}</p>`;
     })
     .join('\n');
 }

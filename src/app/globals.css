@@ -1230,6 +1230,45 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .blog-post-content ul, .blog-post-content ol { padding-left: 1.5rem; margin-bottom: 1.2rem; color: var(--text-muted); }
 .blog-post-content li { margin-bottom: 0.4rem; }
 
+/* ── BLOG: rich content (tables, charts, infographics) ─────────────── */
+.blog-post-content table { width: 100%; border-collapse: collapse; margin: 1.6rem 0; font-size: 0.92rem; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.blog-post-content thead { background: linear-gradient(135deg, rgba(200,16,46,0.18), rgba(1,33,105,0.18)); }
+.blog-post-content th { padding: 0.75rem 1rem; text-align: left; color: var(--text); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+.blog-post-content td { padding: 0.7rem 1rem; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+.blog-post-content tr:last-child td { border-bottom: none; }
+.blog-post-content tr:hover td { background: rgba(255,255,255,0.02); color: var(--text); }
+
+/* Stat-callout grid — used for hero KPI infographics */
+.blog-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin: 1.8rem 0 2.2rem; }
+.blog-stat { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.2rem 1rem; text-align: center; position: relative; overflow: hidden; }
+.blog-stat::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(200,16,46,0.08), transparent); pointer-events: none; }
+.blog-stat-num { font-family: 'Oswald', sans-serif; font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 700; color: var(--accent-light); line-height: 1.1; display: block; margin-bottom: 0.3rem; }
+.blog-stat-label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; line-height: 1.3; }
+
+/* CSS-only horizontal bar chart */
+.blog-bar-chart { margin: 1.8rem 0; padding: 1.4rem 1.2rem; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+.blog-bar-chart h4 { font-family: 'Oswald', sans-serif; font-size: 1.05rem; margin: 0 0 1.1rem; color: var(--text); font-weight: 700; }
+.blog-bar-row { display: grid; grid-template-columns: 130px 1fr 60px; align-items: center; gap: 0.8rem; margin-bottom: 0.7rem; font-size: 0.88rem; }
+.blog-bar-label { color: var(--text); font-weight: 500; }
+.blog-bar-track { height: 12px; background: rgba(255,255,255,0.04); border-radius: 6px; overflow: hidden; }
+.blog-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-blue)); border-radius: 6px; transition: width 0.6s ease; }
+.blog-bar-value { color: var(--accent-light); font-weight: 700; font-size: 0.85rem; text-align: right; }
+@media (max-width: 540px) { .blog-bar-row { grid-template-columns: 90px 1fr 50px; gap: 0.5rem; font-size: 0.8rem; } }
+
+/* Pull-quote / callout */
+.blog-post-content blockquote { margin: 1.8rem 0; padding: 1.1rem 1.4rem; border-left: 3px solid var(--accent); background: rgba(200,16,46,0.06); border-radius: 0 10px 10px 0; color: var(--text); font-style: italic; font-size: 1rem; }
+.blog-post-content blockquote p { color: var(--text); margin: 0; }
+
+/* Figure / infographic wrapper */
+.blog-post-content figure { margin: 1.8rem 0; }
+.blog-post-content figcaption { font-size: 0.82rem; color: var(--text-muted); text-align: center; margin-top: 0.6rem; font-style: italic; }
+
+/* Strong CTA box */
+.blog-cta-box { margin: 2rem 0; padding: 1.6rem 1.4rem; background: linear-gradient(135deg, rgba(200,16,46,0.12), rgba(1,33,105,0.12)); border: 1px solid var(--border); border-radius: 16px; text-align: center; }
+.blog-cta-box h3 { font-family: 'Oswald', sans-serif; font-size: 1.3rem; margin: 0 0 0.5rem; color: var(--text); }
+.blog-cta-box p { color: var(--text-muted); margin: 0 0 1rem; font-size: 0.95rem; }
+.blog-cta-box a { display: inline-block; padding: 0.7rem 1.6rem; background: var(--accent-gradient); color: #fff; border-radius: 10px; font-weight: 700; text-decoration: none; font-size: 0.95rem; }
+
 /* ── LEGAL PAGES ───────────────────────────────── */
 .legal-page { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
 .legal-page h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin-bottom: 0.5rem; }
