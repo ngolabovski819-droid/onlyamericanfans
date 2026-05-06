@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getCategoryBySlug, categories } from '@/config/categories';
+import { states } from '@/config/states';
+import { cities } from '@/config/cities';
 import { fetchCreators } from '@/lib/supabase';
 import CreatorGrid from '@/components/CreatorGrid';
 import { categoryFaqs } from '@/lib/faqs';
@@ -127,6 +129,42 @@ export default async function CategoryPage({ params }: Props) {
               </details>
             ))}
           </dl>
+        </section>
+
+        {/* Browse by State — links to real state pages */}
+        <section style={{ paddingTop: '2.5rem', paddingBottom: '1.5rem' }}>
+          <div className="section-rail">
+            <h2 className="section-rail-title">Browse American OnlyFans by State</h2>
+            <Link href="/onlyfans-search" className="section-rail-link">All creators →</Link>
+          </div>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: '0 0 1rem' }}>
+            Explore American OnlyFans creators in every US state.
+          </p>
+          <div className="chips-row chips-row--wrap">
+            {states.map(s => (
+              <Link key={s.slug} href={`/${s.urlSlug}/`} className="location-chip">
+                {s.abbr} — {s.label}
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Explore Top US Cities — links to real city pages */}
+        <section style={{ paddingTop: '1rem', paddingBottom: '2.5rem' }}>
+          <div className="section-rail">
+            <h2 className="section-rail-title">Explore Top US Cities</h2>
+            <Link href="/onlyfans-search" className="section-rail-link">More cities →</Link>
+          </div>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: '0 0 1rem' }}>
+            Discover American OnlyFans creators in the biggest US cities.
+          </p>
+          <div className="chips-row chips-row--wrap">
+            {cities.slice(0, 24).map(c => (
+              <Link key={c.slug} href={`/${c.urlSlug}/`} className="location-chip">
+                {c.label}
+              </Link>
+            ))}
+          </div>
         </section>
       </div>
     </>
