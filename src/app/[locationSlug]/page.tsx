@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getStateByUrlSlug, states } from '@/config/states';
 import { getCityByUrlSlug, getCitiesByState, cities } from '@/config/cities';
-import { popularCategories } from '@/config/categories';
+
 import { fetchCreators } from '@/lib/supabase';
 import CreatorGrid from '@/components/CreatorGrid';
 import RelatedLocations from '@/components/RelatedLocations';
@@ -164,22 +164,6 @@ export default async function LocationPage({ params }: Props) {
           locationTerms={loc.terms}
           pageSize={24}
         />
-
-        {/* Browse by category */}
-        <section style={{ margin: '2.5rem 0 1.5rem' }}>
-          <div className="section-rail">
-            <h2 className="section-rail-title">Browse {loc.label} by Category</h2>
-            <Link href="/categories" className="section-rail-link">All categories →</Link>
-          </div>
-          <div className="chips-row chips-row--wrap">
-            {popularCategories.map(c => (
-              <Link key={c.slug} href={`/${locationSlug}/${c.slug}/`} className="chip-glass">
-                {c.emoji && <span>{c.emoji}</span>}
-                {c.label}
-              </Link>
-            ))}
-          </div>
-        </section>
 
         {/* Related locations */}
         {isState && state && (
