@@ -2,10 +2,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getCategoryBySlug, categories } from '@/config/categories';
-import { states } from '@/config/states';
 import { fetchCreators } from '@/lib/supabase';
 import CreatorGrid from '@/components/CreatorGrid';
-import RelatedLocations from '@/components/RelatedLocations';
 import { categoryFaqs } from '@/lib/faqs';
 
 export const revalidate = 3600;
@@ -117,8 +115,6 @@ export default async function CategoryPage({ params }: Props) {
           pageSize={24}
         />
 
-        {/* Internal linking: state × category */}
-        <RelatedLocations mode="category-in-states" categorySlug={slug} categoryLabel={cat.label} />
 
         {/* FAQ */}
         <section className="faq-section">
@@ -131,20 +127,6 @@ export default async function CategoryPage({ params }: Props) {
               </details>
             ))}
           </dl>
-        </section>
-
-        {/* State quick links */}
-        <section style={{ paddingBottom: '2rem' }}>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.75rem' }}>
-            Browse {cat.label} Creators by State
-          </h2>
-          <div className="chips-row chips-row--wrap">
-            {states.map(s => (
-              <Link key={s.slug} href={`/${s.urlSlug}/${slug}/`} className="location-chip">
-                {s.abbr} {cat.label}
-              </Link>
-            ))}
-          </div>
         </section>
       </div>
     </>
