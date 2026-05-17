@@ -1,5 +1,4 @@
 import type { Creator } from '@/types/creator';
-import { buildAuOrExpression } from './au-terms';
 
 export interface SearchParams {
   q?: string;
@@ -87,12 +86,16 @@ export async function fetchCreators(params: SearchParams): Promise<SearchResult>
   // Build AND clauses — each is a parenthesized OR expression
   const andClauses: string[] = [];
 
-  // 1. Location scope — state/city terms, location column only
-  // NOTE: about.ilike.* removed — wildcard scan on 100k rows causes Supabase timeouts
-  // NOTE: buildAuOrExpression() fallback removed — 37-term OR takes ~8-9s and caused
-  //       Vercel SSG build timeouts, pre-rendering all pages with 0 creators.
+  // 1. Location scope — uses the `search_text` generated column backed by the
+  //    GIN trigram index (`idx_search_text_trgm`). Plain `location.ilike.*term*`
+  //    OR-chains tipped the planner into a seq scan on cold cache for some
+  //    states (Maryland, Louisiana), causing 8s statement timeouts and ISR
+  //    caching empty pages. search_text concatenates username|name|about|location
+  //    so state landing pages remain broad enough to still be useful.
+  // NOTE: buildAuOrExpression() fallback removed — 37-term OR took ~8-9s and
+  //       caused Vercel SSG build timeouts, pre-rendering pages with 0 creators.
   if (params.locationTerms && params.locationTerms.length > 0) {
-    const parts = params.locationTerms.map((t) => `location.ilike.*${t}*`);
+    const parts = params.locationTerms.map((t) => `search_text.ilike.*${t.toLowerCase()}*`);
     andClauses.push(`(${parts.join(',')})`);
   }
 
