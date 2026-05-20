@@ -86,16 +86,17 @@ export async function fetchCreators(params: SearchParams): Promise<SearchResult>
   // Build AND clauses — each is a parenthesized OR expression
   const andClauses: string[] = [];
 
-  // 1. Location scope — uses the `search_text` generated column backed by the
-  //    GIN trigram index (`idx_search_text_trgm`). Plain `location.ilike.*term*`
-  //    OR-chains tipped the planner into a seq scan on cold cache for some
-  //    states (Maryland, Louisiana), causing 8s statement timeouts and ISR
-  //    caching empty pages. search_text concatenates username|name|about|location
-  //    so state landing pages remain broad enough to still be useful.
-  // NOTE: buildAuOrExpression() fallback removed — 37-term OR took ~8-9s and
-  //       caused Vercel SSG build timeouts, pre-rendering pages with 0 creators.
+  // 1. Location scope — filters on the `location` column only.
+  //    Using location (not search_text) gives smaller, accurate result sets:
+  //    search_text includes the about/bio field where popular city names appear
+  //    as false positives (e.g. "I love Miami"), inflating result sets to 10k+
+  //    rows that time out on the ORDER BY for states like FL, NY, IL, PA.
+  //    Migration 002_location_gin_index.sql adds a GIN trigram index on location
+  //    for fast cold-cache OR-chains. Until that index is applied, a fallback to
+  //    the first (state-name) term is triggered on HTTP 500 (statement timeout).
+  // NOTE: buildAuOrExpression() fallback removed — 37-term OR took ~8-9s.
   if (params.locationTerms && params.locationTerms.length > 0) {
-    const parts = params.locationTerms.map((t) => `search_text.ilike.*${t.toLowerCase()}*`);
+    const parts = params.locationTerms.map((t) => `location.ilike.*${t.toLowerCase()}*`);
     andClauses.push(`(${parts.join(',')})`);
   }
 
@@ -160,6 +161,15 @@ export async function fetchCreators(params: SearchParams): Promise<SearchResult>
   // Final URL: standard params (safely encoded) + raw filter appended manually
   const finalUrl = `${supabaseUrl}/rest/v1/onlyfans_profiles?${qp.toString()}${rawFilter}`;
 
+  // Fallback URL: if the full OR-chain hits a statement timeout (HTTP 500 on cold
+  // Supabase cache before migration 002 index is applied), retry with just the
+  // first term (state name) so the page renders something instead of being blank.
+  // Only active when locationTerms is the sole filter (state landing pages).
+  const fallbackUrl =
+    andClauses.length === 1 && params.locationTerms && params.locationTerms.length > 1
+      ? `${supabaseUrl}/rest/v1/onlyfans_profiles?${qp.toString()}&or=(location.ilike.*${params.locationTerms[0].toLowerCase()}*)`
+      : null;
+
   let res: Response;
   try {
     res = await fetch(finalUrl, {
@@ -175,6 +185,23 @@ export async function fetchCreators(params: SearchParams): Promise<SearchResult>
     });
   } catch {
     return { creators: [], total: 0, hasMore: false };
+  }
+
+  // On statement timeout, retry with just the state-name term.
+  if (!res.ok && res.status === 500 && fallbackUrl) {
+    try {
+      res = await fetch(fallbackUrl, {
+        headers: {
+          apikey: supabaseKey,
+          Authorization: `Bearer ${supabaseKey}`,
+          'Accept-Profile': 'public',
+          Prefer: 'count=estimated',
+        },
+        next: { revalidate: 60 }, // shorter cache so next visitor gets full results
+      });
+    } catch {
+      return { creators: [], total: 0, hasMore: false };
+    }
   }
 
   if (!res.ok) {
