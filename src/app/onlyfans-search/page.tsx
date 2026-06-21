@@ -5,7 +5,7 @@ import CreatorGrid from '@/components/CreatorGrid';
 import FAQ from '@/components/FAQ';
 import { searchPageFaqs } from '@/lib/faqs';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlyamericanfans.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
 
 export const metadata: Metadata = {
   title: 'OnlyFans Search — Find American Creators by Name, City & State',

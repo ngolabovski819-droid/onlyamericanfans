@@ -6,10 +6,10 @@ export const metadata: Metadata = {
   title: 'OnlyFans Categories — Browse American Creators | OnlyAmericanFans',
   description:
     'Browse all American OnlyFans categories — MILF, BBW, teen, latina, ebony, fitness, trans, free and more. Find the perfect American creator for every taste.',
-  alternates: { canonical: 'https://onlyamericanfans.com/categories/' },
+  alternates: { canonical: 'https://www.onlyamericanfans.com/categories/' },
 };
 
-const SITE_URL = 'https://onlyamericanfans.com';
+const SITE_URL = 'https://www.onlyamericanfans.com';
 
 const breadcrumbSchema = {
   '@context': 'https://schema.org',

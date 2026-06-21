@@ -6,7 +6,7 @@ import { popularCategories } from '@/config/categories';
 const FOOTER_STATE_SLUGS = ['california', 'texas', 'florida', 'new-york'];
 
 export default function Footer() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlyamericanfans.com';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
   const currentYear = new Date().getFullYear();
 
   return (

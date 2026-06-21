@@ -11,7 +11,7 @@ const GA_ID = 'G-00EBQM04JD';
 const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-dm-sans', display: 'swap', weight: ['400', '500', '600', '700'] });
 const oswald = Oswald({ subsets: ['latin'], variable: '--font-oswald', display: 'swap', weight: ['400', '500', '600', '700'] });
 
-const SITE_URL  = process.env.NEXT_PUBLIC_SITE_URL  ?? 'https://onlyamericanfans.com';
+const SITE_URL  = process.env.NEXT_PUBLIC_SITE_URL  ?? 'https://www.onlyamericanfans.com';
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME ?? 'OnlyAmericanFans';
 
 export const metadata: Metadata = {

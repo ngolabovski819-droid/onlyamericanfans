@@ -5,7 +5,7 @@ import { getPostBySlug, getAllPosts } from '@/lib/blog';
 
 export const revalidate = 3600;
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlyamericanfans.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
 
 interface Props {
   params: Promise<{ slug: string }>;
