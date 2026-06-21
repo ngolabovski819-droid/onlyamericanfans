@@ -3,7 +3,7 @@ import { regions } from '@/config/regions';
 import { cities } from '@/config/cities';
 import { getAllPosts } from '@/lib/blog';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlyamericanfans.com';
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://onlyamericanfans.com').trim();
 
 function url(path: string, priority = 0.7, freq = 'weekly'): string {
   return `<url><loc>${SITE_URL}${path}</loc><changefreq>${freq}</changefreq><priority>${priority}</priority></url>`;
