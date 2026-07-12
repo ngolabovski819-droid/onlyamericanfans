@@ -2157,3 +2157,20 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   .glass-stats { gap: 1rem; padding: 0.85rem 1rem; }
 }
 
+/* ── PROMOTE PAGE ───────────────────────────────────────────────────── */
+.promote-cta-block { margin-top: 2rem; display: flex; flex-direction: column; align-items: center; gap: 0.7rem; }
+.promote-cta-main { font-size: 1.05rem; padding: 1rem 2.2rem; }
+.promote-cta-note { font-size: 0.82rem; color: var(--text-muted); letter-spacing: 0.02em; }
+
+.compare-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); }
+.compare-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; min-width: 640px; }
+.compare-table thead { background: linear-gradient(135deg, rgba(200,16,46,0.18), rgba(1,33,105,0.18)); }
+.compare-table th { padding: 0.85rem 1.1rem; text-align: left; color: var(--text); font-weight: 700; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+.compare-table td { padding: 0.8rem 1.1rem; color: var(--text-muted); border-bottom: 1px solid var(--border-subtle); }
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-row--highlight td { background: rgba(200,16,46,0.1); color: var(--text); }
+.compare-row--highlight td strong { color: var(--accent-light); }
+
+.nav-link--promote { color: var(--accent-light); font-weight: 700; }
+.nav-link--promote:hover { color: #fff; }
+

@@ -33,6 +33,7 @@ export async function GET(_req: Request, { params }: Params) {
       url('/onlyfans-search/', 0.9, 'daily'),
       url('/blog/', 0.8, 'weekly'),
       url('/about/', 0.5, 'monthly'),
+      url('/promote/', 0.8, 'monthly'),
       url('/privacy/', 0.3, 'monthly'),
       url('/terms/', 0.3, 'monthly'),
       url('/dmca/', 0.3, 'monthly'),

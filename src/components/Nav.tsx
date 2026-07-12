@@ -78,6 +78,7 @@ export default function Nav() {
           </div>
 
           <Link href="/blog" className="nav-link">Blog</Link>
+          <Link href="/promote" className="nav-link nav-link--promote">Promote Your OnlyFans</Link>
         </nav>
 
         {/* Mobile hamburger */}
@@ -113,6 +114,7 @@ export default function Nav() {
             </Link>
           ))}
           <Link href="/blog" className="nav-mobile-link" onClick={() => setMobileOpen(false)}>Blog</Link>
+          <Link href="/promote" className="nav-mobile-link nav-link--promote" onClick={() => setMobileOpen(false)}>Promote Your OnlyFans</Link>
         </div>
       )}
     </header>
