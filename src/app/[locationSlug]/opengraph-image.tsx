@@ -1,6 +1,7 @@
 ﻿import { ImageResponse } from 'next/og';
 import { getStateByUrlSlug } from '@/config/states';
 import { getCityByUrlSlug } from '@/config/cities';
+import { getRegionByUrlSlug } from '@/config/regions';
 
 export const runtime = 'edge';
 export const size    = { width: 1200, height: 630 };
@@ -11,9 +12,10 @@ interface Props {
 
 export default async function OGImage({ params }: Props) {
   const { locationSlug } = await params;
-  const state = getStateByUrlSlug(locationSlug);
-  const city  = !state ? getCityByUrlSlug(locationSlug) : null;
-  const label = state?.label ?? city?.label ?? locationSlug.replace(/-onlyfans$/, '').replace(/-/g, ' ');
+  const state  = getStateByUrlSlug(locationSlug);
+  const city   = !state ? getCityByUrlSlug(locationSlug) : null;
+  const region = !state && !city ? getRegionByUrlSlug(locationSlug) : null;
+  const label  = state?.label ?? city?.label ?? region?.label ?? locationSlug.replace(/-onlyfans$/, '').replace(/-/g, ' ');
 
   return new ImageResponse(
     (

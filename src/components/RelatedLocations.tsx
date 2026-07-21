@@ -1,13 +1,15 @@
 ﻿import Link from 'next/link';
 import { states } from '@/config/states';
 import { cities } from '@/config/cities';
+import { regions } from '@/config/regions';
 import { popularCategories } from '@/config/categories';
 
 interface Props {
-  mode: 'state-to-cities' | 'city-to-siblings' | 'state-chips' | 'category-in-states';
+  mode: 'state-to-cities' | 'city-to-siblings' | 'state-chips' | 'category-in-states' | 'region-to-cities' | 'region-chips';
   stateSlug?: string;
   citySlug?: string;
   categorySlug?: string;
+  regionSlug?: string;
   stateLabel?: string;
   categoryLabel?: string;
   currentSlug?: string;
@@ -15,7 +17,7 @@ interface Props {
   parentStateUrlSlug?: string;
 }
 
-export default function RelatedLocations({ mode, stateSlug, citySlug, categorySlug }: Props) {
+export default function RelatedLocations({ mode, stateSlug, citySlug, categorySlug, regionSlug }: Props) {
   if (mode === 'state-chips') {
     return (
       <div className="related-chips-wrap">
@@ -75,6 +77,61 @@ export default function RelatedLocations({ mode, stateSlug, citySlug, categorySl
               {siblings.map((c) => (
                 <Link key={c.slug} href={`/${c.urlSlug}/`} className="location-chip">
                   {c.label}
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  if (mode === 'region-chips') {
+    return (
+      <div className="related-chips-wrap">
+        <h2 className="related-chips-heading">Browse by Region</h2>
+        <div className="chips-row">
+          {regions.map((r) => (
+            <Link key={r.slug} href={`/${r.urlSlug}/`} className="location-chip">
+              {r.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (mode === 'region-to-cities' && regionSlug) {
+    const region = regions.find((r) => r.slug === regionSlug);
+    if (!region) return null;
+    const regionCities = region.relatedCities
+      .map((s) => cities.find((c) => c.slug === s))
+      .filter(Boolean) as typeof cities;
+    const relatedRegionsList = region.relatedRegions
+      .map((s) => regions.find((r) => r.slug === s))
+      .filter(Boolean) as typeof regions;
+
+    return (
+      <div className="related-chips-wrap">
+        {regionCities.length > 0 && (
+          <>
+            <h2 className="related-chips-heading">Explore Cities in the {region.label}</h2>
+            <div className="chips-row" style={{ marginBottom: '0.75rem' }}>
+              {regionCities.map((c) => (
+                <Link key={c.slug} href={`/${c.urlSlug}/`} className="location-chip">
+                  {c.label}
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+        {relatedRegionsList.length > 0 && (
+          <>
+            <h3 className="related-chips-subheading">Other Regions</h3>
+            <div className="chips-row">
+              {relatedRegionsList.map((r) => (
+                <Link key={r.slug} href={`/${r.urlSlug}/`} className="location-chip">
+                  {r.label}
                 </Link>
               ))}
             </div>

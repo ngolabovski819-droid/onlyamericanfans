@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { regions } from '@/config/regions';
 import { cities } from '@/config/cities';
+import { states } from '@/config/states';
+import { categories } from '@/config/categories';
 import { getAllPosts } from '@/lib/blog';
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com').trim();
@@ -26,21 +28,26 @@ interface Params {
 export async function GET(_req: Request, { params }: Params) {
   const { id } = await params;
 
-  /** Sitemap 0: static + locations (regions + cities) */
+  /** Sitemap 0: static + locations (states + regions + cities) + categories */
   if (id === '0') {
     const staticUrls = [
       url('/', 1.0, 'daily'),
       url('/onlyfans-search/', 0.9, 'daily'),
+      url('/browse-by-state/', 0.8, 'weekly'),
+      url('/categories/', 0.8, 'weekly'),
       url('/blog/', 0.8, 'weekly'),
       url('/about/', 0.5, 'monthly'),
+      url('/contact/', 0.4, 'monthly'),
       url('/promote/', 0.8, 'monthly'),
       url('/privacy/', 0.3, 'monthly'),
       url('/terms/', 0.3, 'monthly'),
       url('/dmca/', 0.3, 'monthly'),
     ];
-    const regionUrls = regions.map(r => url(`/${r.urlSlug}/`, 0.9, 'daily'));
-    const cityUrls   = cities.map(c => url(`/${c.urlSlug}/`, 0.8, 'daily'));
-    return buildSitemap([...staticUrls, ...regionUrls, ...cityUrls]);
+    const stateUrls    = states.map(s => url(`/${s.urlSlug}/`, 0.95, 'daily'));
+    const regionUrls   = regions.map(r => url(`/${r.urlSlug}/`, 0.9, 'daily'));
+    const cityUrls     = cities.map(c => url(`/${c.urlSlug}/`, 0.8, 'daily'));
+    const categoryUrls = categories.map(c => url(`/categories/${c.slug}/`, 0.7, 'daily'));
+    return buildSitemap([...staticUrls, ...stateUrls, ...regionUrls, ...cityUrls, ...categoryUrls]);
   }
 
   /** Sitemap 1: blog posts */

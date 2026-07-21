@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getStateByUrlSlug, states } from '@/config/states';
 import { getCityByUrlSlug, getCitiesByState, cities } from '@/config/cities';
+import { getRegionByUrlSlug, regions } from '@/config/regions';
 
 import { fetchCreators } from '@/lib/supabase';
 import CreatorGrid from '@/components/CreatorGrid';
@@ -21,14 +22,16 @@ export async function generateStaticParams() {
   return [
     ...states.map(s => ({ locationSlug: s.urlSlug })),
     ...cities.map(c => ({ locationSlug: c.urlSlug })),
+    ...regions.map(r => ({ locationSlug: r.urlSlug })),
   ];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locationSlug } = await params;
-  const state = getStateByUrlSlug(locationSlug);
-  const city  = !state ? getCityByUrlSlug(locationSlug) : null;
-  const loc   = state ?? city;
+  const state  = getStateByUrlSlug(locationSlug);
+  const city   = !state ? getCityByUrlSlug(locationSlug) : null;
+  const region = !state && !city ? getRegionByUrlSlug(locationSlug) : null;
+  const loc    = state ?? city ?? region;
   if (!loc) return {};
   const url = `${SITE_URL}/${locationSlug}/`;
   return {
@@ -46,13 +49,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function LocationPage({ params }: Props) {
   const { locationSlug } = await params;
-  const state = getStateByUrlSlug(locationSlug);
-  const city  = !state ? getCityByUrlSlug(locationSlug) : null;
+  const state  = getStateByUrlSlug(locationSlug);
+  const city   = !state ? getCityByUrlSlug(locationSlug) : null;
+  const region = !state && !city ? getRegionByUrlSlug(locationSlug) : null;
 
-  if (!state && !city) notFound();
+  if (!state && !city && !region) notFound();
 
-  const loc = (state ?? city)!;
+  const loc = (state ?? city ?? region)!;
   const isState = !!state;
+  const isRegion = !!region;
 
   const { creators, total, hasMore } = await fetchCreators({
     locationTerms: loc.terms,
@@ -68,8 +73,8 @@ export default async function LocationPage({ params }: Props) {
     customFaqs: loc.faqs,
     label: loc.label,
     total,
-    isState,
-    abbr: state?.abbr,
+    isState: isState || isRegion,
+    abbr: state?.abbr ?? region?.abbr,
     parentStateLabel: parentState?.label,
   });
 
@@ -91,7 +96,7 @@ export default async function LocationPage({ params }: Props) {
       ...(city && state
         ? [{ '@type': 'ListItem', position: 2, name: state.label, item: `${SITE_URL}/${state.urlSlug}/` }]
         : []),
-      { '@type': 'ListItem', position: isState ? 2 : 3, name: loc.label, item: `${SITE_URL}/${locationSlug}/` },
+      { '@type': 'ListItem', position: (isState || isRegion) ? 2 : 3, name: loc.label, item: `${SITE_URL}/${locationSlug}/` },
     ],
   };
 
@@ -141,7 +146,7 @@ export default async function LocationPage({ params }: Props) {
         <section className="detail-hero starfield">
           <div className="detail-hero-inner">
             <p className="eyebrow-pill">
-              {isState ? 'State' : 'City'}{parentState ? ` · ${parentState.label}` : ''}
+              {isRegion ? 'Region' : isState ? 'State' : 'City'}{parentState ? ` · ${parentState.label}` : ''}
             </p>
             <h1>
               <span className="gradient-accent">{loc.label}</span> OnlyFans
@@ -183,6 +188,9 @@ export default async function LocationPage({ params }: Props) {
         )}
         {isState && (
           <RelatedLocations mode="state-chips" currentSlug={state?.slug} />
+        )}
+        {isRegion && region && (
+          <RelatedLocations mode="region-to-cities" regionSlug={region.slug} />
         )}
 
         {/* FAQ */}
