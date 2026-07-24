@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchCreators } from '@/lib/supabase';
 import type { SearchParams } from '@/lib/supabase';
+import { fetchScopedCreators } from '@/lib/sponsorship';
 
 export const runtime = 'nodejs'; // edge doesn't support all Node.js APIs used by Supabase fetch cache
 
@@ -40,7 +41,7 @@ export async function GET(req: NextRequest) {
   const price = ['free', 'under5', 'under10', 'any'].includes(priceRaw ?? '')
     ? (priceRaw as SearchParams['price'])
     : undefined;
-  const sort = searchParams.get('sort') === 'newest' ? 'newest' : 'popular';
+  const sort: 'popular' | 'newest' = searchParams.get('sort') === 'newest' ? 'newest' : 'popular';
   const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10));
   const pageSize = Math.min(40, Math.max(1, parseInt(searchParams.get('page_size') ?? '20', 10)));
 
@@ -75,8 +76,10 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  const scope = searchParams.get('scope') ?? undefined;
+
   try {
-    const result = await fetchCreators({
+    const baseParams = {
       q,
       verified: verified || undefined,
       price,
@@ -87,7 +90,10 @@ export async function GET(req: NextRequest) {
       categoryTerms,
       filterGroups,
       skipLocationFilter,
-    });
+    };
+    const result = scope
+      ? await fetchScopedCreators({ ...baseParams, scope })
+      : await fetchCreators(baseParams);
 
     // Cache Load More responses for 30s (public, non-personalised search).
     // stale-while-revalidate lets the CDN serve stale data while refreshing.

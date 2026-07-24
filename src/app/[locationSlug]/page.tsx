@@ -5,7 +5,7 @@ import { getStateByUrlSlug, states } from '@/config/states';
 import { getCityByUrlSlug, getCitiesByState, cities } from '@/config/cities';
 import { getRegionByUrlSlug, regions } from '@/config/regions';
 
-import { fetchCreators } from '@/lib/supabase';
+import { fetchScopedCreators } from '@/lib/sponsorship';
 import CreatorGrid from '@/components/CreatorGrid';
 import RelatedLocations from '@/components/RelatedLocations';
 import { expandLocationFaqs } from '@/lib/faqs';
@@ -59,7 +59,10 @@ export default async function LocationPage({ params }: Props) {
   const isState = !!state;
   const isRegion = !!region;
 
-  const { creators, total, hasMore } = await fetchCreators({
+  const scope = state ? `state:${state.slug}` : city ? `city:${city.slug}` : `region:${region!.slug}`;
+
+  const { creators, total, hasMore } = await fetchScopedCreators({
+    scope,
     locationTerms: loc.terms,
     pageSize: 24,
     sort: 'popular',
@@ -168,6 +171,7 @@ export default async function LocationPage({ params }: Props) {
           initialHasMore={hasMore}
           locationTerms={loc.terms}
           pageSize={24}
+          scope={scope}
         />
 
         {/* Related locations */}

@@ -1,6 +1,6 @@
 ﻿import type { Metadata } from 'next';
 import Link from 'next/link';
-import { fetchCreators } from '@/lib/supabase';
+import { fetchScopedCreators } from '@/lib/sponsorship';
 import { states } from '@/config/states';
 import CreatorGrid from '@/components/CreatorGrid';
 import CreatorGridSkeleton from '@/components/CreatorGridSkeleton';
@@ -36,13 +36,21 @@ const US_TERMS = [
 ];
 
 async function TrendingCreators() {
-  const { creators, total, hasMore } = await fetchCreators({ pageSize: 20, sort: 'popular', revalidate: 300, locationTerms: US_TERMS });
+  const { creators, total, hasMore } = await fetchScopedCreators({
+    scope: 'home',
+    pageSize: 20,
+    sort: 'popular',
+    revalidate: 300,
+    locationTerms: US_TERMS,
+  });
   return (
     <CreatorGrid
       initialCreators={creators}
       initialTotal={total}
       initialHasMore={hasMore}
       locationTerms={US_TERMS}
+      scope="home"
+      pageSize={20}
       />
   );
 }

@@ -20,11 +20,22 @@ function getBestBundle(creator: Creator): string | null {
 }
 
 export default function CreatorCard({ creator, index }: Props) {
-  const { src, srcSet, sizes } = buildSrcset(creator.avatar ?? creator.avatarC144);
+  const { src, srcSet, sizes } = buildSrcset(creator.imageOverride ?? creator.avatar ?? creator.avatarC144);
   const isEager = index < 4;
   const bundle = getBestBundle(creator);
   const price = formatPrice(creator.subscribePrice);
   const isFree = creator.subscribePrice === 0 || creator.subscribePrice === null;
+
+  // Any creator with a sponsor-overrides.ts entry routes through the click-tracking redirect —
+  // not just their pinned slot — so a linkOverride/click log applies wherever this card renders.
+  // A plain <a> (not next/link's <Link>) is used deliberately: Next.js only prefetches <Link>,
+  // so this route can never be hit by viewport-prefetch, only by an actual click. If this is ever
+  // changed to <Link>, it MUST set prefetch={false} — see src/app/go/[username]/route.ts.
+  const isTracked = creator.sponsorTracked || creator.sponsored;
+  const href = isTracked ? `/go/${creator.username}` : `https://onlyfans.com/${creator.username}`;
+  // GOTCHA: never add "noreferrer" here — it would stop the browser sending a Referer to our own
+  // /go/ route, silently zeroing out placement attribution for internal traffic.
+  const rel = isTracked ? 'noopener nofollow sponsored' : 'noopener noreferrer sponsored';
 
   return (
     <div className="creator-card">
@@ -47,6 +58,9 @@ export default function CreatorCard({ creator, index }: Props) {
         {creator.isVerified && (
           <span className="creator-verified-badge" title="Verified creator">✓</span>
         )}
+        {creator.sponsored && (
+          <span className="creator-sponsored-badge" title="Paid placement">Ad · Sponsored</span>
+        )}
       </div>
       <div className="creator-card-body">
         <h3 className="creator-name">{creator.name ?? creator.username}</h3>
@@ -61,9 +75,9 @@ export default function CreatorCard({ creator, index }: Props) {
           {bundle && <span className="creator-bundle">{bundle}</span>}
         </div>
         <a
-          href={`https://onlyfans.com/${creator.username}`}
+          href={href}
           target="_blank"
-          rel="noopener noreferrer sponsored"
+          rel={rel}
           className="creator-view-btn"
           aria-label={`View ${creator.name ?? creator.username} on OnlyFans`}
         >

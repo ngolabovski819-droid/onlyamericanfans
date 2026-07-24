@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { getCategoryBySlug, categories } from '@/config/categories';
 import { states } from '@/config/states';
 import { cities } from '@/config/cities';
-import { fetchCreators } from '@/lib/supabase';
+import { fetchScopedCreators } from '@/lib/sponsorship';
 import CreatorGrid from '@/components/CreatorGrid';
 import { categoryFaqs } from '@/lib/faqs';
 
@@ -40,7 +40,8 @@ export default async function CategoryPage({ params }: Props) {
   const cat = getCategoryBySlug(slug);
   if (!cat) notFound();
 
-  const { creators, total, hasMore } = await fetchCreators({
+  const { creators, total, hasMore } = await fetchScopedCreators({
+    scope: `category:${slug}`,
     categoryTerms: cat.terms.length > 0 ? cat.terms : undefined,
     price: cat.priceFilter,
     skipLocationFilter: true,
@@ -115,6 +116,7 @@ export default async function CategoryPage({ params }: Props) {
           price={cat.priceFilter}
           skipLocationFilter
           pageSize={24}
+          scope={`category:${slug}`}
         />
 
 

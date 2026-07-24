@@ -17,7 +17,25 @@ export interface SearchParams {
   skipLocationFilter?: boolean;
   /** Revalidate tag for Next.js fetch caching */
   revalidate?: number;
+  /** Usernames to exclude at the DB level (case-sensitive exact match) — used by fetchScopedCreators
+   *  to keep pinned/excluded sponsor placements out of the organic result set so pagination offsets
+   *  stay aligned and nothing shows twice. */
+  excludeUsernames?: string[];
+  /** Explicit offset into the result set, overriding the page/pageSize-derived offset. Used by
+   *  fetchScopedCreators to fetch organic rows around exact pinned positions. */
+  offsetOverride?: number;
+  /** If the filtered query (location/category/filter-group terms) comes back with zero rows,
+   *  retry once with all of those filters stripped (a general "popular" list) so the page never
+   *  renders empty just because a search term matched nothing or a filtered query timed out and
+   *  was swallowed. The fallback result's `total` is capped so an unfiltered site-wide count never
+   *  displays under a specific category/location heading. */
+  fallbackToPopularIfEmpty?: boolean;
 }
+
+/** Cap applied to `total` when fetchCreators falls back to an unfiltered "popular" list — keeps
+ *  "N results found" from showing an absurd unfiltered site-wide total under a specific
+ *  category/location heading. */
+const FALLBACK_TOTAL_CAP = 96;
 
 export interface SearchResult {
   creators: Creator[];
@@ -65,7 +83,82 @@ function mapCreator(raw: Record<string, unknown>): Creator {
   };
 }
 
+/**
+ * Fetches creators plus a resilience fallback: when `fallbackToPopularIfEmpty` is set and the
+ * filtered query comes back with zero rows (a genuine zero-match term, or a filtered query that
+ * timed out and got swallowed as empty — indistinguishable from here, and the product answer is
+ * the same either way per the spec: never render an empty scope), retry once with all filter
+ * terms stripped so the page shows a reasonable amount of content instead of nothing.
+ */
 export async function fetchCreators(params: SearchParams): Promise<SearchResult> {
+  const result = await fetchCreatorsInner(params);
+
+  // Deliberately excludes `q` — a free-text search that genuinely matches nothing should show
+  // "no results," not paper over it with unrelated popular creators. This fallback is for
+  // curated, config-driven term lists (category/location/filter-group) that can time out or
+  // legitimately return zero under a narrow combination, where showing *something* is the
+  // better product answer per the spec.
+  const hadFilters =
+    !!params.fallbackToPopularIfEmpty &&
+    (!!(params.locationTerms && params.locationTerms.length) ||
+      !!(params.categoryTerms && params.categoryTerms.length) ||
+      !!(params.filterGroups && Object.keys(params.filterGroups).length));
+
+  if (hadFilters && result.creators.length === 0) {
+    const fallback = await fetchCreatorsInner({
+      sort: params.sort,
+      page: params.page,
+      pageSize: params.pageSize,
+      offsetOverride: params.offsetOverride,
+      excludeUsernames: params.excludeUsernames,
+      revalidate: 60,
+    });
+    return { ...fallback, total: Math.min(fallback.total, FALLBACK_TOTAL_CAP) };
+  }
+
+  return result;
+}
+
+/** Fetch a fixed, small set of creators by exact username — used by fetchScopedCreators to pull
+ *  pinned placements regardless of whether they'd naturally rank. Order is NOT guaranteed to
+ *  match `usernames`; callers must re-sort. */
+export async function fetchCreatorsByUsernames(usernames: string[]): Promise<Creator[]> {
+  const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/+$/, '');
+  const supabaseKey = process.env.SUPABASE_KEY;
+  const safe = usernames.map(sanitizeUsername).filter(Boolean);
+  if (!supabaseUrl || !supabaseKey || supabaseUrl.includes('your-project') || safe.length === 0) {
+    return [];
+  }
+
+  const qp = new URLSearchParams();
+  qp.set('select', CARD_COLS);
+  qp.set('username', `in.(${safe.join(',')})`);
+
+  let res: Response;
+  try {
+    res = await fetch(`${supabaseUrl}/rest/v1/onlyfans_profiles?${qp.toString()}`, {
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+        'Accept-Profile': 'public',
+      },
+      next: { revalidate: 300 },
+    });
+  } catch {
+    return [];
+  }
+  if (!res.ok) return [];
+  const data: Record<string, unknown>[] = await res.json();
+  return data.map(mapCreator);
+}
+
+/** Usernames only ever come from our own config or the DB itself, but sanitize defensively
+ *  before splicing into a raw (non-percent-encoded) PostgREST filter expression. */
+function sanitizeUsername(u: string): string {
+  return u.replace(/[^A-Za-z0-9_.-]/g, '');
+}
+
+async function fetchCreatorsInner(params: SearchParams): Promise<SearchResult> {
   const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/+$/, '');
   const supabaseKey = process.env.SUPABASE_KEY;
 
@@ -75,7 +168,7 @@ export async function fetchCreators(params: SearchParams): Promise<SearchResult>
 
   const page = params.page ?? 1;
   const pageSize = params.pageSize ?? 20;
-  const offset = (page - 1) * pageSize;
+  const offset = params.offsetOverride ?? (page - 1) * pageSize;
 
   // Use a plain params object — we'll build the final URL manually so PostgREST
   // filter expressions (or/and) are NOT percent-encoded (PostgREST requires raw parens/commas)
@@ -134,6 +227,17 @@ export async function fetchCreators(params: SearchParams): Promise<SearchResult>
     rawFilter = `&and=(${parts.join(',')})`;
   }
 
+  // 5. Sponsor-placement exclusion — pinned/excluded usernames dropped at the DB level (not
+  //    filtered client-side after the fact) so LIMIT/OFFSET pagination never double-counts or
+  //    skips a row because a pinned/excluded creator was sitting in the organic result set.
+  //    This is a top-level AND'd condition, independent of the or=/and= group above.
+  if (params.excludeUsernames && params.excludeUsernames.length > 0) {
+    const safe = params.excludeUsernames.map(sanitizeUsername).filter(Boolean);
+    if (safe.length > 0) {
+      rawFilter += `&username=not.in.(${safe.join(',')})`;
+    }
+  }
+
   // Verified filter
   if (params.verified) {
     qp.set('isverified', 'eq.true');
@@ -165,9 +269,14 @@ export async function fetchCreators(params: SearchParams): Promise<SearchResult>
   // Supabase cache before migration 002 index is applied), retry with just the
   // first term (state name) so the page renders something instead of being blank.
   // Only active when locationTerms is the sole filter (state landing pages).
+  const excludeSuffix = (() => {
+    if (!params.excludeUsernames || params.excludeUsernames.length === 0) return '';
+    const safe = params.excludeUsernames.map(sanitizeUsername).filter(Boolean);
+    return safe.length > 0 ? `&username=not.in.(${safe.join(',')})` : '';
+  })();
   const fallbackUrl =
     andClauses.length === 1 && params.locationTerms && params.locationTerms.length > 1
-      ? `${supabaseUrl}/rest/v1/onlyfans_profiles?${qp.toString()}&or=(location.ilike.*${params.locationTerms[0].toLowerCase()}*)`
+      ? `${supabaseUrl}/rest/v1/onlyfans_profiles?${qp.toString()}&or=(location.ilike.*${params.locationTerms[0].toLowerCase()}*)${excludeSuffix}`
       : null;
 
   let res: Response;

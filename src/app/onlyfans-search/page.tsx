@@ -1,5 +1,5 @@
 ﻿import type { Metadata } from 'next';
-import { fetchCreators } from '@/lib/supabase';
+import { fetchScopedCreators } from '@/lib/sponsorship';
 import SearchFilters from '@/components/SearchFilters';
 import CreatorGrid from '@/components/CreatorGrid';
 import FAQ from '@/components/FAQ';
@@ -49,7 +49,8 @@ export default async function OnlyFansSearchPage({ searchParams }: Props) {
   const sort     = (sp.sort as 'popular' | 'newest') ?? 'popular';
   const filterGroups = parseFilterGroups(sp.filter_groups);
 
-  const { creators, total, hasMore } = await fetchCreators({
+  const { creators, total, hasMore } = await fetchScopedCreators({
+    scope: 'search',
     q: q || undefined,
     verified: verified || undefined,
     price: price !== 'any' ? price : undefined,
@@ -100,6 +101,8 @@ export default async function OnlyFansSearchPage({ searchParams }: Props) {
             sort={sort}
             filterGroups={filterGroups}
             skipLocationFilter={true}
+            pageSize={24}
+            scope="search"
           />
         </div>
       </div>

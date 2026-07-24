@@ -19,6 +19,10 @@ interface Props {
   skipLocationFilter?: boolean;
   /** Page size used for SSR; load-more reuses it so offsets align. Defaults to 20. */
   pageSize?: number;
+  /** Scope id ('home' | `category:<slug>` | `state:<slug>` | `city:<slug>` | `region:<slug>` | 'search')
+   *  — when set, load-more goes through the sponsor-placement-aware orchestrator so pinned
+   *  placements land on the correct page and overrides keep applying past page 1. */
+  scope?: string;
 }
 
 const DEFAULT_PAGE_SIZE = 20;
@@ -36,6 +40,7 @@ export default function CreatorGrid({
   q,
   skipLocationFilter,
   pageSize,
+  scope,
 }: Props) {
   const effectivePageSize = pageSize ?? DEFAULT_PAGE_SIZE;
   const [creators, setCreators] = useState<Creator[]>(initialCreators);
@@ -62,6 +67,7 @@ export default function CreatorGrid({
       }
       // Skip US location filter when on a category page (matches SSR behaviour)
       if (skipLocationFilter) params.set('skip_location_filter', 'true');
+      if (scope) params.set('scope', scope);
 
       const res = await fetch(`/api/search?${params.toString()}`);
       if (!res.ok) throw new Error('Fetch failed');
@@ -78,7 +84,7 @@ export default function CreatorGrid({
     } finally {
       setLoading(false);
     }
-  }, [loading, hasMore, page, q, verified, price, sort, locationTerms, categoryTerms, filterGroups, skipLocationFilter, effectivePageSize]);
+  }, [loading, hasMore, page, q, verified, price, sort, locationTerms, categoryTerms, filterGroups, skipLocationFilter, effectivePageSize, scope]);
 
   if (creators.length === 0) {
     return (
