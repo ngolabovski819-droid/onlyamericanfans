@@ -1,22 +1,22 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import JsonLd from '@/components/JsonLd';
 import { categories } from '@/config/categories';
+import { SITE_URL } from '@/lib/site-url';
 
 export const metadata: Metadata = {
-  title: 'OnlyFans Categories — Browse American Creators | OnlyAmericanFans',
+  title: 'OnlyFans Categories — Browse Creator Niches',
   description:
-    'Browse all American OnlyFans categories — MILF, BBW, teen, latina, ebony, fitness, trans, free and more. Find the perfect American creator for every taste.',
-  alternates: { canonical: 'https://www.onlyamericanfans.com/categories/' },
+    'Browse creator categories, content niches and free-account directories. Category matches use current public directory fields and show verification profile by profile.',
+  alternates: { canonical: `${SITE_URL}/categories` },
 };
-
-const SITE_URL = 'https://www.onlyamericanfans.com';
 
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-    { '@type': 'ListItem', position: 2, name: 'Categories', item: `${SITE_URL}/categories/` },
+    { '@type': 'ListItem', position: 2, name: 'Categories', item: `${SITE_URL}/categories` },
   ],
 };
 
@@ -76,10 +76,7 @@ const SECTION_COLOURS = [
 export default function CategoriesPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
+      <JsonLd id="category-index-breadcrumbs" data={breadcrumbSchema} />
 
       <div className="page-container" style={{ paddingTop: '0.5rem', paddingBottom: '4rem' }}>
         {/* Hero */}
@@ -95,7 +92,7 @@ export default function CategoriesPage() {
               Browse <span className="gradient-accent">All</span> Categories
             </h1>
             <p className="display-sub">
-              From MILF and BBW to free OnlyFans and fitness creators — find exactly the type of American creator you&apos;re looking for.
+              Explore content niches and free-account directories using category matches from current public profile fields.
             </p>
             {/* Quick-jump pills */}
             <div className="chip-rail" style={{ marginTop: '0.5rem' }}>

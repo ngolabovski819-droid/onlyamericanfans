@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
+import { SITE_URL } from '@/lib/site-url';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy — OnlyAmericanFans',
   description: 'Privacy policy for OnlyAmericanFans. Learn how we collect, use and protect your data.',
-  alternates: { canonical: `${SITE_URL}/privacy/` },
+  alternates: { canonical: `${SITE_URL}/privacy` },
 };
 
 export default function PrivacyPage() {

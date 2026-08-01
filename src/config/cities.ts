@@ -2,7 +2,7 @@
 
 export interface CityConfig {
   slug: string;
-  urlSlug: string; // e.g. 'new-york-onlyfans'
+  urlSlug: string; // e.g. 'new-york-city-onlyfans'
   label: string;
   terms: string[];
   parentState: string; // state slug
@@ -18,12 +18,12 @@ export interface CityConfig {
 export const cities: CityConfig[] = [
   {
     slug: 'new-york',
-    urlSlug: 'new-york-onlyfans',
+    urlSlug: 'new-york-city-onlyfans',
     label: 'New York City',
     terms: ['new york', 'nyc', 'brooklyn', 'manhattan', 'bronx', 'queens', 'staten island', 'harlem', 'williamsburg', 'astoria'],
     parentState: 'new-york',
     h1: 'Best OnlyFans Creators in New York City',
-    metaTitle: 'Best New York OnlyFans Creators (2026) | OnlyAmericanFans',
+    metaTitle: 'Best New York City OnlyFans Creators (2026) | OnlyAmericanFans',
     metaDesc: 'Find the hottest OnlyFans creators from New York City. Browse Brooklyn, Manhattan and Queens creators. Free and premium profiles updated daily.',
     intro: "New York City is the undisputed creative capital of the world, and its OnlyFans creator community reflects everything that makes the city extraordinary: relentless ambition, cultural diversity, raw authenticity and unmatched production quality. Brooklyn has emerged as the epicenter of NYC creator culture — Williamsburg and Bushwick's arts scenes produce creators whose work rivals professional fashion and editorial photography. Manhattan's finance and media worlds contribute high-earning, polished creators with access to world-class studios. Queens and the Bronx add multicultural depth that gives NYC's creator ecosystem a richness no other American city can match. NYC creators benefit from the city's enormous talent infrastructure — professional photographers, editors, stylists and managers are more accessible here than anywhere else in America.",
     faqs: [

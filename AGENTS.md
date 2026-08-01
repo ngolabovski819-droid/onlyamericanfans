@@ -92,7 +92,7 @@ redirect still works — it just skips logging when the insert fails).
 ## Resilience (category/location pages under load)
 
 `fetchCreators()` (`src/lib/supabase.ts`) accepts `fallbackToPopularIfEmpty`, which
-`fetchScopedCreators` always sets: if a query filtered by `locationTerms`/`categoryTerms`/
+`fetchScopedCreators` enables by default: if a query filtered by `locationTerms`/`categoryTerms`/
 `filterGroups` comes back with zero rows (a curated term list can legitimately match nothing,
 or a filtered query can time out and get swallowed as empty — indistinguishable from the
 caller's side, and the right product answer is the same either way), it retries once with those
@@ -101,18 +101,85 @@ page never shows an absurd unfiltered site-wide count under its heading. This de
 **not** trigger on the free-text `q` search box — a genuine zero-match search should show "no
 results," not paper over it with unrelated popular creators.
 
+Indexable location and category directories explicitly pass `fallbackToPopularIfEmpty: false`
+on both SSR and `/api/search` load-more requests. Showing unrelated profiles under a geographic
+or category heading would make the page, count and structured data misleading. Keep the fallback
+for discovery surfaces where a generic popular list is an acceptable product response.
+
+## Snapshot-backed location statistics
+
+State, region and city analytics are read from `directory_location_stats_current` through
+`src/lib/state-stats.ts`; page requests must never aggregate `onlyfans_profiles` directly. Apply
+`supabase-migrations/005_directory_location_stats.sql` once, then run `npm run stats:refresh` to
+atomically publish national, 50-state, six-region and configured-city rows. The refresh RPC uses
+one SQL statement snapshot for every scope, so concurrent scraper writes cannot make states use
+different source versions. A failed refresh rolls back and leaves the previous snapshot live.
+
+Missing stats are rendered as `Not available`, never a made-up zero or a request-time estimate.
+Verified share uses active inventory; free-account share uses only profiles with a known effective
+price; median paid price excludes free and unknown prices. Geographic matches use curated public
+location terms and are explicitly not proof of residence. Local scopes may overlap and must not be
+summed to recreate the national total.
+
+The daily workflow is `.github/workflows/refresh-directory-stats.yml` and requires repository
+secrets `SUPABASE_URL` and `SUPABASE_KEY` (service role). `content_changed_at` advances only when a
+displayed metric changes; sitemap `lastmod` must use that value, not build time, request time or a
+no-op scraper completion. City pages under the central minimum-inventory threshold are `noindex`
+and omitted from the sitemap once a complete city rollup is available.
+
 ## Adding a new paid order
 
 1. Get the creator into `onlyfans_profiles` if they aren't already indexed — if this needs a
    one-off fetch, do it from an isolated working directory/context. Never touch the running
    scraper/import process or its state files.
-2. Add pin(s) in `src/config/sponsor-placements.ts` (use the bulk helpers for multi-scope buys).
-3. Add the entry in `src/config/sponsor-overrides.ts` (`linkOverride` / `imageOverride` /
+2. **Before assuming a `sponsor_clicks_<username>` name is free: `SELECT * FROM` it first.** A
+   table can already exist and be actively written to by a DIFFERENT site's own redirect for the
+   same creator — the emilylopz table (below) was live with 69+ rows from fanspedia.net before
+   this system ever touched it, with a different schema (`clicked_at` not `timestamp`) than
+   assumed. If a name collides with something already live and owned by other code, use an
+   isolated `sponsor_clicks_<username>_<site>` name instead of reusing/ALTERing theirs.
+3. **Don't assume what a "tracking link" points to — confirm the literal final destination.**
+   A link that itself looks like a redirect (e.g. `https://otherproperty.com/go/<username>`) may
+   or may not be intentional multi-hop routing through a shared tracking hub; ask rather than
+   chain through it silently. `linkOverride` should be exactly the URL the order specifies as the
+   actual destination.
+4. Add pin(s) in `src/config/sponsor-placements.ts` (use the bulk helpers for multi-scope buys).
+5. Add the entry in `src/config/sponsor-overrides.ts` (`linkOverride` / `imageOverride` /
    `clickTable` as purchased).
-4. If tracking, run `supabase-migrations/003_sponsor_clicks_template.sql` (with the real
-   username substituted) against Supabase BEFORE going live.
-5. Verify locally in a real browser: pin lands at the right position, badge shows, link goes
+6. If tracking, run the click-table migration (`003_sponsor_clicks_template.sql` copied to a
+   real filename, per step 2's naming) against Supabase BEFORE going live.
+7. Verify locally in a real browser: pin lands at the right position, badge shows, link goes
    through `/go/`, a real click logs a row, scrolling past the card does NOT log a row.
-6. Report back before pushing — never deploy without explicit sign-off, even after local
+   **When curl-testing location/category pages, follow redirects (`curl -L`) or drop the
+   trailing slash** — this site's internal links use trailing slashes (`/california-onlyfans/`)
+   but Next's default is no-trailing-slash, so those URLs 308-redirect; a bare `curl` without
+   `-L` silently saves the redirect stub instead of the real page, which looks exactly like a
+   missing pin.
+8. Update the "Active campaigns" log below with what was added.
+9. Report back before pushing — never deploy without explicit sign-off, even after local
    verification passes.
+
+## Active campaigns
+
+**Keep this section current — update it in the same change whenever a campaign is added,
+changed, or ended.** This is the fast answer to "what's live right now" without having to
+re-derive it by reading every config file and Supabase table by hand.
+
+- **emilylopz** — added 2026-07-24.
+  - Placements: #1 position on `home`, every category, every state, every city (not regions —
+    wasn't part of the order).
+  - Destination: `https://onlyfans.com/emilylopz/c545` (direct — NOT routed through
+    fanspedia.net; that was considered and explicitly rejected, see git history).
+  - Image: default synced avatar, no override.
+  - Card carousel: synced avatar, synced header, then 24 campaign gallery images imported from
+    `emily photos.zip` (26 total slides; 29 originals minus 5 SHA-256 duplicates).
+  - Card tags: `GFE`, `Feet fetish`, `Squirting`, and `+9` (do not add `Sex toys`).
+  - Search bars: sponsored suggestion at the top of focused, empty homepage, search-page, and
+    responsive header inputs, configured through `src/config/search-sponsor.ts`.
+  - Click tracking: `sponsor_clicks_emilylopz_oaf` — an isolated table, deliberately separate
+    from `sponsor_clicks_emilylopz` (no `_oaf` suffix), which is a DIFFERENT, live table that
+    fanspedia.net's own `/go/emilylopz` redirect already writes to. Do not point this app's
+    `clickTable` at the non-`_oaf` table.
+  - Status as of push: migration `004_sponsor_clicks_emilylopz_oaf.sql` had NOT yet been run —
+    confirm with the user whether it has been before assuming click data exists.
 <!-- END:nextjs-agent-rules -->

@@ -112,7 +112,7 @@ Here's the most effective workflow we've found, in order:
 
 ### 1. Start with a state or city page
 
-If you have a specific location in mind, jump straight to the state page (e.g. [/california-onlyfans/](/california-onlyfans/), [/texas-onlyfans/](/texas-onlyfans/)) or the city page ([/los-angeles-onlyfans/](/los-angeles-onlyfans/), [/miami-onlyfans/](/miami-onlyfans/)). These are pre-filtered to verified American creators in that geography only.
+If you have a specific location in mind, jump straight to the state page (e.g. [/california-onlyfans](/california-onlyfans), [/texas-onlyfans](/texas-onlyfans)) or the city page ([/los-angeles-onlyfans](/los-angeles-onlyfans), [/miami-onlyfans](/miami-onlyfans)). These are pre-filtered to verified American creators in that geography only.
 
 ### 2. Layer category filters
 

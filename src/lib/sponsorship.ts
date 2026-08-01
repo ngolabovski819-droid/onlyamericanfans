@@ -5,6 +5,11 @@ import { getSponsorOverride } from '@/config/sponsor-overrides';
 
 export interface ScopedFetchParams extends Omit<SearchParams, 'excludeUsernames' | 'offsetOverride' | 'fallbackToPopularIfEmpty'> {
   scope: ScopeId;
+  /**
+   * Keep the historical resilience fallback by default. Indexable location pages disable it so
+   * an empty or timed-out local query can never be mislabeled as local inventory.
+   */
+  fallbackToPopularIfEmpty?: boolean;
 }
 
 export type ScopedFetchResult = SearchResult;
@@ -28,7 +33,7 @@ export type ScopedFetchResult = SearchResult;
  * given scope (SSR and load-more alike) or pins will land on the wrong page.
  */
 export async function fetchScopedCreators(params: ScopedFetchParams): Promise<ScopedFetchResult> {
-  const { scope, ...rest } = params;
+  const { scope, fallbackToPopularIfEmpty = true, ...rest } = params;
   const rule = getScopeRule(scope);
   const page = rest.page ?? 1;
   const pageSize = rest.pageSize ?? 20;
@@ -39,7 +44,7 @@ export async function fetchScopedCreators(params: ScopedFetchParams): Promise<Sc
 
   // Fast path: nothing pinned or excluded anywhere in this scope — skip all the bookkeeping.
   if (rule.pinned.length === 0 && rule.excluded.length === 0) {
-    const result = await fetchCreators({ ...rest, page, pageSize, fallbackToPopularIfEmpty: true });
+    const result = await fetchCreators({ ...rest, page, pageSize, fallbackToPopularIfEmpty });
     return { ...result, creators: applyOverrides(result.creators, EMPTY_SET) };
   }
 
@@ -59,9 +64,9 @@ export async function fetchScopedCreators(params: ScopedFetchParams): Promise<Sc
           page: undefined,
           pageSize: organicNeeded,
           offsetOverride: Math.max(0, organicOffset),
-          fallbackToPopularIfEmpty: true,
+          fallbackToPopularIfEmpty,
         })
-      : Promise.resolve<SearchResult>({ creators: [], total: 0, hasMore: false }),
+      : Promise.resolve<SearchResult>({ creators: [], total: 0, hasMore: false, nextCursor: rest.cursor ?? null }),
     pinnedInRange.length > 0
       ? fetchCreatorsByUsernames(pinnedInRange.map((p) => p.username))
       : Promise.resolve<Creator[]>([]),
@@ -96,9 +101,16 @@ export async function fetchScopedCreators(params: ScopedFetchParams): Promise<Sc
   // the list would be unreachable/wouldn't paginate to.
   const highestPinPosition = rule.pinned.reduce((max, p) => Math.max(max, p.position), 0);
   const total = Math.max(organicResult.total + rule.pinned.length, highestPinPosition);
-  const hasMore = pageEnd < total;
+  // Deliberately NOT `pageEnd < total`: `total` is an estimate that gets capped to 96 whenever
+  // fetchCreators' resilience fallback fires (see fallbackToPopularIfEmpty in supabase.ts) — a
+  // filtered query timing out deep in pagination looks identical to it genuinely running out of
+  // rows, and comparing against that capped number would freeze `hasMore` at false forever even
+  // though organicResult.hasMore (the fetch's own real "did we get a full page" signal) says
+  // there's more. The only thing `total` should still gate is a pin placed further out than any
+  // organic match — hence the highestPinPosition fallback.
+  const hasMore = organicResult.hasMore || pageEnd < highestPinPosition;
 
-  return { creators: finalCreators, total, hasMore };
+  return { creators: finalCreators, total, hasMore, nextCursor: organicResult.nextCursor ?? null };
 }
 
 const EMPTY_SET = new Set<string>();
@@ -110,6 +122,11 @@ function applyOverrides(creators: Creator[], sponsoredUsernames: Set<string>): C
       ...c,
       ...(override?.linkOverride ? { linkOverride: override.linkOverride } : {}),
       ...(override?.imageOverride ? { imageOverride: override.imageOverride } : {}),
+      ...(override?.galleryImages?.length ? { sponsorGalleryImages: override.galleryImages } : {}),
+      ...(override?.tags?.length ? { sponsorTags: override.tags } : {}),
+      ...(override?.additionalTagCount
+        ? { sponsorAdditionalTagCount: override.additionalTagCount }
+        : {}),
       sponsorTracked: !!override,
       sponsored: sponsoredUsernames.has(c.username.toLowerCase()) || undefined,
     };

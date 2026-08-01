@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { states } from '@/config/states';
 import { popularCategories } from '@/config/categories';
+import HeaderCreatorSearch from './HeaderCreatorSearch';
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
@@ -23,6 +24,8 @@ export default function Nav() {
           <span className="nav-logo-flag">🇺🇸</span>
           <span className="nav-logo-text">OnlyAmericanFans</span>
         </Link>
+
+        <HeaderCreatorSearch />
 
         {/* Desktop nav */}
         <nav className="nav-desktop">
@@ -44,7 +47,7 @@ export default function Nav() {
             {statesOpen && (
               <div className="nav-dropdown nav-dropdown--states">
                 {states.map((s) => (
-                  <Link key={s.slug} href={`/${s.urlSlug}/`} className="nav-dropdown-item">
+                  <Link key={s.slug} href={`/${s.urlSlug}`} className="nav-dropdown-item">
                     <span className="nav-dropdown-abbr">{s.abbr}</span>
                     {s.label}
                   </Link>
@@ -65,12 +68,12 @@ export default function Nav() {
             {catsOpen && (
               <div className="nav-dropdown nav-dropdown--wide">
                 {popularCategories.map((c) => (
-                  <Link key={c.slug} href={`/categories/${c.slug}/`} className="nav-dropdown-item">
+                  <Link key={c.slug} href={`/categories/${c.slug}`} className="nav-dropdown-item">
                     {c.emoji && <span>{c.emoji} </span>}
                     {c.label}
                   </Link>
                 ))}
-                <Link href="/categories/" className="nav-dropdown-item nav-dropdown-item--all">
+                <Link href="/categories" className="nav-dropdown-item nav-dropdown-item--all">
                   View All Categories →
                 </Link>
               </div>
@@ -96,6 +99,7 @@ export default function Nav() {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="nav-mobile">
+          <HeaderCreatorSearch mobile onNavigate={() => setMobileOpen(false)} />
           {NAV_LINKS.map((l) => (
             <Link key={l.href} href={l.href} className="nav-mobile-link" onClick={() => setMobileOpen(false)}>
               {l.label}
@@ -103,13 +107,13 @@ export default function Nav() {
           ))}
           <div className="nav-mobile-section">States</div>
           {states.map((s) => (
-            <Link key={s.slug} href={`/${s.urlSlug}/`} className="nav-mobile-link" onClick={() => setMobileOpen(false)}>
+            <Link key={s.slug} href={`/${s.urlSlug}`} className="nav-mobile-link" onClick={() => setMobileOpen(false)}>
               {s.abbr} — {s.label}
             </Link>
           ))}
           <div className="nav-mobile-section">Categories</div>
           {popularCategories.map((c) => (
-            <Link key={c.slug} href={`/categories/${c.slug}/`} className="nav-mobile-link" onClick={() => setMobileOpen(false)}>
+            <Link key={c.slug} href={`/categories/${c.slug}`} className="nav-mobile-link" onClick={() => setMobileOpen(false)}>
               {c.emoji} {c.label}
             </Link>
           ))}

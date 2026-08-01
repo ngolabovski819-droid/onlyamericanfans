@@ -1,24 +1,37 @@
 import { NextResponse } from 'next/server';
-import { regions } from '@/config/regions';
-import { cities } from '@/config/cities';
-import { states } from '@/config/states';
 import { categories } from '@/config/categories';
+import { cities } from '@/config/cities';
+import { regions } from '@/config/regions';
+import { states } from '@/config/states';
 import { getAllPosts } from '@/lib/blog';
+import {
+  getAllCityLocationStats,
+  getAllRegionLocationStats,
+  getAllStateLocationStats,
+  getNationalLocationStats,
+} from '@/lib/state-stats';
+import { getDirectoryLastModified } from '@/lib/seo/last-modified';
+import { MIN_INDEXABLE_CITY_INVENTORY } from '@/lib/seo/indexation';
+import {
+  buildSitemapXml,
+  sitemapXmlResponse,
+  type SitemapChangeFrequency,
+  type SitemapUrlEntry,
+} from '@/lib/seo/sitemap';
+import { SITE_URL } from '@/lib/site-url';
 
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com').trim();
+// These dates represent real shipped template/content changes. They stay fixed until a later
+// material edit; request time and no-op scraper runs must never manufacture sitemap freshness.
+const SITE_TEMPLATE_CHANGED_AT = '2026-08-01';
+const CATEGORY_TEMPLATE_CHANGED_AT = '2026-07-31';
 
-function url(path: string, priority = 0.7, freq = 'weekly'): string {
-  return `<url><loc>${SITE_URL}${path}</loc><changefreq>${freq}</changefreq><priority>${priority}</priority></url>`;
-}
-
-function buildSitemap(urls: string[]): Response {
-  const xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.join('')}</urlset>`;
-  return new Response(xml, {
-    headers: {
-      'Content-Type': 'application/xml',
-      'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=3600',
-    },
-  });
+function url(
+  path: string,
+  priority = 0.7,
+  changeFrequency: SitemapChangeFrequency = 'weekly',
+  lastModified: string | undefined = SITE_TEMPLATE_CHANGED_AT,
+): SitemapUrlEntry {
+  return { url: path, priority, changeFrequency, lastModified };
 }
 
 interface Params {
@@ -28,33 +41,93 @@ interface Params {
 export async function GET(_req: Request, { params }: Params) {
   const { id } = await params;
 
-  /** Sitemap 0: static + locations (states + regions + cities) + categories */
   if (id === '0') {
+    const [nationalStats, stateStats, regionStats, cityStats] = await Promise.all([
+      getNationalLocationStats(),
+      getAllStateLocationStats(),
+      getAllRegionLocationStats(),
+      getAllCityLocationStats(),
+    ]);
+    const stateChangedAt = new Map(stateStats.map((row) => [row.scopeSlug, row.contentChangedAt]));
+    const regionChangedAt = new Map(regionStats.map((row) => [row.scopeSlug, row.contentChangedAt]));
+    const cityStatsBySlug = new Map(cityStats.map((row) => [row.scopeSlug, row]));
+
     const staticUrls = [
-      url('/', 1.0, 'daily'),
-      url('/onlyfans-search/', 0.9, 'daily'),
-      url('/browse-by-state/', 0.8, 'weekly'),
-      url('/categories/', 0.8, 'weekly'),
-      url('/blog/', 0.8, 'weekly'),
-      url('/about/', 0.5, 'monthly'),
-      url('/contact/', 0.4, 'monthly'),
-      url('/promote/', 0.8, 'monthly'),
-      url('/privacy/', 0.3, 'monthly'),
-      url('/terms/', 0.3, 'monthly'),
-      url('/dmca/', 0.3, 'monthly'),
+      url('/', 1, 'daily'),
+      url('/onlyfans-search', 0.9, 'daily'),
+      url(
+        '/browse-by-state',
+        0.9,
+        'daily',
+        getDirectoryLastModified({
+          templateChangedAt: SITE_TEMPLATE_CHANGED_AT,
+          snapshotChangedAt: nationalStats?.contentChangedAt,
+        }),
+      ),
+      url('/categories', 0.8, 'weekly', CATEGORY_TEMPLATE_CHANGED_AT),
+      url('/blog', 0.8, 'weekly', CATEGORY_TEMPLATE_CHANGED_AT),
+      url('/methodology', 0.75, 'monthly'),
+      url('/about', 0.5, 'monthly'),
+      url('/contact', 0.4, 'monthly'),
+      url('/promote', 0.8, 'monthly'),
+      url('/privacy', 0.3, 'monthly'),
+      url('/terms', 0.3, 'monthly'),
+      url('/dmca', 0.3, 'monthly'),
     ];
-    const stateUrls    = states.map(s => url(`/${s.urlSlug}/`, 0.95, 'daily'));
-    const regionUrls   = regions.map(r => url(`/${r.urlSlug}/`, 0.9, 'daily'));
-    const cityUrls     = cities.map(c => url(`/${c.urlSlug}/`, 0.8, 'daily'));
-    const categoryUrls = categories.map(c => url(`/categories/${c.slug}/`, 0.7, 'daily'));
-    return buildSitemap([...staticUrls, ...stateUrls, ...regionUrls, ...cityUrls, ...categoryUrls]);
+    const stateUrls = states.map((state) => url(
+      `/${state.urlSlug}`,
+      0.95,
+      'daily',
+      getDirectoryLastModified({
+        templateChangedAt: SITE_TEMPLATE_CHANGED_AT,
+        snapshotChangedAt: stateChangedAt.get(state.slug),
+      }),
+    ));
+    const regionUrls = regions.map((region) => url(
+      `/${region.urlSlug}`,
+      0.85,
+      'daily',
+      getDirectoryLastModified({
+        templateChangedAt: SITE_TEMPLATE_CHANGED_AT,
+        snapshotChangedAt: regionChangedAt.get(region.slug),
+      }),
+    ));
+    const hasCompleteCityRollups = cityStats.length > 0;
+    const cityUrls = cities
+      .filter((city) => (
+        !hasCompleteCityRollups ||
+        (cityStatsBySlug.get(city.slug)?.activeCount ?? 0) >=
+          MIN_INDEXABLE_CITY_INVENTORY
+      ))
+      .map((city) => url(
+      `/${city.urlSlug}`,
+      0.8,
+      'daily',
+      getDirectoryLastModified({
+        templateChangedAt: SITE_TEMPLATE_CHANGED_AT,
+        snapshotChangedAt: cityStatsBySlug.get(city.slug)?.contentChangedAt,
+      }),
+      ));
+    const categoryUrls = categories.map((category) =>
+      url(`/categories/${category.slug}`, 0.7, 'daily', CATEGORY_TEMPLATE_CHANGED_AT));
+
+    return sitemapXmlResponse(buildSitemapXml(SITE_URL, [
+      ...staticUrls,
+      ...stateUrls,
+      ...regionUrls,
+      ...cityUrls,
+      ...categoryUrls,
+    ]));
   }
 
-  /** Sitemap 1: blog posts */
   if (id === '1') {
     const posts = getAllPosts();
-    const blogUrls = posts.map(p => url(`/blog/${p.slug}/`, 0.7, 'weekly'));
-    return buildSitemap(blogUrls.length ? blogUrls : [url('/blog/', 0.7, 'weekly')]);
+    const blogUrls = posts.map((post) =>
+      url(`/blog/${post.slug}`, 0.7, 'weekly', post.date || undefined));
+    return sitemapXmlResponse(buildSitemapXml(
+      SITE_URL,
+      blogUrls.length ? blogUrls : [url('/blog', 0.7, 'weekly', CATEGORY_TEMPLATE_CHANGED_AT)],
+    ));
   }
 
   return NextResponse.json({ error: 'Not found' }, { status: 404 });

@@ -96,7 +96,7 @@ export const states: StateConfig[] = [
     urlSlug: 'california-onlyfans',
     label: 'California',
     abbr: 'CA',
-    terms: ['california', 'los angeles', 'san diego', 'san francisco', 'san jose', 'sacramento', 'fresno', 'oakland', 'long beach', 'sf', 'socal', 'norcal', 'bay area', 'hollywood', 'beverly hills', 'silver lake', 'east la', 'compton', 'anaheim', 'riverside', 'irvine'],
+    terms: ['california', 'los angeles', 'san diego', 'san francisco', 'san jose', 'sacramento', 'fresno', 'oakland', 'long beach', 'socal', 'norcal', 'bay area', 'hollywood', 'beverly hills', 'silver lake', 'east la', 'compton', 'anaheim', 'riverside', 'irvine'],
     h1: 'Best OnlyFans Creators in California',
     metaTitle: 'Best California OnlyFans Creators (2026) | OnlyAmericanFans',
     metaDesc: 'Find top OnlyFans creators from California. Browse Los Angeles, San Diego, San Francisco and more. Thousands of California creators updated daily.',

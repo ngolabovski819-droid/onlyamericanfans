@@ -8,9 +8,9 @@ interface Props {
 }
 
 const DEFAULT_STATS: Stat[] = [
-  { value: '500k+', label: 'American Creators' },
-  { value: 'Daily', label: 'Updated' },
-  { value: '100%', label: 'US Based' },
+  { value: states.length.toLocaleString('en-US'), label: 'US States' },
+  { value: cities.length.toLocaleString('en-US'), label: 'City Directories' },
+  { value: 'Public', label: 'Profile Data' },
   { value: 'Free', label: 'To Browse' },
 ];
 
@@ -26,3 +26,5 @@ export default function StatsBar({ stats = DEFAULT_STATS }: Props) {
     </div>
   );
 }
+import { cities } from '@/config/cities';
+import { states } from '@/config/states';

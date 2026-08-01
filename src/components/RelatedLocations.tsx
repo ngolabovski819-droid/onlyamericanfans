@@ -2,29 +2,26 @@
 import { states } from '@/config/states';
 import { cities } from '@/config/cities';
 import { regions } from '@/config/regions';
-import { popularCategories } from '@/config/categories';
 
 interface Props {
-  mode: 'state-to-cities' | 'city-to-siblings' | 'state-chips' | 'category-in-states' | 'region-to-cities' | 'region-chips';
+  mode: 'state-to-cities' | 'city-to-siblings' | 'state-chips' | 'region-to-cities' | 'region-chips';
   stateSlug?: string;
   citySlug?: string;
-  categorySlug?: string;
   regionSlug?: string;
   stateLabel?: string;
-  categoryLabel?: string;
   currentSlug?: string;
   parentStateLabel?: string;
   parentStateUrlSlug?: string;
 }
 
-export default function RelatedLocations({ mode, stateSlug, citySlug, categorySlug, regionSlug }: Props) {
+export default function RelatedLocations({ mode, stateSlug, citySlug, regionSlug }: Props) {
   if (mode === 'state-chips') {
     return (
       <div className="related-chips-wrap">
         <h2 className="related-chips-heading">Browse by State</h2>
         <div className="chips-row">
           {states.map((s) => (
-            <Link key={s.slug} href={`/${s.urlSlug}/`} className="location-chip">
+            <Link key={s.slug} href={`/${s.urlSlug}`} className="location-chip">
               {s.abbr} — {s.label}
             </Link>
           ))}
@@ -41,7 +38,7 @@ export default function RelatedLocations({ mode, stateSlug, citySlug, categorySl
         <h2 className="related-chips-heading">Browse Cities in This State</h2>
         <div className="chips-row">
           {stateCities.map((c) => (
-            <Link key={c.slug} href={`/${c.urlSlug}/`} className="location-chip">
+            <Link key={c.slug} href={`/${c.urlSlug}`} className="location-chip">
               {c.label}
             </Link>
           ))}
@@ -64,7 +61,7 @@ export default function RelatedLocations({ mode, stateSlug, citySlug, categorySl
           <>
             <h2 className="related-chips-heading">Browse {parent.label}</h2>
             <div className="chips-row" style={{ marginBottom: '0.75rem' }}>
-              <Link href={`/${parent.urlSlug}/`} className="location-chip location-chip--state">
+              <Link href={`/${parent.urlSlug}`} className="location-chip location-chip--state">
                 All {parent.label} ({parent.abbr})
               </Link>
             </div>
@@ -75,7 +72,7 @@ export default function RelatedLocations({ mode, stateSlug, citySlug, categorySl
             <h3 className="related-chips-subheading">Related Cities</h3>
             <div className="chips-row">
               {siblings.map((c) => (
-                <Link key={c.slug} href={`/${c.urlSlug}/`} className="location-chip">
+                <Link key={c.slug} href={`/${c.urlSlug}`} className="location-chip">
                   {c.label}
                 </Link>
               ))}
@@ -92,7 +89,7 @@ export default function RelatedLocations({ mode, stateSlug, citySlug, categorySl
         <h2 className="related-chips-heading">Browse by Region</h2>
         <div className="chips-row">
           {regions.map((r) => (
-            <Link key={r.slug} href={`/${r.urlSlug}/`} className="location-chip">
+            <Link key={r.slug} href={`/${r.urlSlug}`} className="location-chip">
               {r.label}
             </Link>
           ))}
@@ -118,7 +115,7 @@ export default function RelatedLocations({ mode, stateSlug, citySlug, categorySl
             <h2 className="related-chips-heading">Explore Cities in the {region.label}</h2>
             <div className="chips-row" style={{ marginBottom: '0.75rem' }}>
               {regionCities.map((c) => (
-                <Link key={c.slug} href={`/${c.urlSlug}/`} className="location-chip">
+                <Link key={c.slug} href={`/${c.urlSlug}`} className="location-chip">
                   {c.label}
                 </Link>
               ))}
@@ -130,40 +127,13 @@ export default function RelatedLocations({ mode, stateSlug, citySlug, categorySl
             <h3 className="related-chips-subheading">Other Regions</h3>
             <div className="chips-row">
               {relatedRegionsList.map((r) => (
-                <Link key={r.slug} href={`/${r.urlSlug}/`} className="location-chip">
+                <Link key={r.slug} href={`/${r.urlSlug}`} className="location-chip">
                   {r.label}
                 </Link>
               ))}
             </div>
           </>
         )}
-      </div>
-    );
-  }
-
-  if (mode === 'category-in-states' && categorySlug) {
-    return (
-      <div className="related-chips-wrap">
-        <h2 className="related-chips-heading">Browse by State</h2>
-        <p className="related-chips-desc">Find {categorySlug.replace(/-/g, ' ')} creators in your state:</p>
-        <div className="chips-row">
-          {states.map((s) => (
-            <Link key={s.slug} href={`/${s.urlSlug}/${categorySlug}/`} className="location-chip">
-              {s.abbr} {categorySlug}
-            </Link>
-          ))}
-        </div>
-        <div className="chips-row" style={{ marginTop: '0.75rem' }}>
-          <h3 className="related-chips-subheading">Other Categories</h3>
-          {popularCategories
-            .filter((c) => c.slug !== categorySlug)
-            .slice(0, 8)
-            .map((c) => (
-              <Link key={c.slug} href={`/categories/${c.slug}/`} className="category-chip">
-                {c.label}
-              </Link>
-            ))}
-        </div>
       </div>
     );
   }

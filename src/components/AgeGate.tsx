@@ -1,21 +1,25 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useState, useSyncExternalStore } from 'react';
 
 const AGE_KEY = 'americanonly_age_confirmed';
+const subscribeToAgeConfirmation = () => () => {};
+const getAgeConfirmationSnapshot = () => localStorage.getItem(AGE_KEY) !== '1';
+const getAgeConfirmationServerSnapshot = () => false;
 
 export default function AgeGate() {
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    if (!localStorage.getItem(AGE_KEY)) {
-      setShow(true);
-    }
-  }, []);
+  const needsConfirmation = useSyncExternalStore(
+    subscribeToAgeConfirmation,
+    getAgeConfirmationSnapshot,
+    getAgeConfirmationServerSnapshot,
+  );
+  const [dismissed, setDismissed] = useState(false);
+  const show = needsConfirmation && !dismissed;
 
   function confirm() {
     localStorage.setItem(AGE_KEY, '1');
-    setShow(false);
+    setDismissed(true);
   }
 
   function exit() {
@@ -44,8 +48,8 @@ export default function AgeGate() {
         </div>
         <p className="age-gate-legal">
           By entering, you also agree to our{' '}
-          <a href="/terms" style={{ color: 'var(--accent)' }}>Terms of Use</a> and{' '}
-          <a href="/privacy" style={{ color: 'var(--accent)' }}>Privacy Policy</a>.
+          <Link href="/terms" style={{ color: 'var(--accent)' }}>Terms of Use</Link> and{' '}
+          <Link href="/privacy" style={{ color: 'var(--accent)' }}>Privacy Policy</Link>.
         </p>
       </div>
     </div>

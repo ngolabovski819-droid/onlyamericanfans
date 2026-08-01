@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { filterGroups } from '@/config/filters';
 
@@ -42,13 +42,13 @@ export default function SearchFilters({ onFiltersChange }: Props) {
   const toggleOption = (groupId: string, terms: string[]) => {
     setSelected((prev) => {
       const existing = prev[groupId] ?? [];
-      const key = terms.join(',');
       const alreadySelected = existing.join(',').includes(terms[0]);
       if (alreadySelected) {
         const next = existing.filter((t) => !terms.includes(t));
         if (next.length === 0) {
-          const { [groupId]: _, ...rest } = prev;
-          return rest;
+          const nextSelection = { ...prev };
+          delete nextSelection[groupId];
+          return nextSelection;
         }
         return { ...prev, [groupId]: next };
       }
@@ -161,7 +161,7 @@ export default function SearchFilters({ onFiltersChange }: Props) {
                     ? group.options.map((opt) => (
                         <a
                           key={opt.label}
-                          href={`/${opt.terms[0]?.replace(/\s+/g, '-')}-onlyfans/`}
+                          href={`/${opt.terms[0]?.replace(/\s+/g, '-')}-onlyfans`}
                           className="filter-option filter-option--link"
                         >
                           {opt.label} →

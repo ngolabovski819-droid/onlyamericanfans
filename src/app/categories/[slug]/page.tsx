@@ -6,47 +6,56 @@ import { states } from '@/config/states';
 import { cities } from '@/config/cities';
 import { fetchScopedCreators } from '@/lib/sponsorship';
 import CreatorGrid from '@/components/CreatorGrid';
+import DirectoryPagination from '@/components/DirectoryPagination';
+import JsonLd from '@/components/JsonLd';
 import { categoryFaqs } from '@/lib/faqs';
+import { getDirectoryCanonical, getDirectoryRobots } from '@/lib/seo/indexation';
+import { parseDirectoryPage } from '@/lib/seo/pagination';
+import { SITE_URL } from '@/lib/site-url';
 
 export const revalidate = 3600;
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
-
 interface Props {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 export async function generateStaticParams() {
   return categories.map((c) => ({ slug: c.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
   const cat = getCategoryBySlug(slug);
   if (!cat) return {};
-  const title = `${cat.label} American OnlyFans Creators — Best American ${cat.label} OnlyFans`;
-  const desc  = `Find the best ${cat.label} OnlyFans creators from United States. Browse verified American ${cat.label.toLowerCase()} creators sorted by popularity. Updated daily.`;
-  const url   = `${SITE_URL}/categories/${slug}/`;
+  const page = parseDirectoryPage(query.page, 500);
+  const title = `${cat.label} OnlyFans Creators — Category Directory${page > 1 ? ` — Page ${page}` : ''}`;
+  const desc  = `Browse public creator profiles matched to the ${cat.label} category. Compare advertised prices and source-reported verification, with paid placements clearly labeled.`;
+  const url = getDirectoryCanonical(SITE_URL, `/categories/${slug}`, query.page);
   return {
     title,
     description: desc,
+    robots: getDirectoryRobots({ searchParams: query, maxIndexablePage: 500 }),
     alternates: { canonical: url },
     openGraph: { title, description: desc, url, images: [{ url: `${SITE_URL}/categories/${slug}/opengraph-image` }] },
   };
 }
 
-export default async function CategoryPage({ params }: Props) {
-  const { slug } = await params;
+export default async function CategoryPage({ params, searchParams }: Props) {
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
+  const page = parseDirectoryPage(query.page, 500);
   const cat = getCategoryBySlug(slug);
   if (!cat) notFound();
 
-  const { creators, total, hasMore } = await fetchScopedCreators({
+  const { creators, total, hasMore, nextCursor } = await fetchScopedCreators({
     scope: `category:${slug}`,
     categoryTerms: cat.terms.length > 0 ? cat.terms : undefined,
     price: cat.priceFilter,
     skipLocationFilter: true,
+    page,
     pageSize: 24,
     sort: 'popular',
+    fallbackToPopularIfEmpty: false,
   });
 
   const faqs = categoryFaqs({ label: cat.label, slug, total, priceFilter: cat.priceFilter });
@@ -66,15 +75,15 @@ export default async function CategoryPage({ params }: Props) {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-      { '@type': 'ListItem', position: 2, name: 'Categories', item: `${SITE_URL}/categories/` },
-      { '@type': 'ListItem', position: 3, name: cat.label, item: `${SITE_URL}/categories/${slug}/` },
+      { '@type': 'ListItem', position: 2, name: 'Categories', item: `${SITE_URL}/categories` },
+      { '@type': 'ListItem', position: 3, name: cat.label, item: `${SITE_URL}/categories/${slug}` },
     ],
   };
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      {page === 1 && <JsonLd id="category-faqs" data={faqSchema} />}
+      <JsonLd id="category-breadcrumbs" data={breadcrumbSchema} />
 
       <div className="location-page page-container">
         {/* Breadcrumb */}
@@ -94,16 +103,16 @@ export default async function CategoryPage({ params }: Props) {
               {cat.priceFilter === 'free' && <span style={{ marginLeft: 6, padding: '1px 6px', background: 'rgba(34,197,94,0.2)', color: '#4ade80', borderRadius: 99, fontSize: '0.65rem', letterSpacing: '0.06em' }}>FREE</span>}
             </p>
             <h1>
-              Best <span className="gradient-accent">{cat.label}</span> American OnlyFans
+              <span className="gradient-accent">{cat.label}</span> OnlyFans Creators
             </h1>
             <p className="display-sub" style={{ margin: '0 0 0.5rem', maxWidth: 720 }}>
-              Discover the top American {cat.label.toLowerCase()} OnlyFans creators. All profiles are verified American creators —
-              browse, filter and find your perfect American {cat.label.toLowerCase()} creator below.
+              Browse public creator profiles matched to the {cat.label.toLowerCase()} category. Verification
+              and advertised price are shown from each current directory record, with ads labeled separately.
             </p>
             <div className="detail-hero-meta">
-              <span className="detail-hero-meta-item"><strong>{total.toLocaleString()}</strong> {cat.label.toLowerCase()} creators</span>
-              <span className="detail-hero-meta-item">🇺🇸 100% American</span>
-              <span className="detail-hero-meta-item">🔄 Updated daily</span>
+              <span className="detail-hero-meta-item">Category-matched directory</span>
+              <span className="detail-hero-meta-item">Source-reported verification</span>
+              <span className="detail-hero-meta-item">Current stored advertised prices</span>
             </div>
           </div>
         </section>
@@ -112,16 +121,27 @@ export default async function CategoryPage({ params }: Props) {
           initialCreators={creators}
           initialTotal={total}
           initialHasMore={hasMore}
+          initialPage={page}
+          initialNextCursor={nextCursor}
           categoryTerms={cat.terms.length > 0 ? cat.terms : undefined}
           price={cat.priceFilter}
           skipLocationFilter
           pageSize={24}
-          scope={`category:${slug}`}
+            scope={`category:${slug}`}
+            fallbackToPopularIfEmpty={false}
+            showLoadMore={false}
+          />
+
+        <DirectoryPagination
+          basePath={`/categories/${slug}`}
+          currentPage={page}
+          hasNextPage={hasMore}
+          ariaLabel={`${cat.label} creator directory pages`}
         />
 
 
         {/* FAQ */}
-        <section className="faq-section">
+        {page === 1 && <section className="faq-section">
           <h2 className="faq-heading">Frequently Asked Questions</h2>
           <dl className="faq-list">
             {faqs.map((f, i) => (
@@ -131,10 +151,10 @@ export default async function CategoryPage({ params }: Props) {
               </details>
             ))}
           </dl>
-        </section>
+        </section>}
 
         {/* Browse by State — links to real state pages */}
-        <section style={{ paddingTop: '2.5rem', paddingBottom: '1.5rem' }}>
+        {page === 1 && <section style={{ paddingTop: '2.5rem', paddingBottom: '1.5rem' }}>
           <div className="section-rail">
             <h2 className="section-rail-title">Browse American OnlyFans by State</h2>
             <Link href="/onlyfans-search" className="section-rail-link">All creators →</Link>
@@ -144,15 +164,15 @@ export default async function CategoryPage({ params }: Props) {
           </p>
           <div className="chips-row chips-row--wrap">
             {states.map(s => (
-              <Link key={s.slug} href={`/${s.urlSlug}/`} className="location-chip">
+              <Link key={s.slug} href={`/${s.urlSlug}`} className="location-chip">
                 {s.abbr} — {s.label}
               </Link>
             ))}
           </div>
-        </section>
+        </section>}
 
         {/* Explore Top US Cities — links to real city pages */}
-        <section style={{ paddingTop: '1rem', paddingBottom: '2.5rem' }}>
+        {page === 1 && <section style={{ paddingTop: '1rem', paddingBottom: '2.5rem' }}>
           <div className="section-rail">
             <h2 className="section-rail-title">Explore Top US Cities</h2>
             <Link href="/onlyfans-search" className="section-rail-link">More cities →</Link>
@@ -162,12 +182,12 @@ export default async function CategoryPage({ params }: Props) {
           </p>
           <div className="chips-row chips-row--wrap">
             {cities.slice(0, 24).map(c => (
-              <Link key={c.slug} href={`/${c.urlSlug}/`} className="location-chip">
+              <Link key={c.slug} href={`/${c.urlSlug}`} className="location-chip">
                 {c.label}
               </Link>
             ))}
           </div>
-        </section>
+        </section>}
       </div>
     </>
   );

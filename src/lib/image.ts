@@ -6,6 +6,10 @@ function proxyImg(url: string, w: number, h: number): string {
   return `${WESERV}?url=${encodeURIComponent(noScheme)}&w=${w}&h=${h}&fit=cover&output=webp`;
 }
 
+export function buildImageUrl(url: string, width: number, height: number): string {
+  return proxyImg(url, width, height);
+}
+
 export interface SrcsetData {
   src: string;
   srcSet: string;

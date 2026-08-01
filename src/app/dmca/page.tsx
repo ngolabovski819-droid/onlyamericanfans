@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
+import { SITE_URL } from '@/lib/site-url';
 
 export const metadata: Metadata = {
   title: 'DMCA & Content Removal — OnlyAmericanFans',
   description: 'Submit a DMCA takedown notice or request content removal from OnlyAmericanFans.',
-  alternates: { canonical: `${SITE_URL}/dmca/` },
+  alternates: { canonical: `${SITE_URL}/dmca` },
 };
 
 export default function DMCAPage() {

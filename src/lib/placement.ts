@@ -46,7 +46,7 @@ export function derivePlacement(referer: string | null | undefined, requestHost:
   if (segments[0] === 'categories') return segments[1] ? `category:${segments[1]}` : 'categories';
   if (segments[0] === 'go') return null; // referrer chain from our own redirect shouldn't occur
 
-  // Single-segment location slugs — state, city or region urlSlug (e.g. /california-onlyfans/)
+  // Single-segment location slugs — state, city or region urlSlug (e.g. /california-onlyfans)
   if (segments.length === 1) {
     const slug = segments[0];
     const state = states.find((s) => s.urlSlug === slug);
