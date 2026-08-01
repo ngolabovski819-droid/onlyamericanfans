@@ -127,6 +127,8 @@ export default async function BrowseByStatePage() {
       { name: 'Free accounts' },
       { name: 'Median paid price' },
       { name: 'Directory freshness' },
+      { name: 'Thirty-day inventory change' },
+      { name: 'Seven-day confirmation coverage' },
     ],
   }) : null;
 
@@ -165,6 +167,7 @@ export default async function BrowseByStatePage() {
           title="OnlyFans directory statistics by state"
           description="Every populated metric comes from the latest published snapshot. Not available means the snapshot has no trustworthy value for that state; it never represents an invented zero."
           firstColumnLabel="State"
+          sortable
         />
       ) : (
         <>

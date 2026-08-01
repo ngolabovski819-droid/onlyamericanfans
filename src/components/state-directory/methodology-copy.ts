@@ -13,7 +13,7 @@ export const DIRECTORY_METHODOLOGY: DirectoryMethodologyCopy = {
   medianPrice:
     LOCATION_STATS_METHODOLOGY.medianPaidPrice,
   freshness:
-    `${LOCATION_STATS_METHODOLOGY.snapshotCutoff} ${LOCATION_STATS_METHODOLOGY.refreshedRecently}`,
+    `${LOCATION_STATS_METHODOLOGY.snapshotCutoff} Active inventory requires a successful source check within 30 days; seven-day confirmation coverage is reported separately.`,
   contentCounters: LOCATION_STATS_METHODOLOGY.contentCounters,
   limitations: [
     'Location matching currently uses curated public-profile location terms rather than verified residency, so ambiguous, missing or outdated location text can affect totals.',

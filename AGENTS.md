@@ -115,17 +115,31 @@ atomically publish national, 50-state, six-region and configured-city rows. The 
 one SQL statement snapshot for every scope, so concurrent scraper writes cannot make states use
 different source versions. A failed refresh rolls back and leaves the previous snapshot live.
 
-Missing stats are rendered as `Not available`, never a made-up zero or a request-time estimate.
-Verified share uses active inventory; free-account share uses only profiles with a known effective
-price; median paid price excludes free and unknown prices. Geographic matches use curated public
-location terms and are explicitly not proof of residence. Local scopes may overlap and must not be
-summed to recreate the national total.
+The `location-stats-v2` active contract requires active performer status plus a successful source
+check inside the 30-day freshness window. Verified share uses active inventory; free-account share
+uses only profiles with a known effective price; median paid price excludes free and unknown prices.
+Full-scope missing stats never become fabricated totals: page-one result observations are explicitly
+labeled as a non-sponsored visible sample, while snapshot-only modules stay hidden. Geographic
+matches use curated public location terms and are explicitly not proof of residence. Local scopes
+may overlap and must not be summed to recreate the national total.
+
+The same refresh transaction rebuilds `directory_creator_locations`, an auditable state/city
+classification ledger containing the strongest matched term, categorical evidence strength,
+ambiguity and a deterministic primary match. Those fields are diagnostics for review and future
+normalization work; they are never residency proof and do not narrow the inclusive aggregate.
+Snapshot-backed profile leaderboards live in `directory_location_highlights` and must never be
+replaced with rankings calculated from the visible 24-card page sample.
 
 The daily workflow is `.github/workflows/refresh-directory-stats.yml` and requires repository
-secrets `SUPABASE_URL` and `SUPABASE_KEY` (service role). `content_changed_at` advances only when a
+secrets `SUPABASE_URL` and `SUPABASE_KEY` (service role). Scheduled runs remain inert until the
+repository variable `DIRECTORY_STATS_ENABLED` is explicitly set to `true`; manual dispatch remains
+available for the controlled first run. `content_changed_at` advances only when a
 displayed metric changes; sitemap `lastmod` must use that value, not build time, request time or a
-no-op scraper completion. City pages under the central minimum-inventory threshold are `noindex`
-and omitted from the sitemap once a complete city rollup is available.
+no-op scraper completion. City pages require a complete rollup at or above the central minimum-
+inventory threshold and the centralized price, content-counter and seven-day-confirmation coverage
+floors before they are indexable or admitted to the sitemap; missing stats are not treated as
+permission to index. Keep these gates in `src/lib/seo/indexation.ts` so metadata and sitemap policy
+cannot drift.
 
 ## Adding a new paid order
 

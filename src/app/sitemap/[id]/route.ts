@@ -11,7 +11,7 @@ import {
   getNationalLocationStats,
 } from '@/lib/state-stats';
 import { getDirectoryLastModified } from '@/lib/seo/last-modified';
-import { MIN_INDEXABLE_CITY_INVENTORY } from '@/lib/seo/indexation';
+import { hasIndexableCityQuality } from '@/lib/seo/indexation';
 import {
   buildSitemapXml,
   sitemapXmlResponse,
@@ -95,9 +95,7 @@ export async function GET(_req: Request, { params }: Params) {
     const hasCompleteCityRollups = cityStats.length > 0;
     const cityUrls = cities
       .filter((city) => (
-        !hasCompleteCityRollups ||
-        (cityStatsBySlug.get(city.slug)?.activeCount ?? 0) >=
-          MIN_INDEXABLE_CITY_INVENTORY
+        hasCompleteCityRollups && hasIndexableCityQuality(cityStatsBySlug.get(city.slug))
       ))
       .map((city) => url(
       `/${city.urlSlug}`,

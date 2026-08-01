@@ -1,0 +1,37 @@
+name: Refresh directory location statistics
+
+on:
+  schedule:
+    # A stable off-peak UTC minute avoids the top-of-hour scheduler surge.
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: directory-location-statistics
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    # Keep scheduled runs inert until migration 005 has been applied and the
+    # repository variable DIRECTORY_STATS_ENABLED is explicitly set to true.
+    # Manual dispatch remains available for the first controlled publication.
+    if: vars.DIRECTORY_STATS_ENABLED == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out the directory configuration
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Publish one atomic national, state, region, and city snapshot
+        run: npm run stats:refresh
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}

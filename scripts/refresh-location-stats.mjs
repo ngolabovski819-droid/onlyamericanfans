@@ -22,7 +22,7 @@ import { cities } from '../src/config/cities.ts';
 import { regions } from '../src/config/regions.ts';
 import { states } from '../src/config/states.ts';
 
-const METHODOLOGY_VERSION = 'location-stats-v1';
+const METHODOLOGY_VERSION = 'location-stats-v2';
 const FRESHNESS_WINDOW_DAYS = 30;
 const RPC_TIMEOUT_MS = 15 * 60 * 1000;
 
@@ -96,7 +96,30 @@ function normalizeTerms(terms, identity) {
   return normalized;
 }
 
+function validateCityTermAmbiguity() {
+  const owners = new Map();
+  for (const city of cities) {
+    for (const term of normalizeTerms(city.terms, `city:${city.slug}`)) {
+      const existing = owners.get(term) ?? [];
+      existing.push({ slug: city.slug, parentState: city.parentState });
+      owners.set(term, existing);
+    }
+  }
+
+  const crossStateCollisions = [...owners.entries()].filter(([, matches]) => (
+    new Set(matches.map((match) => match.parentState)).size > 1
+  ));
+  if (crossStateCollisions.length > 0) {
+    const preview = crossStateCollisions
+      .slice(0, 8)
+      .map(([term, matches]) => `${term}: ${matches.map((match) => `${match.slug}/${match.parentState}`).join(', ')}`)
+      .join('; ');
+    throw new Error(`Ambiguous city terms cross state boundaries: ${preview}`);
+  }
+}
+
 function buildScopes(includeAllScopes) {
+  validateCityTermAmbiguity();
   const coreScopes = [
     {
       scope_type: 'national',
@@ -104,6 +127,7 @@ function buildScopes(includeAllScopes) {
       label: 'United States',
       url_slug: 'browse-by-state',
       parent_state_slug: null,
+      member_state_slugs: [],
       abbreviation: 'US',
       terms: [],
       sort_order: 0,
@@ -114,6 +138,7 @@ function buildScopes(includeAllScopes) {
       label: state.label,
       url_slug: state.urlSlug,
       parent_state_slug: null,
+      member_state_slugs: [],
       abbreviation: state.abbr,
       terms: normalizeTerms(state.terms, `state:${state.slug}`),
       sort_order: index,
@@ -127,6 +152,7 @@ function buildScopes(includeAllScopes) {
       label: region.label,
       url_slug: region.urlSlug,
       parent_state_slug: null,
+      member_state_slugs: region.stateSlugs,
       abbreviation: region.abbr,
       terms: normalizeTerms(region.terms, `region:${region.slug}`),
       sort_order: index,
@@ -137,6 +163,7 @@ function buildScopes(includeAllScopes) {
       label: city.label,
       url_slug: city.urlSlug,
       parent_state_slug: city.parentState,
+      member_state_slugs: [],
       abbreviation: null,
       terms: normalizeTerms(city.terms, `city:${city.slug}`),
       sort_order: index,
@@ -248,6 +275,20 @@ async function fetchPublishedSummary({ supabaseUrl, supabaseKey, snapshotId }) {
   return response.json();
 }
 
+async function fetchClassificationAudit({ supabaseUrl, supabaseKey }) {
+  const query = new URLSearchParams({
+    select: 'scope_type,total_matches,ambiguous_matches,broad_term_matches',
+  });
+  const response = await fetch(
+    `${supabaseUrl}/rest/v1/directory_location_classification_audit?${query.toString()}`,
+    { headers: supabaseHeaders(supabaseKey, { Accept: 'application/json' }) },
+  );
+  if (!response.ok) {
+    throw new Error(`Snapshot published but location audit read failed (${response.status}): ${await response.text()}`);
+  }
+  return response.json();
+}
+
 async function main() {
   loadLocalEnv();
   const options = parseArgs();
@@ -281,9 +322,17 @@ async function main() {
     scopes,
     cutoff: options.cutoff,
   });
-  const rows = await fetchPublishedSummary({ supabaseUrl, supabaseKey, snapshotId });
+  const [rows, locationAudit] = await Promise.all([
+    fetchPublishedSummary({ supabaseUrl, supabaseKey, snapshotId }),
+    fetchClassificationAudit({ supabaseUrl, supabaseKey }),
+  ]);
   const national = rows.find((row) => row.scope_type === 'national');
   const emptyScopes = rows.filter((row) => Number(row.active_count) === 0).length;
+  const classificationTotals = locationAudit.reduce((totals, row) => ({
+    matches: totals.matches + Number(row.total_matches ?? 0),
+    ambiguous: totals.ambiguous + Number(row.ambiguous_matches ?? 0),
+    broad: totals.broad + Number(row.broad_term_matches ?? 0),
+  }), { matches: 0, ambiguous: 0, broad: 0 });
 
   console.log(`Published snapshot ${snapshotId} with ${rows.length} scope rows.`);
   console.log(`  completed:       ${national?.completed_at ?? 'unknown'}`);
@@ -292,6 +341,9 @@ async function main() {
   console.log(`  US verified:     ${Number(national?.verified_count ?? 0).toLocaleString('en-US')}`);
   console.log(`  US free:         ${Number(national?.free_count ?? 0).toLocaleString('en-US')}`);
   console.log(`  zero-match scopes (shown honestly as zero): ${emptyScopes}`);
+  console.log(`  normalized state/city match rows: ${classificationTotals.matches.toLocaleString('en-US')}`);
+  console.log(`  ambiguous match rows to review:   ${classificationTotals.ambiguous.toLocaleString('en-US')}`);
+  console.log(`  broad-term match rows to review:  ${classificationTotals.broad.toLocaleString('en-US')}`);
 }
 
 main().catch((error) => {

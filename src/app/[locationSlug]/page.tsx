@@ -8,10 +8,14 @@ import RelatedLocations from '@/components/RelatedLocations';
 import {
   DIRECTORY_METHODOLOGY,
   DirectoryComparison,
+  DirectoryDataQuality,
+  DirectoryHighlights,
+  DirectoryPriceDistribution,
   DirectoryPulseSummary,
   DirectorySampleSnapshot,
   DirectorySnapshot,
   DirectoryTable,
+  DirectoryTrend,
   LocationDirectoryOverview,
   Methodology,
   buildDirectoryFaqs,
@@ -22,12 +26,13 @@ import {
 import { getCitiesByState, getCityByUrlSlug, cities } from '@/config/cities';
 import { getRegionByUrlSlug, regions } from '@/config/regions';
 import { getStateByUrlSlug, states } from '@/config/states';
+import { getDirectoryMonitoringGroup } from '@/config/directory-rollout';
 import { SITE_URL } from '@/lib/site-url';
 import { fetchScopedCreators } from '@/lib/sponsorship';
 import {
-  MIN_INDEXABLE_CITY_INVENTORY,
   getDirectoryCanonical,
   getDirectoryRobots,
+  hasIndexableCityQuality,
 } from '@/lib/seo/indexation';
 import {
   buildCollectionPageJsonLd,
@@ -37,6 +42,8 @@ import {
 import { getDirectoryPageCount, parseDirectoryPage } from '@/lib/seo/pagination';
 import {
   getLocationStats,
+  getLocationHighlights,
+  getLocationStatsHistory,
   getNationalLocationStats,
   getStateStatsBundle,
 } from '@/lib/state-stats';
@@ -83,10 +90,12 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const scopeType = state ? 'state' : city ? 'city' : 'region';
   const stats = await getLocationStats(scopeType, loc.slug);
   const queryRobots = getDirectoryRobots({ searchParams: query, maxIndexablePage: 500 });
-  const cityHasEnoughInventory = !city || !stats || stats.activeCount >= MIN_INDEXABLE_CITY_INVENTORY;
+  // City pages enter the index only after a complete snapshot proves they meet
+  // the local-inventory floor. Missing rollups are not treated as permission.
+  const cityPassesQualityGate = !city || hasIndexableCityQuality(stats);
   const pageIsInRange = !stats || page <= getDirectoryPageCount(stats.activeCount, 24);
   const queryShouldIndex = typeof queryRobots !== 'string' && queryRobots?.index !== false;
-  const shouldIndex = cityHasEnoughInventory && pageIsInRange && queryShouldIndex;
+  const shouldIndex = cityPassesQualityGate && pageIsInRange && queryShouldIndex;
   const title = `${loc.label} OnlyFans Creators — Prices & Directory Data${pageSuffix}`;
   const description = stats
     ? `Browse ${stats.activeCount.toLocaleString('en-US')} active creator profiles matched to ${loc.label}, including ${stats.verifiedCount.toLocaleString('en-US')} verified and ${stats.freeCount.toLocaleString('en-US')} free accounts. See prices and methodology.`
@@ -121,6 +130,7 @@ export default async function LocationPage({ params, searchParams }: Props) {
   const isState = Boolean(state);
   const isRegion = Boolean(region);
   const scope = state ? `state:${state.slug}` : city ? `city:${city.slug}` : `region:${region!.slug}`;
+  const scopeType = state ? 'state' : city ? 'city' : 'region';
   const parentState = city ? states.find((candidate) => candidate.slug === city.parentState) : null;
 
   const statsPromise = state
@@ -134,7 +144,7 @@ export default async function LocationPage({ params, searchParams }: Props) {
         getNationalLocationStats(),
       ]).then(([location, national]) => ({ location, national, cities: [] }));
 
-  const [creatorResult, statsBundle] = await Promise.all([
+  const [creatorResult, statsBundle, statsHistory, locationHighlights] = await Promise.all([
     fetchScopedCreators({
       scope,
       locationTerms: loc.terms,
@@ -145,6 +155,8 @@ export default async function LocationPage({ params, searchParams }: Props) {
       fallbackToPopularIfEmpty: false,
     }),
     statsPromise,
+    page === 1 ? getLocationStatsHistory(scopeType, loc.slug) : Promise.resolve([]),
+    page === 1 ? getLocationHighlights(scopeType, loc.slug) : Promise.resolve([]),
   ]);
   const { creators, total, hasMore, nextCursor } = creatorResult;
   const { location: locationStats, national: nationalStats, cities: cityStats } = statsBundle;
@@ -233,7 +245,12 @@ export default async function LocationPage({ params, searchParams }: Props) {
       { name: 'Verified profiles', description: 'Active inventory explicitly marked verified by the source record.' },
       { name: 'Free accounts', description: 'Price-known active profiles with an effective advertised price of zero.' },
       { name: 'Median paid price', description: 'Median effective advertised price above zero.' },
+      { name: 'Advertised price distribution', description: 'Known prices grouped into five mutually exclusive bands.' },
       { name: 'Directory freshness', description: 'Recently refreshed and newly discovered profile counts.' },
+      { name: 'Data completeness', description: 'Known-price, successful-check and content-counter coverage.' },
+      { name: 'Thirty-day inventory change', description: 'Change from the latest complete snapshot at least 30 days older.' },
+      { name: 'Directory trends', description: 'Seven, 30 and 90-day comparisons against complete historical snapshots.' },
+      { name: 'Snapshot leaderboards', description: 'Transparent top-five popularity, discovery and confirmation lists captured with the aggregate.' },
     ],
   }) : null;
 
@@ -245,7 +262,10 @@ export default async function LocationPage({ params, searchParams }: Props) {
       {itemListSchema && <JsonLd id="location-creators" data={itemListSchema} />}
       {datasetSchema && <JsonLd id="location-dataset" data={datasetSchema} />}
 
-      <div className="location-page page-container">
+      <div
+        className="location-page page-container"
+        data-directory-monitoring-cohort={state ? getDirectoryMonitoringGroup(state.slug) : undefined}
+      >
         <nav className="breadcrumb" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
           <span className="breadcrumb-sep" aria-hidden="true">›</span>
@@ -296,28 +316,6 @@ export default async function LocationPage({ params, searchParams }: Props) {
           </div>
         </section>
 
-        {page === 1 && locationStats && (
-          <DirectoryPulseSummary
-            stats={locationStats}
-            nationalStats={nationalStats}
-            leadingCity={state ? cityStats[0] : null}
-          />
-        )}
-
-        {page === 1 && locationSnapshot && nationalSnapshot && (
-          <DirectoryComparison label={loc.label} local={locationSnapshot} national={nationalSnapshot} />
-        )}
-
-        {page === 1 && state && cityStats.length > 0 && cityRows.length > 0 && (
-          <DirectoryTable
-            rows={cityRows}
-            title={`${state.label} city directory breakdown`}
-            description={`Compare configured ${state.label} city pages using the same published snapshot. Cities without a trustworthy rollup remain linked and clearly marked as not available.`}
-            firstColumnLabel="City"
-            id="state-city-directory-heading"
-          />
-        )}
-
         {page === 1 && isState && state && (
           <RelatedLocations mode="state-to-cities" stateSlug={state.slug} stateLabel={state.label} />
         )}
@@ -360,6 +358,44 @@ export default async function LocationPage({ params, searchParams }: Props) {
           />
         )}
 
+        {page === 1 && locationStats && (
+          <DirectoryPulseSummary
+            stats={locationStats}
+            nationalStats={nationalStats}
+            leadingCity={state ? cityStats[0] : null}
+          />
+        )}
+
+        {page === 1 && locationSnapshot && nationalSnapshot && (
+          <DirectoryComparison label={loc.label} local={locationSnapshot} national={nationalSnapshot} />
+        )}
+
+        {page === 1 && locationStats && (
+          <DirectoryPriceDistribution label={loc.label} stats={locationStats} />
+        )}
+
+        {page === 1 && locationStats && (
+          <DirectoryDataQuality label={loc.label} stats={locationStats} />
+        )}
+
+        {page === 1 && locationStats && statsHistory.length > 0 && (
+          <DirectoryTrend label={loc.label} history={statsHistory} />
+        )}
+
+        {page === 1 && locationStats && locationHighlights.length > 0 && (
+          <DirectoryHighlights label={loc.label} highlights={locationHighlights} />
+        )}
+
+        {page === 1 && state && cityStats.length > 0 && cityRows.length > 0 && (
+          <DirectoryTable
+            rows={cityRows}
+            title={`${state.label} city directory breakdown`}
+            description={`Compare configured ${state.label} city pages using the same published snapshot. Cities without a trustworthy rollup remain linked and clearly marked as not available.`}
+            firstColumnLabel="City"
+            id="state-city-directory-heading"
+          />
+        )}
+
         {page === 1 && city && (
           <RelatedLocations
             mode="city-to-siblings"
@@ -368,7 +404,7 @@ export default async function LocationPage({ params, searchParams }: Props) {
             parentStateUrlSlug={parentState?.urlSlug}
           />
         )}
-        {page === 1 && isState && <RelatedLocations mode="state-chips" currentSlug={state?.slug} />}
+        {page === 1 && isState && state && <RelatedLocations mode="state-context" stateSlug={state.slug} />}
         {page === 1 && isRegion && region && <RelatedLocations mode="region-to-cities" regionSlug={region.slug} />}
 
         {page === 1 && (

@@ -54,8 +54,13 @@ const metricDefinitions = [
       'Active records with a known, nonnegative effective advertised price divided by active inventory. This exposes how representative price statistics are.',
   },
   {
-    term: 'Refreshed in 7 days',
-    definition: `${LOCATION_STATS_METHODOLOGY.refreshedRecently} The published seven-day count uses the seven days before the snapshot cutoff.`,
+    term: 'Core-field completeness',
+    definition:
+      'Share of active inventory with a known nonnegative price, at least one known content counter and a successful source check during the preceding seven days. All conditions must belong to the same profile.',
+  },
+  {
+    term: 'Confirmed in 7 days',
+    definition: 'Active records with an HTTP 200–299 source check during the seven days before the snapshot cutoff.',
   },
   {
     term: 'New in 30 days',
@@ -72,11 +77,31 @@ const metricDefinitions = [
   },
   {
     term: 'Reported content counters',
-    definition: LOCATION_STATS_METHODOLOGY.contentCounters,
+    definition: `${LOCATION_STATS_METHODOLOGY.contentCounters} Median post, photo and video counters use only profiles where the relevant counter is known.`,
+  },
+  {
+    term: 'Price distribution',
+    definition: 'Known nonnegative effective advertised prices are assigned to exactly one band: free, $0.01–$4.99, $5–$9.99, $10–$19.99 or $20+. Unknown and negative prices are excluded.',
+  },
+  {
+    term: 'Promotion and discount prevalence',
+    definition: 'Promotion prevalence counts active profiles with a source-reported promotion price or discount. Discount prevalence also includes a positive bundle discount. These describe offers, not purchases.',
+  },
+  {
+    term: 'State inventory rank',
+    definition: 'A state’s position and percentile among all 50 state rows in the same published snapshot, ordered by active inventory.',
   },
   {
     term: '30-day inventory change',
     definition: LOCATION_STATS_METHODOLOGY.thirtyDayChange,
+  },
+  {
+    term: '7-, 30- and 90-day trends',
+    definition: 'Each comparison uses the newest complete immutable snapshot whose cutoff is at or before the relevant window boundary. A window remains unavailable until that history exists.',
+  },
+  {
+    term: 'Snapshot leaderboards',
+    definition: 'Most-favorited ranks use the source-reported favorite count; latest discoveries use this directory\'s first-observed time; recently confirmed uses the latest successful source check. Each top-five list is captured in the same transaction as its aggregate metrics, with creator ID as the deterministic tie-break.',
   },
 ] as const;
 
@@ -84,7 +109,8 @@ const denominatorRows = [
   ['Verified share', 'Verified active profiles', 'Active inventory'],
   ['Free-account share', 'Free active profiles', 'Active profiles with a known effective price'],
   ['Known-price coverage', 'Active profiles with a known effective price', 'Active inventory'],
-  ['Seven-day refresh coverage', 'Active profiles refreshed in the preceding seven days', 'Active inventory'],
+  ['Core-field completeness', 'Active profiles meeting every core-field condition', 'Active inventory'],
+  ['Seven-day confirmation coverage', 'Active profiles successfully checked in the preceding seven days', 'Active inventory'],
 ] as const;
 
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([
@@ -278,6 +304,13 @@ export default function MethodologyPage() {
               cannot support. Ambiguous abbreviations, names shared by multiple places, outdated
               profile text and creator travel can affect classification. Missing locations are
               excluded from geographic inventory.
+            </p>
+            <p>
+              Each successful snapshot also rebuilds an auditable state-and-city classification
+              ledger. It records the strongest matched term, whether that term is exact, specific
+              or broad, whether multiple places matched, and one deterministic primary match.
+              Published aggregates remain inclusive of configured matches and do not present the
+              primary flag as proof of residence.
             </p>
           </article>
           <article className={styles.policyCard}>

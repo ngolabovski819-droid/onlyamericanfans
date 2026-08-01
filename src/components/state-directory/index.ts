@@ -1,4 +1,8 @@
 export { DirectorySnapshot } from './DirectorySnapshot';
+export { DirectoryPriceDistribution } from './DirectoryPriceDistribution';
+export { DirectoryTrend } from './DirectoryTrend';
+export { DirectoryHighlights } from './DirectoryHighlights';
+export { DirectoryDataQuality } from './DirectoryDataQuality';
 export { DirectorySampleSnapshot } from './DirectorySampleSnapshot';
 export { LocationDirectoryOverview } from './LocationDirectoryOverview';
 export {

@@ -185,8 +185,11 @@ export function buildDirectoryPulseSentences({
       ? nationalStats
       : null;
   const city = validLeadingCity(stats, leadingCity ?? null);
+  const rankClause = stats.scopeType === 'state' && isNonNegativeFinite(stats.inventoryRank)
+    ? `, ranking #${formatCount(stats.inventoryRank)} among the 50 state directories in the same snapshot`
+    : '';
   const sentences: string[] = [
-    `The ${stats.label} directory snapshot contains ${formatCount(stats.activeCount)} active creator ${pluralize(stats.activeCount, 'profile')}.`,
+    `The ${stats.label} directory snapshot contains ${formatCount(stats.activeCount)} active creator ${pluralize(stats.activeCount, 'profile')}${rankClause}.`,
   ];
 
   const shares = buildShareSentence(stats, national);
@@ -199,9 +202,25 @@ export function buildDirectoryPulseSentences({
   if (changeAndDiscovery) sentences.push(changeAndDiscovery);
 
   if (city) {
+    const concentration = stats.activeCount > 0
+      ? ` (${formatShare(city.activeCount / stats.activeCount)} of the state inventory before accounting for overlapping public-location signals)`
+      : '';
     sentences.push(
-      `The leading city by active inventory is ${city.label}, with ${formatCount(city.activeCount)} active ${pluralize(city.activeCount, 'profile')} in the same snapshot.`,
+      `The leading city by active inventory is ${city.label}, with ${formatCount(city.activeCount)} active ${pluralize(city.activeCount, 'profile')}${concentration} in the same snapshot.`,
     );
+  }
+
+  if (
+    isNonNegativeFinite(stats.medianPosts) ||
+    isNonNegativeFinite(stats.medianPhotos) ||
+    isNonNegativeFinite(stats.medianVideos)
+  ) {
+    const counters = [
+      isNonNegativeFinite(stats.medianPosts) ? `${formatCount(stats.medianPosts)} posts` : null,
+      isNonNegativeFinite(stats.medianPhotos) ? `${formatCount(stats.medianPhotos)} photos` : null,
+      isNonNegativeFinite(stats.medianVideos) ? `${formatCount(stats.medianVideos)} videos` : null,
+    ].filter((value): value is string => value !== null);
+    sentences.push(`Median source-reported profile counters are ${counters.join(', ')} among records where each counter is known.`);
   }
 
   if (sentences.length < 3) {

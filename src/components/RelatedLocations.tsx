@@ -2,9 +2,10 @@
 import { states } from '@/config/states';
 import { cities } from '@/config/cities';
 import { regions } from '@/config/regions';
+import { popularCategories } from '@/config/categories';
 
 interface Props {
-  mode: 'state-to-cities' | 'city-to-siblings' | 'state-chips' | 'region-to-cities' | 'region-chips';
+  mode: 'state-to-cities' | 'city-to-siblings' | 'state-context' | 'region-to-cities' | 'region-chips';
   stateSlug?: string;
   citySlug?: string;
   regionSlug?: string;
@@ -15,14 +16,41 @@ interface Props {
 }
 
 export default function RelatedLocations({ mode, stateSlug, citySlug, regionSlug }: Props) {
-  if (mode === 'state-chips') {
+  if (mode === 'state-context' && stateSlug) {
+    const currentState = states.find((state) => state.slug === stateSlug);
+    if (!currentState) return null;
+    const parentRegion = regions.find((region) => region.stateSlugs.includes(stateSlug));
+    const neighbors = currentState.relatedStates
+      .map((slug) => states.find((state) => state.slug === slug))
+      .filter((state): state is (typeof states)[number] => Boolean(state));
+
     return (
       <div className="related-chips-wrap">
-        <h2 className="related-chips-heading">Browse by State</h2>
+        <h2 className="related-chips-heading">Continue exploring from {currentState.label}</h2>
+        {parentRegion && (
+          <div className="chips-row" style={{ marginBottom: '0.75rem' }}>
+            <Link href={`/${parentRegion.urlSlug}`} className="location-chip location-chip--state">
+              {parentRegion.label} region
+            </Link>
+          </div>
+        )}
+        {neighbors.length > 0 && (
+          <>
+            <h3 className="related-chips-subheading">Neighboring state directories</h3>
+            <div className="chips-row" style={{ marginBottom: '0.75rem' }}>
+              {neighbors.map((state) => (
+                <Link key={state.slug} href={`/${state.urlSlug}`} className="location-chip">
+                  {state.abbr} — {state.label}
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+        <h3 className="related-chips-subheading">Popular creator categories</h3>
         <div className="chips-row">
-          {states.map((s) => (
-            <Link key={s.slug} href={`/${s.urlSlug}`} className="location-chip">
-              {s.abbr} — {s.label}
+          {popularCategories.slice(0, 8).map((category) => (
+            <Link key={category.slug} href={`/categories/${category.slug}`} className="location-chip">
+              {category.label}
             </Link>
           ))}
         </div>
