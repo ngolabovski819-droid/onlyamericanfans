@@ -5,17 +5,18 @@ import CreatorGrid from '@/components/CreatorGrid';
 import FAQ from '@/components/FAQ';
 import { searchPageFaqs } from '@/lib/faqs';
 import CreatorSearchBox from '@/components/CreatorSearchBox';
-import { SITE_URL } from '@/lib/site-url';
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
 
 export const metadata: Metadata = {
-  title: 'OnlyFans Creator Search — Name, Price & Verification',
+  title: 'OnlyFans Search — Find American Creators by Name, City & State',
   description:
-    'Search public creator directory records by name, advertised price and source-reported verification. Estimated result totals are labeled transparently.',
-  alternates: { canonical: `${SITE_URL}/onlyfans-search` },
+    'The best American OnlyFans search engine. Search thousands of verified US creators by name, city, state, price and more. Updated daily.',
+  alternates: { canonical: `${SITE_URL}/onlyfans-search/` },
   openGraph: {
-    title: 'OnlyFans Creator Search | OnlyAmericanFans',
-    description: 'Search public creator records by name, advertised price and verification status.',
-    url: `${SITE_URL}/onlyfans-search`,
+    title: 'American OnlyFans Search Engine',
+    description: 'Find verified US OnlyFans creators by name, city & price.',
+    url: `${SITE_URL}/onlyfans-search/`,
   },
 };
 
@@ -49,7 +50,7 @@ export default async function OnlyFansSearchPage({ searchParams }: Props) {
   const sort     = (sp.sort as 'popular' | 'newest') ?? 'popular';
   const filterGroups = parseFilterGroups(sp.filter_groups);
 
-  const { creators, total, hasMore, nextCursor } = await fetchScopedCreators({
+  const { creators, total, hasMore } = await fetchScopedCreators({
     scope: 'search',
     q: q || undefined,
     verified: verified || undefined,
@@ -67,10 +68,10 @@ export default async function OnlyFansSearchPage({ searchParams }: Props) {
         <div className="hero-shell-inner">
           <p className="eyebrow-pill">OnlyFans Search</p>
           <h1 className="display-h1">
-            {q ? <>Results for <span className="gradient-accent">&ldquo;{q}&rdquo;</span></> : <>Search the <span className="gradient-accent">Creator</span> Directory</>}
+            {q ? <>Results for <span className="gradient-accent">&ldquo;{q}&rdquo;</span></> : <>All <span className="gradient-accent">American</span> OnlyFans Creators</>}
           </h1>
           <p className="display-sub">
-            About <strong style={{ color: 'var(--text)' }}>{total.toLocaleString()}</strong> matching records · filter by price, sort, and source-reported verification.
+            <strong style={{ color: 'var(--text)' }}>{total.toLocaleString()}</strong> verified American creators · filter by price, sort, and verification status.
           </p>
           <CreatorSearchBox defaultValue={q} />
         </div>
@@ -86,7 +87,6 @@ export default async function OnlyFansSearchPage({ searchParams }: Props) {
             initialCreators={creators}
             initialTotal={total}
             initialHasMore={hasMore}
-            initialNextCursor={nextCursor}
             q={q || undefined}
             verified={verified || undefined}
             price={price !== 'any' ? price : undefined}

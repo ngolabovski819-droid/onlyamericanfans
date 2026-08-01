@@ -3,20 +3,12 @@
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import type { Creator } from '@/types/creator';
-import type { SearchCursor } from '@/lib/supabase';
 import CreatorCard from './CreatorCard';
 
 interface Props {
   initialCreators: Creator[];
   initialHasMore: boolean;
   initialTotal: number;
-  /** PostgREST planner totals are estimates; only snapshot-backed callers should set false. */
-  initialTotalIsEstimated?: boolean;
-  /** One-based SSR result page. Crawlable directory URLs can begin beyond page 1. */
-  initialPage?: number;
-  /** Seek-pagination cursor from the SSR page's fetch — passed back on the first "Load More"
-   *  click so deep pagination stays fast instead of degrading via OFFSET. */
-  initialNextCursor?: SearchCursor | null;
   locationTerms?: string[];
   categoryTerms?: string[];
   filterGroups?: Record<string, string[]>;
@@ -28,14 +20,10 @@ interface Props {
   skipLocationFilter?: boolean;
   /** Page size used for SSR; load-more reuses it so offsets align. Defaults to 20. */
   pageSize?: number;
-  /** Disable the unrelated-popular fallback on indexable geographic directories. */
-  fallbackToPopularIfEmpty?: boolean;
   /** Scope id ('home' | `category:<slug>` | `state:<slug>` | `city:<slug>` | `region:<slug>` | 'search')
    *  — when set, load-more goes through the sponsor-placement-aware orchestrator so pinned
    *  placements land on the correct page and overrides keep applying past page 1. */
   scope?: string;
-  /** Hide the client-only append control when crawlable page links are rendered separately. */
-  showLoadMore?: boolean;
 }
 
 const DEFAULT_PAGE_SIZE = 20;
@@ -44,9 +32,6 @@ export default function CreatorGrid({
   initialCreators,
   initialHasMore,
   initialTotal,
-  initialTotalIsEstimated = true,
-  initialPage = 1,
-  initialNextCursor,
   locationTerms,
   categoryTerms,
   filterGroups,
@@ -56,16 +41,13 @@ export default function CreatorGrid({
   q,
   skipLocationFilter,
   pageSize,
-  fallbackToPopularIfEmpty,
   scope,
-  showLoadMore = true,
 }: Props) {
   const effectivePageSize = pageSize ?? DEFAULT_PAGE_SIZE;
   const [creators, setCreators] = useState<Creator[]>(initialCreators);
-  const [page, setPage] = useState(Math.max(1, initialPage));
+  const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [loading, setLoading] = useState(false);
-  const [cursor, setCursor] = useState<SearchCursor | null>(initialNextCursor ?? null);
 
   const loadMore = useCallback(async () => {
     if (loading || !hasMore) return;
@@ -87,8 +69,6 @@ export default function CreatorGrid({
       // Skip US location filter when on a category page (matches SSR behaviour)
       if (skipLocationFilter) params.set('skip_location_filter', 'true');
       if (scope) params.set('scope', scope);
-      if (fallbackToPopularIfEmpty === false) params.set('fallback_to_popular', 'false');
-      if (cursor) params.set('cursor', JSON.stringify(cursor));
 
       const res = await fetch(`/api/search?${params.toString()}`);
       if (!res.ok) throw new Error('Fetch failed');
@@ -99,41 +79,34 @@ export default function CreatorGrid({
         return [...prev, ...newOnes];
       });
       setHasMore(data.hasMore);
-      setCursor((data.nextCursor as SearchCursor | null) ?? null);
       setPage(nextPage);
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
     }
-  }, [loading, hasMore, page, q, verified, price, sort, locationTerms, categoryTerms, filterGroups, skipLocationFilter, effectivePageSize, scope, cursor, fallbackToPopularIfEmpty]);
+  }, [loading, hasMore, page, q, verified, price, sort, locationTerms, categoryTerms, filterGroups, skipLocationFilter, effectivePageSize, scope]);
 
   if (creators.length === 0) {
     return (
       <div className="empty-state">
-        <p>No creator profiles found matching your filters.</p>
+        <p>No American creators found matching your filters.</p>
         <Link href="/onlyfans-search" className="empty-state-link">Try a broader search</Link>
       </div>
     );
   }
 
-  const firstVisiblePosition = (Math.max(1, initialPage) - 1) * effectivePageSize + 1;
-  const lastVisiblePosition = firstVisiblePosition + creators.length - 1;
-
   return (
     <div>
       <p className="results-count">
-        Showing <strong>{firstVisiblePosition.toLocaleString()}–{lastVisiblePosition.toLocaleString()}</strong>
-        {initialTotal >= lastVisiblePosition
-          ? ` of ${initialTotalIsEstimated ? 'about ' : ''}${initialTotal.toLocaleString()}`
-          : ''} matched creator profiles
+        Showing <strong>{creators.length}</strong>{initialTotal > creators.length ? ` of ${initialTotal.toLocaleString()}` : ''} American creators
       </p>
       <div className="creator-grid">
         {creators.map((c, i) => (
           <CreatorCard key={c.id} creator={c} index={i} />
         ))}
       </div>
-      {showLoadMore && hasMore && (
+      {hasMore && (
         <div className="load-more-wrap">
           <button
             className="load-more-btn"

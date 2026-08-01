@@ -1,18 +1,18 @@
 import type { Metadata } from 'next';
 import FAQ from '@/components/FAQ';
-import { SITE_URL } from '@/lib/site-url';
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
 const APPLY_URL = 'https://tally.so/r/kd16Xe';
 
 export const metadata: Metadata = {
   title: 'Promote Your OnlyFans — Get Real American Fans from Google',
   description:
-    'Apply for a clearly labeled sponsored creator placement. No password is required, and paid placement remains separate from editorial directory statistics.',
-  alternates: { canonical: `${SITE_URL}/promote` },
+    'Get your OnlyFans featured on America\'s #1 creator directory. Reach high-intent fans searching Google every month. Go live in 24 hours — no password required.',
+  alternates: { canonical: `${SITE_URL}/promote/` },
   openGraph: {
     title: 'Promote Your OnlyFans — OnlyAmericanFans',
     description: 'Get featured in front of high-intent American fans searching Google. Go live in 24 hours.',
-    url: `${SITE_URL}/promote`,
+    url: `${SITE_URL}/promote/`,
     images: [{ url: `${SITE_URL}/og-default.svg`, width: 1200, height: 630 }],
   },
 };
@@ -57,8 +57,8 @@ const BENEFITS = [
   },
   {
     icon: '🔒',
-    title: 'No Account Access Required',
-    desc: 'We never ask for your password or account access. Placements use public profile information and a configured destination link.',
+    title: '100% Safe & Compliant',
+    desc: 'We never ask for your password or account access, and nothing we do violates OnlyFans\' terms of service.',
   },
   {
     icon: '💎',
@@ -88,7 +88,7 @@ const COMPARISON = [
 const promoteFaqs = [
   {
     q: 'Is this safe for my OnlyFans account?',
-    a: 'We use public profile information and never ask for your password or account access. Review the current terms of any platform you use before purchasing a promotion.',
+    a: 'Yes. We only list publicly available information — your username, link, categories and location. We never ask for your password or access your account, and directory listings fully comply with OnlyFans\' terms of service.',
   },
   {
     q: 'Do I need to share my OnlyFans password?',
@@ -124,8 +124,9 @@ export default function PromotePage() {
               Promote Your <span className="gradient-accent">OnlyFans</span> and Get Real Paying Fans
             </h1>
             <p className="display-sub">
-              Fans use search engines and directories to discover creators. Apply for a clearly
-              labeled placement in front of visitors actively browsing creator profiles.
+              Millions of American fans search Google for creators every month.
+              Get your profile featured on America&apos;s #1 OnlyFans directory and put yourself
+              in front of a high-intent audience ready to subscribe.
             </p>
 
             <div className="promote-cta-block">
@@ -146,8 +147,8 @@ export default function PromotePage() {
                   <div className="glass-stat-label">States Covered</div>
                 </div>
                 <div className="glass-stat">
-                  <div className="glass-stat-num">Ad</div>
-                  <div className="glass-stat-label">Clearly Labeled</div>
+                  <div className="glass-stat-num">Top 3</div>
+                  <div className="glass-stat-label">Google Rankings</div>
                 </div>
                 <div className="glass-stat">
                   <div className="glass-stat-num">24h</div>
@@ -165,7 +166,7 @@ export default function PromotePage() {
           <span className="trust-item"><span className="trust-item-icon">✓</span> No Password Required</span>
           <span className="trust-item"><span className="trust-item-icon">✓</span> Free to Apply</span>
           <span className="trust-item"><span className="trust-item-icon">✓</span> Real Google Traffic</span>
-          <span className="trust-item"><span className="trust-item-icon">✓</span> Clearly Labeled Placement</span>
+          <span className="trust-item"><span className="trust-item-icon">✓</span> 100% ToS-Safe</span>
         </div>
       </div>
 

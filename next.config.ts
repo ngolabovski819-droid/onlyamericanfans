@@ -1,8 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Keep every non-root page on the no-trailing-slash canonical URL.
-  trailingSlash: false,
   async redirects() {
     return [
       {

@@ -77,23 +77,6 @@ export async function GET(req: NextRequest) {
   }
 
   const scope = searchParams.get('scope') ?? undefined;
-  const fallbackToPopularIfEmpty = searchParams.get('fallback_to_popular') !== 'false';
-
-  // Seek-pagination cursor from the previous page's `nextCursor` — an opaque JSON blob the
-  // client round-trips verbatim. Malformed/missing just means "no cursor," which falls back to
-  // the (slower for deep pages, but always correct) offset-based path.
-  let cursor: SearchParams['cursor'];
-  const cursorRaw = searchParams.get('cursor');
-  if (cursorRaw) {
-    try {
-      const parsed = JSON.parse(cursorRaw);
-      if (parsed && typeof parsed === 'object') {
-        cursor = parsed as SearchParams['cursor'];
-      }
-    } catch {
-      // ignore malformed cursor
-    }
-  }
 
   try {
     const baseParams = {
@@ -107,10 +90,9 @@ export async function GET(req: NextRequest) {
       categoryTerms,
       filterGroups,
       skipLocationFilter,
-      cursor,
     };
     const result = scope
-      ? await fetchScopedCreators({ ...baseParams, scope, fallbackToPopularIfEmpty })
+      ? await fetchScopedCreators({ ...baseParams, scope })
       : await fetchCreators(baseParams);
 
     // Cache Load More responses for 30s (public, non-personalised search).

@@ -161,7 +161,7 @@ export default function SearchFilters({ onFiltersChange }: Props) {
                     ? group.options.map((opt) => (
                         <a
                           key={opt.label}
-                          href={`/${opt.terms[0]?.replace(/\s+/g, '-')}-onlyfans`}
+                          href={`/${opt.terms[0]?.replace(/\s+/g, '-')}-onlyfans/`}
                           className="filter-option filter-option--link"
                         >
                           {opt.label} →

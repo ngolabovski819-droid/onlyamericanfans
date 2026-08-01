@@ -25,7 +25,7 @@ const STATES = [
   { slug: 'alaska', terms: ['alaska', 'anchorage', 'fairbanks', 'juneau'] },
   { slug: 'arizona', terms: ['arizona', 'phoenix', 'tucson', 'scottsdale', 'mesa', 'tempe', 'chandler', 'gilbert'] },
   { slug: 'arkansas', terms: ['arkansas', 'little rock', 'fayetteville', 'fort smith'] },
-  { slug: 'california', terms: ['california', 'los angeles', 'san diego', 'san francisco', 'san jose', 'sacramento', 'fresno', 'oakland', 'long beach', 'socal', 'norcal', 'bay area', 'hollywood', 'beverly hills', 'silver lake', 'east la', 'compton', 'anaheim', 'riverside', 'irvine'] },
+  { slug: 'california', terms: ['california', 'los angeles', 'san diego', 'san francisco', 'san jose', 'sacramento', 'fresno', 'oakland', 'long beach', 'sf', 'socal', 'norcal', 'bay area', 'hollywood', 'beverly hills', 'silver lake', 'east la', 'compton', 'anaheim', 'riverside', 'irvine'] },
   { slug: 'colorado', terms: ['colorado', 'denver', 'colorado springs', 'fort collins', 'boulder', 'aurora colorado'] },
   { slug: 'connecticut', terms: ['connecticut', 'hartford', 'new haven', 'bridgeport', 'stamford'] },
   { slug: 'delaware', terms: ['delaware', 'wilmington', 'dover delaware', 'newark delaware'] },

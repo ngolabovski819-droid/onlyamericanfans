@@ -30,27 +30,6 @@ export interface SearchParams {
    *  was swallowed. The fallback result's `total` is capped so an unfiltered site-wide count never
    *  displays under a specific category/location heading. */
   fallbackToPopularIfEmpty?: boolean;
-  /** Keyset ("seek") pagination cursor from a previous page's `nextCursor`. When present, this
-   *  replaces OFFSET-based paging for the underlying query: instead of "skip N rows" (which gets
-   *  linearly more expensive the deeper you page, since Postgres has to walk and discard every
-   *  row up to the offset), it filters directly to "rows ordered after this exact row," which
-   *  costs the same regardless of how deep the page is. Falls back to page/pageSize/offsetOverride
-   *  when omitted (first page, or a caller that doesn't carry a cursor forward). */
-  cursor?: SearchCursor;
-}
-
-/** Opaque-to-callers seek-pagination position: the sort-key values of the last row on the
- *  previous page. Only the fields relevant to the active `sort` matter for a given query, but
- *  all are carried so switching sort mid-pagination degrades gracefully instead of erroring. */
-export interface SearchCursor {
-  /** favoritedcount of the last row seen */
-  fc: number;
-  /** subscribeprice of the last row seen (nullable — pricing is optional) */
-  sp: number | string | null;
-  /** first_seen_at of the last row seen (nullable — backfilled rows may lack it) */
-  fsa: string | null;
-  /** id of the last row seen — final tiebreak so ties in fc/sp/fsa don't skip or duplicate rows */
-  id: number;
 }
 
 /** Cap applied to `total` when fetchCreators falls back to an unfiltered "popular" list — keeps
@@ -62,51 +41,17 @@ export interface SearchResult {
   creators: Creator[];
   total: number;
   hasMore: boolean;
-  /** Seek-pagination position after the last row in `creators`. Pass this back as `cursor` to
-   *  fetch the next page cheaply. `null` means there is nothing after this page (or the
-   *  underlying query returned zero rows). */
-  nextCursor?: SearchCursor | null;
 }
 
 const CARD_COLS = [
   'id', 'username', 'name', 'about', 'location', 'avatar', 'avatar_c144', 'header',
   'isverified', 'subscribeprice', 'photoscount', 'videoscount', 'postscount',
-  'subscriberscount', 'favoritedcount', 'first_seen_at',
+  'subscriberscount', 'favoritedcount',
   'bundle1_price', 'bundle1_duration', 'bundle1_discount',
   'bundle2_price', 'bundle2_duration', 'bundle2_discount',
   'bundle3_price', 'bundle3_duration', 'bundle3_discount',
   'promotion1_price', 'promotion1_discount',
 ].join(',');
-
-/**
- * Builds the "rows ordered strictly after this cursor" filter as a raw PostgREST logic-tree
- * expression (and(...)/or(...) function-call form, meant to be nested inside another and=/or=
- * group — see the andClauses/rawFilter assembly below).
- *
- * Must mirror the ORDER BY exactly or the seek will skip or repeat rows:
- *   - sort=popular: favoritedcount.desc, subscribeprice.asc.nullslast, id.desc
- *   - sort=newest:  first_seen_at.desc.nullslast, favoritedcount.desc, id.desc
- *
- * NULLS LAST on an ascending secondary/primary key means null-valued rows sort after every
- * non-null row in that key, regardless of the tertiary key — hence the unconditional
- * "or field.is.null" branch when the cursor's own value for that field is non-null.
- */
-function buildKeysetClause(cursor: SearchCursor, sort: SearchParams['sort']): string {
-  const { fc, sp, fsa, id } = cursor;
-
-  if (sort === 'newest') {
-    if (fsa !== null) {
-      return `or(first_seen_at.lt.${fsa},first_seen_at.is.null,and(first_seen_at.eq.${fsa},or(favoritedcount.lt.${fc},and(favoritedcount.eq.${fc},id.lt.${id}))))`;
-    }
-    return `and(first_seen_at.is.null,or(favoritedcount.lt.${fc},and(favoritedcount.eq.${fc},id.lt.${id})))`;
-  }
-
-  // sort=popular (default)
-  if (sp !== null) {
-    return `or(favoritedcount.lt.${fc},and(favoritedcount.eq.${fc},or(subscribeprice.is.null,subscribeprice.gt.${sp},and(subscribeprice.eq.${sp},id.lt.${id}))))`;
-  }
-  return `or(favoritedcount.lt.${fc},and(favoritedcount.eq.${fc},subscribeprice.is.null,id.lt.${id}))`;
-}
 
 function mapCreator(raw: Record<string, unknown>): Creator {
   return {
@@ -166,7 +111,6 @@ export async function fetchCreators(params: SearchParams): Promise<SearchResult>
       page: params.page,
       pageSize: params.pageSize,
       offsetOverride: params.offsetOverride,
-      cursor: params.cursor,
       excludeUsernames: params.excludeUsernames,
       revalidate: 60,
     });
@@ -225,13 +169,7 @@ async function fetchCreatorsInner(params: SearchParams): Promise<SearchResult> {
 
   const page = params.page ?? 1;
   const pageSize = params.pageSize ?? 20;
-  const usingCursor = !!params.cursor;
-  // Cursor mode ignores page/offsetOverride entirely — position comes from the keyset clause
-  // below instead of OFFSET, which is what keeps deep pages fast (see buildKeysetClause).
-  const offset = usingCursor ? 0 : (params.offsetOverride ?? (page - 1) * pageSize);
-  // Fetch one extra row in cursor mode so hasMore is known without trusting the (estimated,
-  // sometimes wildly inaccurate for ilike-heavy queries) total count.
-  const fetchLimit = usingCursor ? pageSize + 1 : pageSize;
+  const offset = params.offsetOverride ?? (page - 1) * pageSize;
 
   // Use a plain params object — we'll build the final URL manually so PostgREST
   // filter expressions (or/and) are NOT percent-encoded (PostgREST requires raw parens/commas)
@@ -281,17 +219,9 @@ async function fetchCreatorsInner(params: SearchParams): Promise<SearchResult> {
     }
   }
 
-  // 5. Seek-pagination cursor — must be AND'd alongside every other clause above, so it can't
-  //    reuse the "single andClause -> top-level or=" shortcut; when present it always goes
-  //    through the and=(...) nesting branch even if it's the only required clause.
-  const keysetClause = params.cursor ? buildKeysetClause(params.cursor, params.sort) : null;
-
   // Build raw filter string — must NOT be percent-encoded
   let rawFilter = '';
-  if (keysetClause) {
-    const groups = [...andClauses.map((c) => `or${c}`), keysetClause];
-    rawFilter = `&and=(${groups.join(',')})`;
-  } else if (andClauses.length === 1) {
+  if (andClauses.length === 1) {
     rawFilter = `&or=${andClauses[0]}`;
   } else if (andClauses.length > 1) {
     const parts = andClauses.map((c) => `or${c}`);
@@ -323,16 +253,14 @@ async function fetchCreatorsInner(params: SearchParams): Promise<SearchResult> {
     qp.set('subscribeprice', 'lte.10');
   }
 
-  // Sort — id.desc is a stable final tiebreak: without it, rows tied on every other sort key
-  // have no deterministic order, which is exactly what a keyset cursor needs to avoid skipping
-  // or repeating a row when a page boundary lands mid-tie.
+  // Sort
   if (params.sort === 'newest') {
-    qp.set('order', 'first_seen_at.desc.nullslast,favoritedcount.desc,id.desc');
+    qp.set('order', 'first_seen_at.desc.nullslast,favoritedcount.desc');
   } else {
-    qp.set('order', 'favoritedcount.desc,subscribeprice.asc.nullslast,id.desc');
+    qp.set('order', 'favoritedcount.desc,subscribeprice.asc.nullslast');
   }
 
-  qp.set('limit', String(fetchLimit));
+  qp.set('limit', String(pageSize));
   qp.set('offset', String(offset));
 
   // Final URL: standard params (safely encoded) + raw filter appended manually
@@ -393,27 +321,7 @@ async function fetchCreatorsInner(params: SearchParams): Promise<SearchResult> {
   const contentRange = res.headers.get('content-range') ?? '';
   const total = parseInt(contentRange.split('/')[1] ?? '0', 10) || 0;
   const data: Record<string, unknown>[] = await res.json();
+  const creators = data.map(mapCreator);
 
-  // In cursor mode we over-fetched by one row specifically to answer "is there more?" without
-  // relying on the (estimated, unreliable for ilike-heavy filters) total — trim it back off.
-  const hasExtra = usingCursor && data.length > pageSize;
-  const pageData = hasExtra ? data.slice(0, pageSize) : data;
-  const creators = pageData.map(mapCreator);
-
-  const lastRaw = pageData[pageData.length - 1];
-  const nextCursor: SearchCursor | null = lastRaw
-    ? {
-        fc: Number(lastRaw.favoritedcount ?? 0),
-        sp: (lastRaw.subscribeprice as number | string | null) ?? null,
-        fsa: (lastRaw.first_seen_at as string | null) ?? null,
-        id: Number(lastRaw.id),
-      }
-    : null;
-
-  return {
-    creators,
-    total,
-    hasMore: usingCursor ? hasExtra : offset + creators.length < total,
-    nextCursor,
-  };
+  return { creators, total, hasMore: offset + creators.length < total };
 }

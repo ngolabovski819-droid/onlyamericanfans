@@ -14,7 +14,7 @@ export default function NotFound() {
         </p>
         <div className="chip-rail" style={{ marginBottom: '2rem' }}>
           {regions.map(r => (
-            <Link key={r.slug} href={`/${r.urlSlug}`} className="chip-glass">
+            <Link key={r.slug} href={`/${r.urlSlug}/`} className="chip-glass">
               <strong style={{ color: 'var(--accent-light)' }}>{r.abbr}</strong> {r.label}
             </Link>
           ))}

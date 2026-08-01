@@ -101,32 +101,6 @@ page never shows an absurd unfiltered site-wide count under its heading. This de
 **not** trigger on the free-text `q` search box — a genuine zero-match search should show "no
 results," not paper over it with unrelated popular creators.
 
-Indexable location and category directories explicitly pass `fallbackToPopularIfEmpty: false`
-on both SSR and `/api/search` load-more requests. Showing unrelated profiles under a geographic
-or category heading would make the page, count and structured data misleading. Keep the fallback
-for discovery surfaces where a generic popular list is an acceptable product response.
-
-## Snapshot-backed location statistics
-
-State, region and city analytics are read from `directory_location_stats_current` through
-`src/lib/state-stats.ts`; page requests must never aggregate `onlyfans_profiles` directly. Apply
-`supabase-migrations/005_directory_location_stats.sql` once, then run `npm run stats:refresh` to
-atomically publish national, 50-state, six-region and configured-city rows. The refresh RPC uses
-one SQL statement snapshot for every scope, so concurrent scraper writes cannot make states use
-different source versions. A failed refresh rolls back and leaves the previous snapshot live.
-
-Missing stats are rendered as `Not available`, never a made-up zero or a request-time estimate.
-Verified share uses active inventory; free-account share uses only profiles with a known effective
-price; median paid price excludes free and unknown prices. Geographic matches use curated public
-location terms and are explicitly not proof of residence. Local scopes may overlap and must not be
-summed to recreate the national total.
-
-The daily workflow is `.github/workflows/refresh-directory-stats.yml` and requires repository
-secrets `SUPABASE_URL` and `SUPABASE_KEY` (service role). `content_changed_at` advances only when a
-displayed metric changes; sitemap `lastmod` must use that value, not build time, request time or a
-no-op scraper completion. City pages under the central minimum-inventory threshold are `noindex`
-and omitted from the sitemap once a complete city rollup is available.
-
 ## Adding a new paid order
 
 1. Get the creator into `onlyfans_profiles` if they aren't already indexed — if this needs a
@@ -150,11 +124,8 @@ and omitted from the sitemap once a complete city rollup is available.
    real filename, per step 2's naming) against Supabase BEFORE going live.
 7. Verify locally in a real browser: pin lands at the right position, badge shows, link goes
    through `/go/`, a real click logs a row, scrolling past the card does NOT log a row.
-   **When curl-testing location/category pages, follow redirects (`curl -L`) or drop the
-   trailing slash** — this site's internal links use trailing slashes (`/california-onlyfans/`)
-   but Next's default is no-trailing-slash, so those URLs 308-redirect; a bare `curl` without
-   `-L` silently saves the redirect stub instead of the real page, which looks exactly like a
-   missing pin.
+   **When curl-testing location/category pages, follow redirects (`curl -L`)** so a redirect can
+   never be mistaken for a missing pin.
 8. Update the "Active campaigns" log below with what was added.
 9. Report back before pushing — never deploy without explicit sign-off, even after local
    verification passes.

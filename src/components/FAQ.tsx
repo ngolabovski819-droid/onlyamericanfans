@@ -1,5 +1,3 @@
-import JsonLd from '@/components/JsonLd';
-
 interface FAQ {
   q: string;
   a: string;
@@ -35,7 +33,10 @@ export default function FAQ({ faqs, heading = 'Frequently Asked Questions' }: Pr
           </details>
         ))}
       </div>
-      <JsonLd data={schema} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
     </section>
   );
 }

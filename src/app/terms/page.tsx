@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 
-import { SITE_URL } from '@/lib/site-url';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
 
 export const metadata: Metadata = {
   title: 'Terms of Service — OnlyAmericanFans',
   description: "Terms of service for OnlyAmericanFans, America's OnlyFans search directory.",
-  alternates: { canonical: `${SITE_URL}/terms` },
+  alternates: { canonical: `${SITE_URL}/terms/` },
 };
 
 export default function TermsPage() {

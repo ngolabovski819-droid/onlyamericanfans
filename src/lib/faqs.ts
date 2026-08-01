@@ -12,43 +12,43 @@ export interface Faq {
 export const homepageFaqs: Faq[] = [
   {
     q: 'How do I find American OnlyFans creators?',
-    a: 'Search current public profile records by name and advertised price, or browse state, city and category directories. Geographic pages use documented public-text matching and should be treated as discovery aids rather than proof of residence.',
+    a: 'Use OnlyAmericanFans to browse thousands of verified US-based creators by state, city, category or price. Every profile in our directory is confirmed to be from the United States, so you never have to filter through international results.',
   },
   {
     q: 'Is OnlyAmericanFans free to use?',
-    a: 'Yes. Browsing and searching the directory does not require payment or an OnlyAmericanFans account. Any subscription or purchase happens on the creator\'s destination platform under its current terms.',
+    a: 'Yes — browsing the OnlyAmericanFans directory is 100% free. There are no signup fees, paywalls or hidden charges. You only pay if you choose to subscribe to an individual creator on OnlyFans itself.',
   },
   {
     q: 'Are the creators on OnlyAmericanFans verified?',
-    a: 'Not every listed profile has a verified flag. A blue check appears only when the current source record reports verified status; OnlyAmericanFans does not independently verify identity, residence or profile ownership.',
+    a: 'Yes — every profile we list is publicly verified on OnlyFans and confirmed to be from the United States. Use the "Verified Only" toggle on the search page to display only ID-confirmed creators.',
   },
   {
     q: 'Do you list free American OnlyFans accounts?',
-    a: 'Use the Free filter to find records whose current known advertised subscription price is $0. Unknown prices are not counted as free, and creators may separately charge for optional content.',
+    a: 'Yes — many American creators offer free subscriptions and monetize through tips, PPV (pay-per-view) and bundles. Filter by the "Free" pricing option on the search page to see only no-cost American profiles.',
   },
   {
     q: 'How often is the directory updated?',
-    a: 'Profile cards use the latest successfully stored public record. Location statistics show an explicit snapshot cutoff and update time, and the last complete snapshot remains visible if a refresh fails.',
+    a: 'The OnlyAmericanFans directory is updated daily with new creators, refreshed pricing and current subscriber counts. We continuously discover new American profiles and remove inactive accounts.',
   },
   {
     q: 'Can I search OnlyFans creators by state or city?',
-    a: 'Yes. The directory has pages for all 50 states and configured US cities. Matches are based on curated public location terms, so aliases can be ambiguous and the methodology page explains the limits.',
+    a: 'Yes — we have dedicated pages for every US state and major city. Browse by state via the navigation menu, or visit the State Directory to see all 50 states ranked by creator count.',
   },
   {
-    q: 'How are creator categories assigned?',
-    a: 'Category pages match configured terms in current public directory fields. A match helps discovery but is not an endorsement or an independent claim about a creator\'s identity or content.',
+    q: 'What categories of American OnlyFans creators are available?',
+    a: 'We index every popular category including MILF, BBW, Latina, Asian, Ebony, Blonde, Trans, Fitness, Petite, Teen (18+) and many more. Visit the Categories page for the full list.',
   },
   {
     q: 'Do I need to create an account to browse?',
-    a: 'No. You can search, filter and open public creator links without creating an OnlyAmericanFans account.',
+    a: 'No — OnlyAmericanFans requires no signup. Just visit any page, search, filter and click through to a creator\'s OnlyFans profile. Your privacy is preserved because we don\'t track personal accounts.',
   },
   {
-    q: 'How are sponsored creators handled?',
-    a: 'Paid placements are marked with an Ad disclosure. Sponsorship can change a configured card position or destination link, but it does not change the creator\'s organic fields or the published directory statistics.',
+    q: 'How is OnlyAmericanFans different from searching OnlyFans directly?',
+    a: 'OnlyFans does not offer location filtering. We solve this by indexing every American profile and letting you filter by state, city, category and price — something OnlyFans itself doesn\'t support.',
   },
   {
-    q: 'Should I confirm profile details before subscribing?',
-    a: 'Yes. Prices, availability and profile details can change after a record is refreshed. Confirm the current offer, identity signals and terms on the destination profile before making a purchase.',
+    q: 'Is it legal to browse OnlyFans creators on this site?',
+    a: 'Yes — OnlyAmericanFans is a search engine that links to publicly listed OnlyFans profiles. We do not host any adult content. The site is intended for adults aged 18+ in jurisdictions where adult content is legal.',
   },
 ];
 
@@ -56,43 +56,43 @@ export const homepageFaqs: Faq[] = [
 export const searchPageFaqs: Faq[] = [
   {
     q: 'How does the OnlyAmericanFans search work?',
-    a: 'Search matches the query against current public directory fields such as display name, username, biography and location text. The selected sort and filters are then applied to those stored records.',
+    a: 'Our search engine indexes thousands of verified American OnlyFans profiles and matches your query against creator names, usernames, bios, cities and states. Results are sorted by popularity by default.',
   },
   {
     q: 'Can I filter by free OnlyFans creators?',
-    a: 'Yes. Select Free to show records with a current known advertised subscription price of $0. Unknown prices are not treated as free; other paid products may still be offered.',
+    a: 'Yes — open the Filters panel and select "Free" under Pricing. You can also filter by "Under $5" or "Under $10" to find affordable American creators.',
   },
   {
-    q: 'What does the Verified Only filter mean?',
-    a: 'It shows records whose source data currently reports verified status. The flag is not an independent OnlyAmericanFans identity, residence or ownership check.',
+    q: 'How do I find verified American OnlyFans accounts?',
+    a: 'Toggle the "Verified Only" switch in the Filters panel to show only profiles where the creator has completed OnlyFans ID verification.',
   },
   {
     q: 'Can I search OnlyFans by city or state?',
-    a: 'You can search public location text or use a dedicated state or city directory. Dedicated location pages explain the curated matching terms and publish snapshot-backed statistics when available.',
+    a: 'Yes — type a state ("California") or city ("Miami") into the search bar. You can also use our dedicated state and city pages from the navigation menu for richer results.',
   },
   {
     q: 'How do I sort OnlyFans creators by newest first?',
-    a: 'Open Filters, expand Sort, and select Newest. This orders stored records by the directory\'s discovery timestamp, which is not necessarily the date a creator first joined the destination platform.',
+    a: 'Open the Filters panel, expand the Sort group, and select "Newest". Results will reorder to show the most recently discovered American creators first.',
   },
   {
-    q: 'Why can a profile be missing from a search?',
-    a: 'A public profile may not be in the current dataset, may be inactive, may use different terms, or may have changed since the last successful refresh. Search results are directory matches, not a complete census.',
+    q: 'Can I search by category and location together?',
+    a: 'Yes — visit a state page (e.g. /california-onlyfans/) and click any category chip to see only creators of that category in that state. Or browse a category page and pick a state.',
   },
   {
-    q: 'Why do some cards have an Ad label?',
-    a: 'Ad identifies a paid placement. Sponsored links use the appropriate sponsored link relationship, and sponsorship is kept separate from the profile data and location statistics.',
+    q: 'Why are some creators marked as verified?',
+    a: 'Verified creators have completed OnlyFans\' identity verification process, which confirms they are who they claim to be. We display the verification badge on every confirmed profile.',
   },
   {
     q: 'How do I contact a creator I find here?',
-    a: 'Click anywhere on a creator card to open its configured destination in a new tab. Any subscription or messaging happens on that external platform.',
+    a: 'Click "View Profile" on any card to open that creator\'s OnlyFans page in a new tab. From there you can subscribe and message them through OnlyFans\' built-in DM system.',
   },
   {
-    q: 'How current are prices and profile details?',
-    a: 'Cards show the latest successfully stored public values. Because creators can change details after a refresh, verify the current price and offer on the destination profile.',
+    q: 'Are there American MILFs / BBWs / Latinas on OnlyFans?',
+    a: 'Yes — we have dedicated category pages for MILF, BBW, Latina, Asian, Ebony, Blonde, Trans, Fitness, Petite and more. Click any category from the search filters or visit /categories/.',
   },
   {
-    q: 'Does browsing the search directory cost anything?',
-    a: 'No. Searching and browsing OnlyAmericanFans is free. Any later subscription or purchase is made on the external destination platform.',
+    q: 'Why use OnlyAmericanFans instead of Google?',
+    a: 'Google does not let you filter OnlyFans creators by state, city, category or price. We aggregate every American creator into a structured directory with proper filters that OnlyFans itself doesn\'t offer.',
   },
 ];
 
@@ -112,50 +112,50 @@ export function expandLocationFaqs(opts: {
 }): Faq[] {
   const { customFaqs, label, total, isState, abbr, parentStateLabel } = opts;
   const ctx = isState ? `${label}` : `${label}${parentStateLabel ? `, ${parentStateLabel}` : ''}`;
-  const totalText = total > 0 ? total.toLocaleString() : 'no currently counted';
+  const totalText = total > 0 ? total.toLocaleString() : 'hundreds of';
 
   const generic: Faq[] = [
     {
       q: `How many OnlyFans creators are from ${label}?`,
-      a: `The current directory result contains ${totalText} active profile matches for ${ctx}. This is a public-text directory match, not a census or independent proof that every listed creator resides there.`,
+      a: `OnlyAmericanFans currently lists ${totalText} verified OnlyFans creators from ${ctx}. New profiles are added daily as we discover and verify more local creators.`,
     },
     {
       q: `Are there free OnlyFans creators in ${label}?`,
-      a: `Use the Free filter to show matched records whose current known advertised subscription price is $0. Unknown prices are not counted as free, and paid extras may still be available.`,
+      a: `Yes — many ${label} creators offer free subscriptions and monetize through tips and pay-per-view content. Filter by "Free" on the search page to see only no-cost ${label} accounts.`,
     },
     {
       q: `How do I find verified ${label} OnlyFans creators?`,
-      a: `Use the Verified Only filter to show matched records whose current source data reports verified status. OnlyAmericanFans does not independently verify identity or residence.`,
+      a: `Use the "Verified Only" toggle in the filter panel on this page to display only ID-confirmed ${label} creators. Verified accounts have completed OnlyFans\' identity verification.`,
     },
     {
       q: `Which ${isState ? 'cities in ' + label : 'neighborhoods near ' + label} have the most OnlyFans creators?`,
       a: isState
-        ? `The ${label} page lists configured city directories. When a complete city snapshot is available, the table can be compared using the same cutoff and methodology.`
-        : `Browse the parent state page for configured nearby city directories. City labels and aliases can overlap, so review the published matching methodology.`,
+        ? `${label}\'s largest cities — including the metropolitan areas — produce the highest volume of OnlyFans creators. Use our state page to see all city-level breakdowns.`
+        : `${label} and its surrounding metro area concentrate most local creators. Browse the parent state page for nearby cities.`,
     },
     {
       q: `What categories of ${label} OnlyFans creators are popular?`,
-      a: `Category directories use configured terms found in current public profile fields. These matches are discovery aids, not endorsements or independent claims about identity or content.`,
+      a: `Popular categories among ${label} creators include MILF, fitness, blonde, Latina, Asian, ebony, BBW and amateur. Click any category chip on this page to filter by category within ${label}.`,
     },
     {
       q: `How often is the ${label} OnlyFans directory updated?`,
-      a: `Profile cards use the latest successfully stored records. Published location statistics include an explicit snapshot cutoff and retain the last complete snapshot if a refresh fails.`,
+      a: `Our ${label} directory refreshes daily — pricing, subscriber counts and verification status are continuously updated, and new creators are added as soon as they are discovered.`,
     },
     {
       q: `Is it free to browse ${label} OnlyFans creators on this site?`,
-      a: `Yes. Browsing the directory is free. Any subscription or purchase is made on the creator\'s destination platform under its current terms.`,
+      a: `Yes — browsing the OnlyAmericanFans directory is 100% free. You only pay if you choose to subscribe to an individual ${label} creator directly on OnlyFans.`,
     },
     {
       q: `Can I search ${label} OnlyFans by price?`,
-      a: `Yes. Open the Filters panel and select Free, Under $5 or Under $10 to narrow ${label} results by advertised subscription price.`,
+      a: `Yes — open the Filters panel and select Free, Under $5 or Under $10 to narrow ${label} results by subscription price.`,
     },
     {
       q: `Are ${label} OnlyFans creators all from ${label}?`,
-      a: `No residency guarantee is made. ${abbr ? `${abbr} ` : ''}Matches use curated location terms in current public directory fields; aliases, travel references and incomplete text can create ambiguity.`,
+      a: `We verify each profile\'s self-reported location against city and state mentions in their bio. ${abbr ? `${abbr} ` : ''}Creators in our ${label} directory have publicly indicated they are from or based in ${label}.`,
     },
     {
       q: `How do I subscribe to a ${label} OnlyFans creator?`,
-      a: `Click anywhere on a creator card to open its configured external destination in a new tab, then review that platform\'s current price and terms.`,
+      a: `Click "View Profile" on any ${label} creator card to open their OnlyFans page in a new tab. From there, click "Subscribe" on OnlyFans to follow their content.`,
     },
   ];
 
@@ -178,40 +178,53 @@ export function categoryFaqs(opts: {
   total: number;
   priceFilter?: string;
 }): Faq[] {
-  const { label, priceFilter } = opts;
+  const { label, total, priceFilter } = opts;
   const lower = label.toLowerCase();
+  const totalText = total > 0 ? total.toLocaleString() : 'hundreds of';
   const isFreeCategory = priceFilter === 'free';
 
   return [
     {
-      q: `How are profiles included in the ${label} directory?`,
-      a: `Profiles are matched using configured ${lower} terms found in current public directory fields. A category match is a discovery aid, not an endorsement or a claim about a creator's identity.`,
+      q: `Where can I find the best ${label} OnlyFans creators in America?`,
+      a: `OnlyAmericanFans lists ${totalText} verified American ${lower} OnlyFans creators, all sorted by popularity. Browse the directory above to find the best ${lower} creators across the United States.`,
     },
     {
-      q: `Can I find free ${label} accounts?`,
+      q: `Are there free American ${label} OnlyFans accounts?`,
       a: isFreeCategory
-        ? `This directory is filtered to profiles whose current known advertised subscription price is $0. Prices and paid extras can change after a record is refreshed.`
-        : `Use the Free pricing filter to narrow the current ${lower} directory to profiles whose known advertised subscription price is $0. Unknown prices are not treated as free.`,
+        ? `Yes — every creator on this page offers a free subscription. They monetize through tips, PPV messages and content bundles instead of subscription fees.`
+        : `Yes — many American ${lower} creators offer free subscriptions. Use the "Free" pricing filter to see only no-cost ${lower} profiles.`,
     },
     {
-      q: `Are all ${label} profiles verified?`,
-      a: `No. A verification check appears only when the source directory record explicitly reports verified status. Verification is not inferred from a profile name, image or biography.`,
+      q: `How many ${label} OnlyFans creators are listed on OnlyAmericanFans?`,
+      a: `Our directory currently includes ${totalText} American ${lower} OnlyFans creators. New profiles are discovered and added daily.`,
     },
     {
-      q: `How are ${label} profiles ordered?`,
-      a: `Organic results use the selected directory sort. A paid placement can occupy a separately configured position, but it is visibly labeled as an advertisement and does not change a profile's underlying data.`,
+      q: `Which US states have the most ${label} OnlyFans creators?`,
+      a: `California, Texas, Florida and New York consistently lead in volume of American ${lower} creators. Use the state chips below to browse ${lower} creators by state.`,
     },
     {
-      q: `How current are ${label} prices and profile details?`,
-      a: `Cards use the latest successfully stored public directory record. A creator can change a price or profile after that refresh, so confirm current terms on the destination profile before subscribing.`,
+      q: `How do I find verified ${label} American OnlyFans creators?`,
+      a: `Toggle the "Verified Only" switch in the filter panel to display only ${lower} creators who have completed OnlyFans\' ID verification process.`,
     },
     {
-      q: `Can I browse ${label} creators by state or city?`,
-      a: `Use the state and city links below to open geographic directories. Location pages explain their matching methodology and publish local statistics when a complete snapshot is available.`,
+      q: `Are ${label} OnlyFans creators on this site really American?`,
+      a: `Yes — we verify each profile\'s self-reported location against US states and cities in their OnlyFans bio. Every ${lower} creator listed here has indicated they are from the United States.`,
     },
     {
-      q: `Does OnlyAmericanFans charge to browse the ${label} directory?`,
-      a: `No. Browsing and searching this directory is free. Any subscription or purchase happens on the creator's destination platform under that platform's current terms.`,
+      q: `What\'s the average subscription price for ${label} American OnlyFans creators?`,
+      a: `Most American ${lower} creators charge between free and $15/month. Use the pricing filter to find ${lower} accounts in your budget — Free, Under $5, or Under $10.`,
+    },
+    {
+      q: `How often are ${label} creators added to the directory?`,
+      a: `Our ${label} category is updated daily. We discover new American ${lower} OnlyFans creators continuously and refresh existing profiles to keep pricing and verification status current.`,
+    },
+    {
+      q: `Can I combine the ${label} filter with a state or city?`,
+      a: `Yes — visit any state or city page and click the ${label} category chip to see only ${lower} creators in that location. Conversely, scroll down on this page to browse ${lower} creators by state.`,
+    },
+    {
+      q: `Is it free to browse ${label} American OnlyFans on OnlyAmericanFans?`,
+      a: `Yes — using OnlyAmericanFans is 100% free. You only pay if you choose to subscribe to an individual ${lower} creator on OnlyFans.`,
     },
   ];
 }

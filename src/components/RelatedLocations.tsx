@@ -2,19 +2,22 @@
 import { states } from '@/config/states';
 import { cities } from '@/config/cities';
 import { regions } from '@/config/regions';
+import { popularCategories } from '@/config/categories';
 
 interface Props {
-  mode: 'state-to-cities' | 'city-to-siblings' | 'state-chips' | 'region-to-cities' | 'region-chips';
+  mode: 'state-to-cities' | 'city-to-siblings' | 'state-chips' | 'category-in-states' | 'region-to-cities' | 'region-chips';
   stateSlug?: string;
   citySlug?: string;
+  categorySlug?: string;
   regionSlug?: string;
   stateLabel?: string;
+  categoryLabel?: string;
   currentSlug?: string;
   parentStateLabel?: string;
   parentStateUrlSlug?: string;
 }
 
-export default function RelatedLocations({ mode, stateSlug, citySlug, regionSlug }: Props) {
+export default function RelatedLocations({ mode, stateSlug, citySlug, categorySlug, regionSlug }: Props) {
   if (mode === 'state-chips') {
     return (
       <div className="related-chips-wrap">
@@ -134,6 +137,33 @@ export default function RelatedLocations({ mode, stateSlug, citySlug, regionSlug
             </div>
           </>
         )}
+      </div>
+    );
+  }
+
+  if (mode === 'category-in-states' && categorySlug) {
+    return (
+      <div className="related-chips-wrap">
+        <h2 className="related-chips-heading">Browse by State</h2>
+        <p className="related-chips-desc">Find {categorySlug.replace(/-/g, ' ')} creators in your state:</p>
+        <div className="chips-row">
+          {states.map((s) => (
+            <Link key={s.slug} href={`/${s.urlSlug}/${categorySlug}/`} className="location-chip">
+              {s.abbr} {categorySlug}
+            </Link>
+          ))}
+        </div>
+        <div className="chips-row" style={{ marginTop: '0.75rem' }}>
+          <h3 className="related-chips-subheading">Other Categories</h3>
+          {popularCategories
+            .filter((c) => c.slug !== categorySlug)
+            .slice(0, 8)
+            .map((c) => (
+              <Link key={c.slug} href={`/categories/${c.slug}/`} className="category-chip">
+                {c.label}
+              </Link>
+            ))}
+        </div>
       </div>
     );
   }

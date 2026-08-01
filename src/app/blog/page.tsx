@@ -1,14 +1,15 @@
 ﻿import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllPosts } from '@/lib/blog';
-import { SITE_URL } from '@/lib/site-url';
 
 export const revalidate = 3600;
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
 
 export const metadata: Metadata = {
   title: 'Blog — American OnlyFans Tips & Guides',
   description: 'Tips, guides and news about American OnlyFans creators. Find advice on subscribing, discovering creators, and making the most of your experience.',
-  alternates: { canonical: `${SITE_URL}/blog` },
+  alternates: { canonical: `${SITE_URL}/blog/` },
 };
 
 export default function BlogPage() {
@@ -36,7 +37,7 @@ export default function BlogPage() {
       ) : (
         <>
           {featured && (
-            <Link href={`/blog/${featured.slug}`} className="blog-featured" style={{ textDecoration: 'none' }}>
+            <Link href={`/blog/${featured.slug}/`} className="blog-featured" style={{ textDecoration: 'none' }}>
               <div className="blog-featured-body">
                 <p className="blog-featured-eyebrow">★ Featured Post</p>
                 <h2 className="blog-featured-title gradient-accent" style={{ display: 'inline-block' }}>{featured.title}</h2>
@@ -56,7 +57,7 @@ export default function BlogPage() {
               </div>
               <div className="blog-grid">
                 {rest.map(post => (
-                  <Link key={post.slug} href={`/blog/${post.slug}`} className="blog-card card-lift" style={{ textDecoration: 'none' }}>
+                  <Link key={post.slug} href={`/blog/${post.slug}/`} className="blog-card card-lift" style={{ textDecoration: 'none' }}>
                     <div className="blog-card-body">
                       <p className="blog-card-date">{new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                       <h2 className="blog-card-title">{post.title}</h2>

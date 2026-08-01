@@ -6,10 +6,7 @@
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "stats:dry-run": "node --experimental-strip-types scripts/refresh-location-stats.mjs --include-all-scopes --dry-run",
-    "stats:refresh": "node --experimental-strip-types scripts/refresh-location-stats.mjs --include-all-scopes",
-    "stats:refresh:core": "node --experimental-strip-types scripts/refresh-location-stats.mjs"
+    "lint": "eslint"
   },
   "dependencies": {
     "@next/third-parties": "^16.2.4",

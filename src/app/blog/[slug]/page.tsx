@@ -2,9 +2,10 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getPostBySlug, getAllPosts } from '@/lib/blog';
-import { SITE_URL } from '@/lib/site-url';
 
 export const revalidate = 3600;
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -21,8 +22,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: post.title,
     description: post.description,
-    alternates: { canonical: `${SITE_URL}/blog/${slug}` },
-    openGraph: { title: post.title, description: post.description, type: 'article', url: `${SITE_URL}/blog/${slug}` },
+    alternates: { canonical: `${SITE_URL}/blog/${slug}/` },
+    openGraph: { title: post.title, description: post.description, type: 'article' },
   };
 }
 
@@ -67,7 +68,7 @@ export default async function BlogPostPage({ params }: Props) {
         <nav className="breadcrumb" style={{ marginBottom: '1.5rem' }} aria-label="Breadcrumb">
           <Link href="/">Home</Link>
           <span className="breadcrumb-sep">›</span>
-          <Link href="/blog">Blog</Link>
+          <Link href="/blog/">Blog</Link>
           <span className="breadcrumb-sep">›</span>
           <span className="breadcrumb-current">{post.title}</span>
         </nav>
@@ -92,7 +93,7 @@ export default async function BlogPostPage({ params }: Props) {
         />
 
         <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--border-subtle)' }}>
-          <Link href="/blog" style={{ color: 'var(--accent-light)', fontWeight: 600 }}>← Back to Blog</Link>
+          <Link href="/blog/" style={{ color: 'var(--accent-light)', fontWeight: 600 }}>← Back to Blog</Link>
         </div>
       </article>
     </>

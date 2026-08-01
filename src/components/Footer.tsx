@@ -1,12 +1,12 @@
 ﻿import Link from 'next/link';
 import { states } from '@/config/states';
 import { popularCategories } from '@/config/categories';
-import { SITE_URL } from '@/lib/site-url';
 
 // Four largest US states by population
 const FOOTER_STATE_SLUGS = ['california', 'texas', 'florida', 'new-york'];
 
 export default function Footer() {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
   const currentYear = new Date().getFullYear();
 
   return (
@@ -17,7 +17,7 @@ export default function Footer() {
           <div className="footer-brand">
             <Link href="/" className="footer-logo">OnlyAmericanFans</Link>
             <p className="footer-tagline">
-              Independent creator discovery by state, city, category and advertised price, with transparent directory methodology.
+              America&apos;s largest OnlyFans creator directory. Find free and premium American creators updated daily.
             </p>
             <p className="footer-disclaimer">
               onlyamericanfans.com is not affiliated with or endorsed by OnlyFans or Fenix International Limited.
@@ -34,14 +34,14 @@ export default function Footer() {
                 if (!s) return null;
                 return (
                   <li key={s.slug}>
-                    <Link href={`/${s.urlSlug}`} className="footer-link">
+                    <Link href={`/${s.urlSlug}/`} className="footer-link">
                       {s.label} ({s.abbr})
                     </Link>
                   </li>
                 );
               })}
               <li>
-                <Link href="/browse-by-state" className="footer-link">Browse all states →</Link>
+                <Link href="/browse-by-state/" className="footer-link">Browse all states →</Link>
               </li>
             </ul>
           </div>
@@ -52,13 +52,13 @@ export default function Footer() {
             <ul className="footer-list">
               {popularCategories.slice(0, 8).map((c) => (
                 <li key={c.slug}>
-                  <Link href={`/categories/${c.slug}`} className="footer-link">
+                  <Link href={`/categories/${c.slug}/`} className="footer-link">
                     {c.label}
                   </Link>
                 </li>
               ))}
               <li>
-                <Link href="/categories" className="footer-link">All Categories →</Link>
+                <Link href="/categories/" className="footer-link">All Categories →</Link>
               </li>
             </ul>
           </div>
@@ -68,7 +68,6 @@ export default function Footer() {
             <h3 className="footer-heading">Information</h3>
             <ul className="footer-list">
               <li><Link href="/about" className="footer-link">About Us</Link></li>
-              <li><Link href="/methodology" className="footer-link">Data Methodology</Link></li>
               <li><Link href="/blog" className="footer-link">Blog</Link></li>
               <li><Link href="/onlyfans-search" className="footer-link">Search Creators</Link></li>
               <li><Link href="/promote" className="footer-link">Promote Your OnlyFans</Link></li>
@@ -92,7 +91,7 @@ export default function Footer() {
             <Link href="/terms" className="footer-link">Terms of Use</Link>
           </p>
           <p className="footer-hreflang">
-            <link rel="alternate" hrefLang="en-US" href={SITE_URL} />
+            <link rel="alternate" hrefLang="en-US" href={siteUrl} />
           </p>
         </div>
       </div>

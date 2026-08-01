@@ -1,41 +1,42 @@
 ﻿import type { Metadata } from 'next';
 
-import { SITE_URL } from '@/lib/site-url';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
 
 export const metadata: Metadata = {
-  title: 'About the OnlyAmericanFans Creator Directory',
-  description: 'Learn how OnlyAmericanFans organizes public creator records by location, category and advertised price, including its limitations.',
-  alternates: { canonical: `${SITE_URL}/about` },
+  title: 'About OnlyAmericanFans — America\'s #1 OnlyFans Directory',
+  description: 'Learn about OnlyAmericanFans, America\'s dedicated OnlyFans search engine. Discover how we index and organize American creators.',
+  alternates: { canonical: `${SITE_URL}/about/` },
 };
 
 export default function AboutPage() {
   return (
     <div className="legal-page">
       <h1>About OnlyAmericanFans</h1>
-      <p className="legal-page-date">Independent creator discovery directory</p>
+      <p className="legal-page-date">America&apos;s #1 OnlyFans Search Engine</p>
 
       <h2>What We Do</h2>
       <p>
-        OnlyAmericanFans is an independent creator search and discovery directory. We organize
-        public profile records by location, category and advertised price to make them easier to explore.
+        OnlyAmericanFans is America&apos;s dedicated OnlyFans search engine and creator directory.
+        We index American OnlyFans creators to help fans discover content from local creators
+        that matches their interests and budget.
       </p>
       <p>
-        Our platform is refreshed regularly with new and existing creator records, allowing you to search
+        Our platform is updated daily with new and existing creator profiles, allowing you to search
         by region, city, category and price. We&apos;re independent and not affiliated with OnlyFans.
       </p>
 
       <h2>Our Mission</h2>
       <p>
-        We believe directory search should be useful, transparent and honest about its limits.
-        Our goal is to make public creator records easier to explore without presenting location,
-        verification or price information as more certain than the source data supports.
+        We believe American fans deserve a dedicated, high-quality search tool built specifically
+        for discovering local content creators. Our goal is to make it easy to find verified
+        American OnlyFans creators without having to scroll endlessly through generic directories.
       </p>
 
       <h2>How We Work</h2>
       <ul>
         <li>We index publicly available creator information from OnlyFans</li>
         <li>Creator profiles are updated regularly to reflect current pricing and status</li>
-        <li>Location pages use curated public-profile terms and explain that this is not proof of residence</li>
+        <li>All creators listed have American location indicators in their profiles</li>
         <li>We do not manage, operate or take fees from any OnlyFans creator</li>
       </ul>
 

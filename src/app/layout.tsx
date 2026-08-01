@@ -5,22 +5,22 @@ import './globals.css';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import AgeGate from '@/components/AgeGate';
-import { SITE_URL } from '@/lib/site-url';
 
 const GA_ID = 'G-00EBQM04JD';
 
 const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-dm-sans', display: 'swap', weight: ['400', '500', '600', '700'] });
 const oswald = Oswald({ subsets: ['latin'], variable: '--font-oswald', display: 'swap', weight: ['400', '500', '600', '700'] });
 
+const SITE_URL  = process.env.NEXT_PUBLIC_SITE_URL  ?? 'https://www.onlyamericanfans.com';
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME ?? 'OnlyAmericanFans';
 
 export const metadata: Metadata = {
   title: {
-    default: 'OnlyAmericanFans — American Creator Directory & Search',
+    default: 'OnlyAmericanFans — #1 American OnlyFans Search Engine',
     template: '%s | OnlyAmericanFans',
   },
   description:
-    'Browse public American creator profiles by state, city, price and category with transparent directory data and search.',
+    'Find the best American OnlyFans creators. Search by state, city, price and more. Thousands of verified US creators — updated daily.',
   metadataBase: new URL(SITE_URL),
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
   openGraph: {
@@ -47,7 +47,7 @@ const websiteSchema = {
       url: SITE_URL,
       name: SITE_NAME,
       alternateName: ['Only American Fans', 'OAF'],
-      description: 'American creator directory and search by state, city, category and advertised price.',
+      description: 'The #1 American OnlyFans search engine — find US creators by state, city and price.',
       inLanguage: 'en-US',
       publisher: { '@id': `${SITE_URL}/#organization` },
       potentialAction: {
@@ -79,11 +79,7 @@ const websiteSchema = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en-US"
-      className={`${dmSans.variable} ${oswald.variable}`}
-      data-scroll-behavior="smooth"
-    >
+    <html lang="en-US" className={`${dmSans.variable} ${oswald.variable}`}>
       <head>
         <meta name="rating" content="adult" />
         <meta name="DC.language" content="en-US" />
@@ -106,3 +102,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+

@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { SITE_URL } from '@/lib/site-url';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
 
 export const metadata: Metadata = {
   title: 'Contact Us — OnlyAmericanFans',
   description: 'Get in touch with the OnlyAmericanFans team. Contact us for general enquiries, corrections, or any questions.',
-  alternates: { canonical: `${SITE_URL}/contact` },
+  alternates: { canonical: `${SITE_URL}/contact/` },
 };
 
 export default function ContactPage() {
@@ -30,7 +30,7 @@ export default function ContactPage() {
       <h2>DMCA &amp; Takedown Requests</h2>
       <p>
         For content removal and DMCA requests, please use our dedicated{' '}
-        <Link href="/dmca" className="footer-link">DMCA / Takedowns</Link> page which includes all
+        <Link href="/dmca/" className="footer-link">DMCA / Takedowns</Link> page which includes all
         required information for a valid takedown notice.
       </p>
 
