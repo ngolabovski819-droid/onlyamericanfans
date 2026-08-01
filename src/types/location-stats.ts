@@ -36,12 +36,6 @@ export interface LocationStats {
   medianPaidPrice: number | null;
   paidPriceP25: number | null;
   paidPriceP75: number | null;
-  paidUnder5Count: number;
-  paid5To10Count: number;
-  paid10To20Count: number;
-  paid20PlusCount: number;
-  promotedCount: number;
-  discountedCount: number;
 
   new7dCount: number;
   new30dCount: number;
@@ -51,27 +45,16 @@ export interface LocationStats {
   checked30dShare: number | null;
   successfulChecked30dCount: number;
   successfulChecked30dShare: number | null;
-  successfulChecked7dCount: number;
-  successfulChecked7dShare: number | null;
   recentlySeen30dCount: number;
   recentlySeen30dShare: number | null;
   contentKnownCount: number;
   contentKnownShare: number | null;
-  completeProfileCount: number;
-  completeProfileShare: number | null;
 
   totalPosts: number;
   totalPhotos: number;
   totalVideos: number;
   totalMedia: number;
-  medianPosts: number | null;
-  medianPhotos: number | null;
-  medianVideos: number | null;
   sourceLatestRefreshAt: string | null;
-
-  /** Rank among the 50 state rows in the same snapshot; unavailable for other scopes. */
-  inventoryRank: number | null;
-  inventoryPercentile: number | null;
 
   /** The comparison snapshot nearest to, but not newer than, 30 days ago. */
   previousCutoffAt: string | null;
@@ -83,36 +66,6 @@ export interface StateStatsBundle {
   state: LocationStats | null;
   national: LocationStats | null;
   cities: LocationStats[];
-}
-
-/** A compact historical observation used for 7/30/90-day trend reporting. */
-export interface LocationStatsHistoryPoint {
-  snapshotId: number;
-  cutoffAt: string;
-  completedAt: string;
-  contentChangedAt: string;
-  activeCount: number;
-  verifiedCount: number;
-  freeCount: number;
-  priceKnownCount: number;
-  medianPaidPrice: number | null;
-  successfulChecked7dCount: number;
-}
-
-export type LocationHighlightType = 'popular' | 'newly-discovered' | 'recently-confirmed';
-
-export interface LocationHighlight {
-  snapshotId: number;
-  cutoffAt: string;
-  scopeType: LocationStatsScopeType;
-  scopeSlug: string;
-  highlightType: LocationHighlightType;
-  rank: number;
-  creatorId: number;
-  username: string;
-  displayName: string | null;
-  metricValue: number | null;
-  metricAt: string | null;
 }
 
 export interface LocationStatsMethodology {

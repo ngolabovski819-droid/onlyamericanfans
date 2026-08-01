@@ -8,8 +8,6 @@ export interface RegionConfig {
   urlSlug: string; // e.g. 'northeast-onlyfans'
   label: string;
   abbr: string;
-  /** States intentionally connected to this editorial region for hierarchical navigation. */
-  stateSlugs: string[];
   terms: string[];
   h1: string;
   metaTitle: string;
@@ -26,7 +24,6 @@ export const regions: RegionConfig[] = [
     urlSlug: 'northeast-onlyfans',
     label: 'Northeast',
     abbr: 'NE',
-    stateSlugs: ['connecticut', 'maine', 'massachusetts', 'new-hampshire', 'new-jersey', 'new-york', 'pennsylvania', 'rhode-island', 'vermont'],
     terms: [
       'new york', 'boston', 'philadelphia', 'new jersey', 'connecticut',
       'massachusetts', 'pennsylvania', 'rhode island', 'new hampshire', 'vermont', 'maine',
@@ -51,7 +48,6 @@ export const regions: RegionConfig[] = [
     urlSlug: 'southeast-onlyfans',
     label: 'Southeast',
     abbr: 'SE',
-    stateSlugs: ['alabama', 'arkansas', 'delaware', 'florida', 'georgia', 'kentucky', 'louisiana', 'maryland', 'mississippi', 'north-carolina', 'south-carolina', 'tennessee', 'virginia', 'west-virginia'],
     terms: [
       'florida', 'georgia', 'north carolina', 'south carolina', 'virginia', 'tennessee',
       'alabama', 'mississippi', 'arkansas', 'louisiana', 'kentucky', 'west virginia',
@@ -76,7 +72,6 @@ export const regions: RegionConfig[] = [
     urlSlug: 'midwest-onlyfans',
     label: 'Midwest',
     abbr: 'MW',
-    stateSlugs: ['illinois', 'indiana', 'iowa', 'kansas', 'michigan', 'minnesota', 'missouri', 'nebraska', 'north-dakota', 'ohio', 'south-dakota', 'wisconsin'],
     terms: [
       'illinois', 'ohio', 'michigan', 'indiana', 'wisconsin', 'minnesota',
       'iowa', 'missouri', 'north dakota', 'south dakota', 'nebraska', 'kansas',
@@ -101,7 +96,6 @@ export const regions: RegionConfig[] = [
     urlSlug: 'southwest-onlyfans',
     label: 'Southwest',
     abbr: 'SW',
-    stateSlugs: ['arizona', 'nevada', 'new-mexico', 'oklahoma', 'texas'],
     terms: [
       'texas', 'arizona', 'new mexico', 'oklahoma', 'nevada',
       'dallas', 'houston', 'san antonio', 'austin', 'phoenix', 'scottsdale',
@@ -126,7 +120,6 @@ export const regions: RegionConfig[] = [
     urlSlug: 'west-coast-onlyfans',
     label: 'West Coast',
     abbr: 'WC',
-    stateSlugs: ['alaska', 'california', 'hawaii', 'oregon', 'washington'],
     terms: [
       'california', 'oregon', 'washington',
       'los angeles', 'san francisco', 'san diego', 'seattle', 'portland',
@@ -152,7 +145,6 @@ export const regions: RegionConfig[] = [
     urlSlug: 'mountain-west-onlyfans',
     label: 'Mountain West',
     abbr: 'MW',
-    stateSlugs: ['colorado', 'idaho', 'montana', 'utah', 'wyoming'],
     terms: [
       'colorado', 'utah', 'montana', 'idaho', 'wyoming',
       'denver', 'salt lake city', 'boise', 'billings', 'cheyenne',

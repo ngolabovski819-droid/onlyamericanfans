@@ -65,13 +65,22 @@ export function DirectorySnapshot({
       note: 'First observed in the directory during the last 30 days',
     });
   }
-  if (hasMetric(stats.successfulCheckedIn7Days)) {
+  if (hasMetric(stats.refreshedIn7Days)) {
     metrics.push({
-      label: 'Confirmed in 7 days',
-      value: formatCount(stats.successfulCheckedIn7Days),
-      note: formatShare(stats.successfulCheckedIn7Days, stats.activeInventory)
-        ? `${formatShare(stats.successfulCheckedIn7Days, stats.activeInventory)} of active inventory received a successful source check`
-        : 'Profiles receiving a successful source check during the last 7 days',
+      label: 'Refreshed in 7 days',
+      value: formatCount(stats.refreshedIn7Days),
+      note: 'Profiles whose directory record was refreshed during the last 7 days',
+    });
+  }
+  if (
+    hasMetric(stats.totalMedia) &&
+    hasMetric(stats.contentKnownCount) &&
+    stats.contentKnownCount > 0
+  ) {
+    metrics.push({
+      label: 'Reported media total',
+      value: formatCount(stats.totalMedia),
+      note: `Summed source media counters across ${formatCount(stats.contentKnownCount)} profiles with known content data`,
     });
   }
 

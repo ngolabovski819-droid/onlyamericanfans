@@ -3,30 +3,6 @@ import { buildDirectoryPageUrl, parseDirectoryPage } from './pagination';
 
 /** City pages below this complete-snapshot inventory are followable but not indexable. */
 export const MIN_INDEXABLE_CITY_INVENTORY = 20;
-export const MIN_INDEXABLE_CITY_PRICE_COVERAGE = 0.35;
-export const MIN_INDEXABLE_CITY_CONTENT_COVERAGE = 0.25;
-export const MIN_INDEXABLE_CITY_7D_CONFIRMATION_COVERAGE = 0.15;
-export const MIN_INDEXABLE_CITY_COMPLETE_PROFILE_COVERAGE = 0.15;
-
-interface CityQualityStats {
-  activeCount: number;
-  priceKnownCount: number;
-  contentKnownCount: number;
-  successfulChecked7dCount: number;
-  completeProfileCount: number;
-}
-
-/** A city enters the index only when one complete snapshot has enough useful, fresh local data. */
-export function hasIndexableCityQuality(stats: CityQualityStats | null | undefined): boolean {
-  if (!stats || stats.activeCount < MIN_INDEXABLE_CITY_INVENTORY) return false;
-  const denominator = stats.activeCount;
-  return (
-    stats.priceKnownCount / denominator >= MIN_INDEXABLE_CITY_PRICE_COVERAGE &&
-    stats.contentKnownCount / denominator >= MIN_INDEXABLE_CITY_CONTENT_COVERAGE &&
-    stats.successfulChecked7dCount / denominator >= MIN_INDEXABLE_CITY_7D_CONFIRMATION_COVERAGE &&
-    stats.completeProfileCount / denominator >= MIN_INDEXABLE_CITY_COMPLETE_PROFILE_COVERAGE
-  );
-}
 
 export type DirectorySearchParams = Readonly<
   Record<string, string | readonly string[] | undefined>

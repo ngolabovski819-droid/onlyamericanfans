@@ -1,8 +1,5 @@
 import type {
   LocationStats,
-  LocationStatsHistoryPoint,
-  LocationHighlight,
-  LocationHighlightType,
   LocationStatsMethodology,
   LocationStatsScopeType,
   StateStatsBundle,
@@ -16,9 +13,9 @@ export const LOCATION_STATS_FRESHNESS_WINDOW_DAYS = 30;
  * intentionally revised; change the version whenever the SQL changes.
  */
 export const LOCATION_STATS_METHODOLOGY: LocationStatsMethodology = Object.freeze({
-  version: 'location-stats-v2',
+  version: 'location-stats-v1',
   activeInventory:
-    "Profiles whose current directory row has isperformer=true and status='active', with a successful source check during the 30-day freshness window and a nonblank location matching the scope.",
+    "Profiles whose current directory row has isperformer=true and status='active', with a nonblank location matching the scope.",
   locationMatch:
     'A case-insensitive match between the profile location text and at least one curated term configured for the state, city, or region. This is a directory match, not proof of residence.',
   nationalInventory:
@@ -67,32 +64,19 @@ const CURRENT_STATS_COLUMNS = [
   'median_paid_price',
   'paid_price_p25',
   'paid_price_p75',
-  'paid_under_5_count',
-  'paid_5_to_10_count',
-  'paid_10_to_20_count',
-  'paid_20_plus_count',
-  'promoted_count',
-  'discounted_count',
   'new_7d_count',
   'new_30d_count',
   'refreshed_7d_count',
   'refreshed_30d_count',
   'checked_30d_count',
   'successful_checked_30d_count',
-  'successful_checked_7d_count',
   'recently_seen_30d_count',
   'content_known_count',
-  'complete_profile_count',
   'total_posts',
   'total_photos',
   'total_videos',
   'total_media',
-  'median_posts',
-  'median_photos',
-  'median_videos',
   'source_latest_refresh_at',
-  'inventory_rank',
-  'inventory_percentile',
   'previous_cutoff_at',
   'change_30d_count',
   'change_30d_percent',
@@ -123,10 +107,6 @@ function isScopeType(value: unknown): value is LocationStatsScopeType {
   return value === 'national' || value === 'region' || value === 'state' || value === 'city';
 }
 
-function isHighlightType(value: unknown): value is LocationHighlightType {
-  return value === 'popular' || value === 'newly-discovered' || value === 'recently-confirmed';
-}
-
 function mapLocationStats(raw: RawLocationStats): LocationStats | null {
   if (
     !isScopeType(raw.scope_type) ||
@@ -147,7 +127,6 @@ function mapLocationStats(raw: RawLocationStats): LocationStats | null {
   const successfulChecked30dCount = finiteNumber(raw.successful_checked_30d_count);
   const recentlySeen30dCount = finiteNumber(raw.recently_seen_30d_count);
   const contentKnownCount = finiteNumber(raw.content_known_count);
-  const completeProfileCount = finiteNumber(raw.complete_profile_count);
 
   return {
     snapshotId: finiteNumber(raw.snapshot_id),
@@ -183,12 +162,6 @@ function mapLocationStats(raw: RawLocationStats): LocationStats | null {
     medianPaidPrice: nullableNumber(raw.median_paid_price),
     paidPriceP25: nullableNumber(raw.paid_price_p25),
     paidPriceP75: nullableNumber(raw.paid_price_p75),
-    paidUnder5Count: finiteNumber(raw.paid_under_5_count),
-    paid5To10Count: finiteNumber(raw.paid_5_to_10_count),
-    paid10To20Count: finiteNumber(raw.paid_10_to_20_count),
-    paid20PlusCount: finiteNumber(raw.paid_20_plus_count),
-    promotedCount: finiteNumber(raw.promoted_count),
-    discountedCount: finiteNumber(raw.discounted_count),
 
     new7dCount: finiteNumber(raw.new_7d_count),
     new30dCount: finiteNumber(raw.new_30d_count),
@@ -198,25 +171,16 @@ function mapLocationStats(raw: RawLocationStats): LocationStats | null {
     checked30dShare: ratio(checked30dCount, activeCount),
     successfulChecked30dCount,
     successfulChecked30dShare: ratio(successfulChecked30dCount, activeCount),
-    successfulChecked7dCount: finiteNumber(raw.successful_checked_7d_count),
-    successfulChecked7dShare: ratio(finiteNumber(raw.successful_checked_7d_count), activeCount),
     recentlySeen30dCount,
     recentlySeen30dShare: ratio(recentlySeen30dCount, activeCount),
     contentKnownCount,
     contentKnownShare: ratio(contentKnownCount, activeCount),
-    completeProfileCount,
-    completeProfileShare: ratio(completeProfileCount, activeCount),
 
     totalPosts: finiteNumber(raw.total_posts),
     totalPhotos: finiteNumber(raw.total_photos),
     totalVideos: finiteNumber(raw.total_videos),
     totalMedia: finiteNumber(raw.total_media),
-    medianPosts: nullableNumber(raw.median_posts),
-    medianPhotos: nullableNumber(raw.median_photos),
-    medianVideos: nullableNumber(raw.median_videos),
     sourceLatestRefreshAt: nullableString(raw.source_latest_refresh_at),
-    inventoryRank: nullableNumber(raw.inventory_rank),
-    inventoryPercentile: nullableNumber(raw.inventory_percentile),
 
     previousCutoffAt: nullableString(raw.previous_cutoff_at),
     change30dCount: nullableNumber(raw.change_30d_count),
@@ -347,139 +311,6 @@ export async function getStateStatsBundle(stateSlug: string): Promise<StateStats
   ]);
 
   return { state, national, cities };
-}
-
-export async function getLocationStatsHistory(
-  scopeType: LocationStatsScopeType,
-  scopeSlug: string,
-  limit = 100,
-): Promise<LocationStatsHistoryPoint[]> {
-  const config = getSupabaseConfig();
-  const slug = safeSlug(scopeSlug);
-  if (!config || !slug) return [];
-
-  const query = new URLSearchParams({
-    select: [
-      'snapshot_id',
-      'cutoff_at',
-      'completed_at',
-      'content_changed_at',
-      'active_count',
-      'verified_count',
-      'free_count',
-      'price_known_count',
-      'median_paid_price',
-      'successful_checked_7d_count',
-    ].join(','),
-    scope_type: `eq.${scopeType}`,
-    scope_slug: `eq.${slug}`,
-    order: 'cutoff_at.desc',
-    limit: String(Math.min(Math.max(Math.trunc(limit), 2), 100)),
-  });
-
-  let response: Response;
-  try {
-    response = await fetch(
-      `${config.url}/rest/v1/directory_location_stats_history?${query.toString()}`,
-      {
-        headers: {
-          apikey: config.key,
-          Authorization: `Bearer ${config.key}`,
-          'Accept-Profile': 'public',
-        },
-        next: { revalidate: 3600, tags: ['directory-location-stats'] },
-      },
-    );
-  } catch {
-    return [];
-  }
-  if (!response.ok) return [];
-
-  try {
-    const rows = await response.json() as RawLocationStats[];
-    return rows.flatMap((row) => {
-      if (
-        typeof row.cutoff_at !== 'string' ||
-        typeof row.completed_at !== 'string' ||
-        typeof row.content_changed_at !== 'string'
-      ) return [];
-      return [{
-        snapshotId: finiteNumber(row.snapshot_id),
-        cutoffAt: row.cutoff_at,
-        completedAt: row.completed_at,
-        contentChangedAt: row.content_changed_at,
-        activeCount: finiteNumber(row.active_count),
-        verifiedCount: finiteNumber(row.verified_count),
-        freeCount: finiteNumber(row.free_count),
-        priceKnownCount: finiteNumber(row.price_known_count),
-        medianPaidPrice: nullableNumber(row.median_paid_price),
-        successfulChecked7dCount: finiteNumber(row.successful_checked_7d_count),
-      }];
-    });
-  } catch {
-    return [];
-  }
-}
-
-export async function getLocationHighlights(
-  scopeType: LocationStatsScopeType,
-  scopeSlug: string,
-): Promise<LocationHighlight[]> {
-  const config = getSupabaseConfig();
-  const slug = safeSlug(scopeSlug);
-  if (!config || !slug) return [];
-
-  const query = new URLSearchParams({
-    select: '*',
-    scope_type: `eq.${scopeType}`,
-    scope_slug: `eq.${slug}`,
-    order: 'highlight_type.asc,rank.asc',
-  });
-  let response: Response;
-  try {
-    response = await fetch(
-      `${config.url}/rest/v1/directory_location_highlights_current?${query.toString()}`,
-      {
-        headers: {
-          apikey: config.key,
-          Authorization: `Bearer ${config.key}`,
-          'Accept-Profile': 'public',
-        },
-        next: { revalidate: 3600, tags: ['directory-location-stats'] },
-      },
-    );
-  } catch {
-    return [];
-  }
-  if (!response.ok) return [];
-
-  try {
-    const rows = await response.json() as RawLocationStats[];
-    return rows.flatMap((row) => {
-      if (
-        !isScopeType(row.scope_type) ||
-        !isHighlightType(row.highlight_type) ||
-        typeof row.scope_slug !== 'string' ||
-        typeof row.username !== 'string' ||
-        typeof row.cutoff_at !== 'string'
-      ) return [];
-      return [{
-        snapshotId: finiteNumber(row.snapshot_id),
-        cutoffAt: row.cutoff_at,
-        scopeType: row.scope_type,
-        scopeSlug: row.scope_slug,
-        highlightType: row.highlight_type,
-        rank: finiteNumber(row.rank),
-        creatorId: finiteNumber(row.creator_id),
-        username: row.username,
-        displayName: nullableString(row.display_name),
-        metricValue: nullableNumber(row.metric_value),
-        metricAt: nullableString(row.metric_at),
-      }];
-    });
-  } catch {
-    return [];
-  }
 }
 
 /**

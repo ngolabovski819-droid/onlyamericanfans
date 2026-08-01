@@ -20,7 +20,7 @@ export function buildDirectoryFaqs({ label, stats, cutoffAt }: BuildDirectoryFaq
   if (hasMetric(stats.activeInventory)) {
     faqs.push({
       q: `How many active creator profiles are in the ${label} directory?`,
-      a: `The latest published snapshot contains ${formatCount(stats.activeInventory)} active profiles with a successful source check inside the 30-day freshness window and public location text matching a curated ${label} term. This describes matched directory records, not a census of every creator living in ${label}.`,
+      a: `The latest published snapshot contains ${formatCount(stats.activeInventory)} active profiles whose public location matches a curated ${label} term. This describes matched directory records, not a census of every creator living in ${label}.`,
     });
   }
   if (hasMetric(stats.verifiedCount)) {

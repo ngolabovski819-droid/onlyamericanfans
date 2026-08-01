@@ -12,20 +12,7 @@ interface ComparisonRow {
   label: string;
   local: string;
   national: string;
-  difference: string;
   note: string;
-}
-
-function shareValue(numerator?: number | null, denominator?: number | null): number | null {
-  return hasMetric(numerator) && hasMetric(denominator) && denominator > 0
-    ? numerator / denominator
-    : null;
-}
-
-function percentagePointDifference(local: number | null, national: number | null): string {
-  if (local == null || national == null) return 'Not available';
-  const difference = (local - national) * 100;
-  return `${difference > 0 ? '+' : ''}${difference.toFixed(1)} pp`;
 }
 
 export function DirectoryComparison({ label, local, national }: DirectoryComparisonProps) {
@@ -36,39 +23,29 @@ export function DirectoryComparison({ label, local, national }: DirectoryCompari
   const nationalFree = formatShare(national.freeAccountCount, national.priceKnownCount);
   const localPriceCoverage = formatShare(local.priceKnownCount, local.activeInventory);
   const nationalPriceCoverage = formatShare(national.priceKnownCount, national.activeInventory);
-  const localVerifiedValue = shareValue(local.verifiedCount, local.activeInventory);
-  const nationalVerifiedValue = shareValue(national.verifiedCount, national.activeInventory);
-  const localFreeValue = shareValue(local.freeAccountCount, local.priceKnownCount);
-  const nationalFreeValue = shareValue(national.freeAccountCount, national.priceKnownCount);
-  const localPriceCoverageValue = shareValue(local.priceKnownCount, local.activeInventory);
-  const nationalPriceCoverageValue = shareValue(national.priceKnownCount, national.activeInventory);
 
   if (localVerified && nationalVerified) {
-    rows.push({ label: 'Verified share', local: localVerified, national: nationalVerified, difference: percentagePointDifference(localVerifiedValue, nationalVerifiedValue), note: 'Share of active inventory' });
+    rows.push({ label: 'Verified share', local: localVerified, national: nationalVerified, note: 'Share of active inventory' });
   }
   if (localFree && nationalFree) {
-    rows.push({ label: 'Free-account share', local: localFree, national: nationalFree, difference: percentagePointDifference(localFreeValue, nationalFreeValue), note: 'Share of profiles with known prices' });
+    rows.push({ label: 'Free-account share', local: localFree, national: nationalFree, note: 'Share of profiles with known prices' });
   }
   if (hasMetric(local.medianPaidPrice) && hasMetric(national.medianPaidPrice)) {
     rows.push({
       label: 'Median paid price',
       local: formatPrice(local.medianPaidPrice),
       national: formatPrice(national.medianPaidPrice),
-      difference: national.medianPaidPrice > 0
-        ? `${Math.round((local.medianPaidPrice / national.medianPaidPrice) * 100)} index`
-        : 'Not available',
       note: 'Free and unknown prices excluded',
     });
   }
   if (localPriceCoverage && nationalPriceCoverage) {
-    rows.push({ label: 'Known-price coverage', local: localPriceCoverage, national: nationalPriceCoverage, difference: percentagePointDifference(localPriceCoverageValue, nationalPriceCoverageValue), note: 'Share of active inventory' });
+    rows.push({ label: 'Known-price coverage', local: localPriceCoverage, national: nationalPriceCoverage, note: 'Share of active inventory' });
   }
   if (hasMetric(local.newlyDiscovered30Days) && hasMetric(national.newlyDiscovered30Days)) {
     rows.push({
       label: 'New in 30 days',
       local: formatCount(local.newlyDiscovered30Days),
       national: formatCount(national.newlyDiscovered30Days),
-      difference: 'Counts, not rates',
       note: 'First observed during the last 30 days',
     });
   }
@@ -91,7 +68,7 @@ export function DirectoryComparison({ label, local, national }: DirectoryCompari
         <table className={`${styles.table} ${styles.comparisonTable}`}>
           <caption className={styles.srOnly}>{label} directory metrics compared with national metrics</caption>
           <thead>
-            <tr><th scope="col">Metric</th><th scope="col">{label}</th><th scope="col">United States</th><th scope="col">Difference</th><th scope="col">Definition</th></tr>
+            <tr><th scope="col">Metric</th><th scope="col">{label}</th><th scope="col">United States</th><th scope="col">Definition</th></tr>
           </thead>
           <tbody>
             {rows.map((row) => (
@@ -99,7 +76,6 @@ export function DirectoryComparison({ label, local, national }: DirectoryCompari
                 <th scope="row">{row.label}</th>
                 <td><span className={styles.tableValue}>{row.local}</span></td>
                 <td><span className={styles.tableValue}>{row.national}</span></td>
-                <td><span className={styles.tableValue}>{row.difference}</span></td>
                 <td>{row.note}</td>
               </tr>
             ))}
