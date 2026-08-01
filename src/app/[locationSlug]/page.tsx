@@ -296,22 +296,6 @@ export default async function LocationPage({ params, searchParams }: Props) {
           </div>
         </section>
 
-        {page === 1 && (
-          locationSnapshot
-            ? <DirectorySnapshot label={loc.label} stats={locationSnapshot} />
-            : <DirectorySampleSnapshot label={loc.label} creators={creators} estimatedInventory={total} />
-        )}
-
-        {page === 1 && (
-          <LocationDirectoryOverview
-            label={loc.label}
-            kind={isState ? 'state' : city ? 'city' : 'region'}
-            terms={loc.terms}
-            parentState={parentState ? { label: parentState.label, href: `/${parentState.urlSlug}` } : null}
-            configuredCityCount={configuredCities.length}
-          />
-        )}
-
         {page === 1 && locationStats && (
           <DirectoryPulseSummary
             stats={locationStats}
@@ -359,6 +343,22 @@ export default async function LocationPage({ params, searchParams }: Props) {
           totalPages={locationStats ? getDirectoryPageCount(locationStats.activeCount, 24) : undefined}
           ariaLabel={`${loc.label} creator directory pages`}
         />
+
+        {page === 1 && (
+          locationSnapshot
+            ? <DirectorySnapshot label={loc.label} stats={locationSnapshot} />
+            : <DirectorySampleSnapshot label={loc.label} creators={creators} estimatedInventory={total} />
+        )}
+
+        {page === 1 && (
+          <LocationDirectoryOverview
+            label={loc.label}
+            kind={isState ? 'state' : city ? 'city' : 'region'}
+            terms={loc.terms}
+            parentState={parentState ? { label: parentState.label, href: `/${parentState.urlSlug}` } : null}
+            configuredCityCount={configuredCities.length}
+          />
+        )}
 
         {page === 1 && city && (
           <RelatedLocations
