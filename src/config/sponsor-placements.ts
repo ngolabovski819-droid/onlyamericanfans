@@ -104,6 +104,22 @@ function buildPlacements(): PlacementMap {
   pinAllCategories('emilylopz', 1);
   pinAllStates('emilylopz', 1);
   pinAllCities('emilylopz', 1);
+  pin('search', 'emilylopz', 1);
+
+  // rocketreynaxo — #2 position after Emily on home, every category, every
+  // state, every city, and search results.
+  pin('home', 'rocketreynaxo', 2);
+  pinAllCategories('rocketreynaxo', 2);
+  pinAllStates('rocketreynaxo', 2);
+  pinAllCities('rocketreynaxo', 2);
+  pin('search', 'rocketreynaxo', 2);
+
+  // hannazuki — #3 position after Emily and Rocket Reyna on the same scopes.
+  pin('home', 'hannazuki', 3);
+  pinAllCategories('hannazuki', 3);
+  pinAllStates('hannazuki', 3);
+  pinAllCities('hannazuki', 3);
+  pin('search', 'hannazuki', 3);
 
   return rules;
 }

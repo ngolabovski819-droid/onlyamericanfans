@@ -137,8 +137,8 @@ changed, or ended.** This is the fast answer to "what's live right now" without 
 re-derive it by reading every config file and Supabase table by hand.
 
 - **emilylopz** — added 2026-07-24.
-  - Placements: #1 position on `home`, every category, every state, every city (not regions —
-    wasn't part of the order).
+  - Placements: #1 position on `home`, `search`, every category, every state, every city (not
+    regions — wasn't part of the order).
   - Destination: `https://onlyfans.com/emilylopz/c545` (direct — NOT routed through
     fanspedia.net; that was considered and explicitly rejected, see git history).
   - Image: default synced avatar, no override.
@@ -151,6 +151,26 @@ re-derive it by reading every config file and Supabase table by hand.
     from `sponsor_clicks_emilylopz` (no `_oaf` suffix), which is a DIFFERENT, live table that
     fanspedia.net's own `/go/emilylopz` redirect already writes to. Do not point this app's
     `clickTable` at the non-`_oaf` table.
-  - Status as of push: migration `004_sponsor_clicks_emilylopz_oaf.sql` had NOT yet been run —
-    confirm with the user whether it has been before assuming click data exists.
+  - Status: migration `004_sponsor_clicks_emilylopz_oaf.sql` is live and click logging was
+    verified end-to-end on 2026-08-01.
+- **rocketreynaxo** — added 2026-08-01.
+  - Placements: #2 position after Emily on `home`, `search`, every category, every state, and
+    every city (not regions).
+  - Destination: `https://onlyfans.com/rocketreynaxo/c58`.
+  - Images: 10 campaign images in supplied order; `rocket-01.jpg` is the lead image.
+  - Card tags: `Asian MILF`, `Busty`, `Curvy`.
+  - Search bars: second sponsored suggestion after Emily.
+  - Click tracking: `sponsor_clicks_rocketreynaxo_oaf`, isolated from FansPedia.
+  - Status: migration `005_sponsor_clicks_rocketreynaxo_oaf.sql` is live and click logging was
+    verified end-to-end on 2026-08-01.
+- **hannazuki** — added 2026-08-01.
+  - Placements: #3 position after Emily and Rocket Reyna on `home`, `search`, every category,
+    every state, and every city (not regions).
+  - Destination: `https://onlyfans.com/hannazuki/c1043`.
+  - Images: 7 campaign images in supplied numeric order; `hanna-01.jpg` is the lead image.
+  - Card tags: `asian`, `cosplay`, `egirl`, `GFE`.
+  - Search bars: third sponsored suggestion after Emily and Rocket Reyna.
+  - Click tracking: `sponsor_clicks_hannazuki_oaf`, isolated from FansPedia.
+  - Status: migration `006_sponsor_clicks_hannazuki_oaf.sql` is live and click logging was
+    verified end-to-end on 2026-08-01.
 <!-- END:nextjs-agent-rules -->

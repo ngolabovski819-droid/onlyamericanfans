@@ -79,6 +79,37 @@ const overrides: Record<string, SponsorOverride> = {
     // until then, logging here is a silent no-op (the redirect itself still works).
     clickTable: 'sponsor_clicks_emilylopz_oaf',
   },
+  rocketreynaxo: {
+    linkOverride: 'https://onlyfans.com/rocketreynaxo/c58',
+    imageOverride: '/sponsors/rocketreynaxo/rocket-01.jpg',
+    tags: ['Asian MILF', 'Busty', 'Curvy'],
+    galleryImages: [
+      '/sponsors/rocketreynaxo/rocket-02.jpg',
+      '/sponsors/rocketreynaxo/rocket-03.jpg',
+      '/sponsors/rocketreynaxo/rocket-04.jpg',
+      '/sponsors/rocketreynaxo/rocket-05.jpg',
+      '/sponsors/rocketreynaxo/rocket-06.jpg',
+      '/sponsors/rocketreynaxo/rocket-07.jpg',
+      '/sponsors/rocketreynaxo/rocket-08.jpg',
+      '/sponsors/rocketreynaxo/rocket-09.jpg',
+      '/sponsors/rocketreynaxo/rocket-10.jpg',
+    ],
+    clickTable: 'sponsor_clicks_rocketreynaxo_oaf',
+  },
+  hannazuki: {
+    linkOverride: 'https://onlyfans.com/hannazuki/c1043',
+    imageOverride: '/sponsors/hannazuki/hanna-01.jpg',
+    tags: ['asian', 'cosplay', 'egirl', 'GFE'],
+    galleryImages: [
+      '/sponsors/hannazuki/hanna-02.jpg',
+      '/sponsors/hannazuki/hanna-03.jpg',
+      '/sponsors/hannazuki/hanna-04.jpg',
+      '/sponsors/hannazuki/hanna-05.jpg',
+      '/sponsors/hannazuki/hanna-06.jpg',
+      '/sponsors/hannazuki/hanna-07.jpg',
+    ],
+    clickTable: 'sponsor_clicks_hannazuki_oaf',
+  },
 };
 
 export function getSponsorOverride(username: string): SponsorOverride | undefined {

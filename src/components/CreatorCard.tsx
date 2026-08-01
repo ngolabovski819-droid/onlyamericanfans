@@ -43,12 +43,10 @@ function stopCardNavigation(event: MouseEvent<HTMLElement>) {
 
 export default function CreatorCard({ creator, index }: Props) {
   const images = useMemo(
-    () => uniqueImages([
-      creator.imageOverride,
-      creator.avatar ?? creator.avatarC144,
-      creator.header,
-      ...(creator.sponsorGalleryImages ?? []),
-    ]),
+    () => uniqueImages(creator.imageOverride
+      ? [creator.imageOverride, ...(creator.sponsorGalleryImages ?? [])]
+      : [creator.avatar ?? creator.avatarC144, creator.header, ...(creator.sponsorGalleryImages ?? [])]
+    ),
     [creator.imageOverride, creator.avatar, creator.avatarC144, creator.header, creator.sponsorGalleryImages]
   );
   const [activeImage, setActiveImage] = useState(0);
