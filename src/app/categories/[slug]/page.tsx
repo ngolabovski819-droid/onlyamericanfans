@@ -6,6 +6,7 @@ import { states } from '@/config/states';
 import { cities } from '@/config/cities';
 import { fetchScopedCreators } from '@/lib/sponsorship';
 import CreatorGrid from '@/components/CreatorGrid';
+import CreatorStatsSection from '@/components/CreatorStatsSection';
 import { categoryFaqs } from '@/lib/faqs';
 
 export const revalidate = 3600;
@@ -119,6 +120,17 @@ export default async function CategoryPage({ params }: Props) {
           scope={`category:${slug}`}
         />
 
+        {/* About / Creator Stats (programmatic SEO) — strip a trailing "(18+)"-style
+            parenthetical from the inline label so sentences like "Teen OnlyFans creators"
+            read naturally; the full label still shows in the H2. */}
+        <CreatorStatsSection
+          headingLabel={cat.label}
+          pageLabel={cat.label.replace(/\s*\([^)]*\)\s*$/, '')}
+          params={{
+            categoryTerms: cat.terms.length > 0 ? cat.terms : undefined,
+            price: cat.priceFilter,
+          }}
+        />
 
         {/* FAQ */}
         <section className="faq-section">

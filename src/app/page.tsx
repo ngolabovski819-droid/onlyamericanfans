@@ -5,6 +5,7 @@ import { states } from '@/config/states';
 import { cities } from '@/config/cities';
 import CreatorGrid from '@/components/CreatorGrid';
 import CreatorGridSkeleton from '@/components/CreatorGridSkeleton';
+import CreatorStatsSection from '@/components/CreatorStatsSection';
 import FAQ from '@/components/FAQ';
 import CreatorSearchBox from '@/components/CreatorSearchBox';
 import { homepageFaqs } from '@/lib/faqs';
@@ -170,6 +171,16 @@ export default async function HomePage() {
         </div>
         <Suspense fallback={<CreatorGridSkeleton />}>
           <TrendingCreators />
+        </Suspense>
+      </section>
+
+      {/* — About / Creator Stats (programmatic SEO) — */}
+      <section className="page-container" style={{ paddingTop: 0 }}>
+        <Suspense fallback={null}>
+          <CreatorStatsSection
+            headingLabel="American"
+            params={{ locationTerms: US_TERMS }}
+          />
         </Suspense>
       </section>
 

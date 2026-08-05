@@ -7,6 +7,7 @@ import { getRegionByUrlSlug, regions } from '@/config/regions';
 
 import { fetchScopedCreators } from '@/lib/sponsorship';
 import CreatorGrid from '@/components/CreatorGrid';
+import CreatorStatsSection from '@/components/CreatorStatsSection';
 import RelatedLocations from '@/components/RelatedLocations';
 import { expandLocationFaqs } from '@/lib/faqs';
 
@@ -185,6 +186,12 @@ export default async function LocationPage({ params }: Props) {
           locationTerms={loc.terms}
           pageSize={24}
           scope={scope}
+        />
+
+        {/* About / Creator Stats (programmatic SEO) */}
+        <CreatorStatsSection
+          headingLabel={loc.label}
+          params={{ locationTerms: loc.terms }}
         />
 
         {/* Related locations */}

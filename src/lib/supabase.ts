@@ -159,25 +159,16 @@ function sanitizeUsername(u: string): string {
   return u.replace(/[^A-Za-z0-9_.-]/g, '');
 }
 
-async function fetchCreatorsInner(params: SearchParams): Promise<SearchResult> {
-  const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/+$/, '');
-  const supabaseKey = process.env.SUPABASE_KEY;
+interface ScopeClauseParams {
+  locationTerms?: string[];
+  q?: string;
+  categoryTerms?: string[];
+  filterGroups?: Record<string, string[]>;
+}
 
-  if (!supabaseUrl || !supabaseKey || supabaseUrl.includes('your-project')) {
-    return { creators: [], total: 0, hasMore: false };
-  }
-
-  const page = params.page ?? 1;
-  const pageSize = params.pageSize ?? 20;
-  const offset = params.offsetOverride ?? (page - 1) * pageSize;
-
-  // Use a plain params object — we'll build the final URL manually so PostgREST
-  // filter expressions (or/and) are NOT percent-encoded (PostgREST requires raw parens/commas)
-  const qp = new URLSearchParams();
-  qp.set('select', CARD_COLS);
-  qp.set('isperformer', 'eq.true');
-
-  // Build AND clauses — each is a parenthesized OR expression
+/** Builds the same location/text/category/filter-group AND-of-ORs clauses used by both the main
+ *  card search and the stat-leaders query below, so the two stay in sync by construction. */
+function buildScopeAndClauses(params: ScopeClauseParams): string[] {
   const andClauses: string[] = [];
 
   // 1. Location scope — filters on the `location` column only.
@@ -219,14 +210,37 @@ async function fetchCreatorsInner(params: SearchParams): Promise<SearchResult> {
     }
   }
 
-  // Build raw filter string — must NOT be percent-encoded
-  let rawFilter = '';
-  if (andClauses.length === 1) {
-    rawFilter = `&or=${andClauses[0]}`;
-  } else if (andClauses.length > 1) {
-    const parts = andClauses.map((c) => `or${c}`);
-    rawFilter = `&and=(${parts.join(',')})`;
+  return andClauses;
+}
+
+/** Combines buildScopeAndClauses() output into the raw (non-percent-encoded) PostgREST
+ *  or=/and= query fragment. */
+function andClausesToRawFilter(andClauses: string[]): string {
+  if (andClauses.length === 1) return `&or=${andClauses[0]}`;
+  if (andClauses.length > 1) return `&and=(${andClauses.map((c) => `or${c}`).join(',')})`;
+  return '';
+}
+
+async function fetchCreatorsInner(params: SearchParams): Promise<SearchResult> {
+  const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/+$/, '');
+  const supabaseKey = process.env.SUPABASE_KEY;
+
+  if (!supabaseUrl || !supabaseKey || supabaseUrl.includes('your-project')) {
+    return { creators: [], total: 0, hasMore: false };
   }
+
+  const page = params.page ?? 1;
+  const pageSize = params.pageSize ?? 20;
+  const offset = params.offsetOverride ?? (page - 1) * pageSize;
+
+  // Use a plain params object — we'll build the final URL manually so PostgREST
+  // filter expressions (or/and) are NOT percent-encoded (PostgREST requires raw parens/commas)
+  const qp = new URLSearchParams();
+  qp.set('select', CARD_COLS);
+  qp.set('isperformer', 'eq.true');
+
+  const andClauses = buildScopeAndClauses(params);
+  let rawFilter = andClausesToRawFilter(andClauses);
 
   // 5. Sponsor-placement exclusion — pinned/excluded usernames dropped at the DB level (not
   //    filtered client-side after the fact) so LIMIT/OFFSET pagination never double-counts or
@@ -324,4 +338,98 @@ async function fetchCreatorsInner(params: SearchParams): Promise<SearchResult> {
   const creators = data.map(mapCreator);
 
   return { creators, total, hasMore: offset + creators.length < total };
+}
+
+/** The onlyfans_profiles numeric columns the programmatic "About" SEO section (see
+ *  CreatorStatsSection) ranks creators by. */
+export type StatMetric =
+  | 'favoritedcount'
+  | 'subscriberscount'
+  | 'finishedstreamscount'
+  | 'photoscount'
+  | 'postscount'
+  | 'videoscount'
+  | 'audioscount'
+  | 'archivedpostscount';
+
+export interface StatLeader {
+  username: string;
+  name: string | null;
+  value: number;
+}
+
+export interface StatLeaderParams {
+  locationTerms?: string[];
+  categoryTerms?: string[];
+  filterGroups?: Record<string, string[]>;
+  /** Matches SearchParams.price — needed for price-only categories (e.g. 'free') where terms
+   *  alone wouldn't scope the leaderboard to the right creators. */
+  price?: 'free' | 'under5' | 'under10' | 'any';
+}
+
+/** Stat leaderboards change slowly (a creator's post/photo/video count doesn't meaningfully
+ *  shift hour to hour) and this SEO copy doesn't need to be fresher than that, so it's cached far
+ *  longer than the creator grid itself — cuts background Supabase query volume across all
+ *  state/city/category pages without any visible staleness. */
+const STAT_LEADER_REVALIDATE_SECONDS = 60 * 60 * 24 * 7; // 7 days
+
+/**
+ * Top N creators for a single numeric column, scoped by the same location/category/filter-group
+ * terms a page's CreatorGrid uses — powers the programmatic "About" SEO copy. This is a plain
+ * organic ranking: independent of src/config/sponsor-placements.ts pins, since the point is to
+ * report who actually holds the top spot for that stat, not who paid for a slot.
+ */
+export async function fetchCreatorStatLeaders(
+  metric: StatMetric,
+  params: StatLeaderParams,
+  limit = 5,
+): Promise<StatLeader[]> {
+  const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/+$/, '');
+  const supabaseKey = process.env.SUPABASE_KEY;
+  if (!supabaseUrl || !supabaseKey || supabaseUrl.includes('your-project')) return [];
+
+  const andClauses = buildScopeAndClauses(params);
+  const rawFilter = andClausesToRawFilter(andClauses);
+
+  const qp = new URLSearchParams();
+  qp.set('select', `username,name,${metric}`);
+  qp.set('isperformer', 'eq.true');
+  qp.set(metric, 'gt.0');
+  // Subscriber count is a creator-controlled visibility setting on OnlyFans — some creators hide
+  // it from public view entirely. Even though we may have a scraped value on file, it would be
+  // wrong to surface it here as if it were public; this ranks only creators who've chosen to show it.
+  if (metric === 'subscriberscount') {
+    qp.set('showsubscriberscount', 'eq.true');
+  }
+  if (params.price === 'free') {
+    qp.set('subscribeprice', 'eq.0');
+  } else if (params.price === 'under5') {
+    qp.set('subscribeprice', 'lte.5');
+  } else if (params.price === 'under10') {
+    qp.set('subscribeprice', 'lte.10');
+  }
+  qp.set('order', `${metric}.desc.nullslast`);
+  qp.set('limit', String(limit));
+
+  let res: Response;
+  try {
+    res = await fetch(`${supabaseUrl}/rest/v1/onlyfans_profiles?${qp.toString()}${rawFilter}`, {
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+        'Accept-Profile': 'public',
+      },
+      next: { revalidate: STAT_LEADER_REVALIDATE_SECONDS },
+    });
+  } catch {
+    return [];
+  }
+  if (!res.ok) return [];
+
+  const data: Record<string, unknown>[] = await res.json();
+  return data.map((row) => ({
+    username: row.username as string,
+    name: (row.name as string) ?? null,
+    value: Number(row[metric] ?? 0),
+  }));
 }
