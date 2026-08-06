@@ -5,6 +5,7 @@ import './globals.css';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import AgeGate from '@/components/AgeGate';
+import SponsoredLinkTokenizer from '@/components/SponsoredLinkTokenizer';
 
 const GA_ID = 'G-00EBQM04JD';
 
@@ -93,6 +94,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
+        <SponsoredLinkTokenizer />
         <AgeGate />
         <Nav />
         <main>{children}</main>
