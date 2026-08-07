@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSponsorOverride } from '@/config/sponsor-overrides';
 import { isBotUserAgent } from '@/lib/bot-detection';
 import { derivePlacement } from '@/lib/placement';
-import { extractClientIp, hashIp, isDatacenterIp, isRateLimited } from '@/lib/click-integrity';
+import { extractClientIp, hashIp, isDatacenterIp, isRateLimited, extractGeo } from '@/lib/click-integrity';
 import { verifyClickToken } from '@/lib/click-token';
 
 // Identifies THIS site's rows in a click table — matters whenever a clickTable is shared with
@@ -55,6 +55,7 @@ export async function GET(req: NextRequest, { params }: Params) {
       const referrer = req.headers.get('referer');
       const placement = derivePlacement(referrer, req.nextUrl.host);
       const clientIp = extractClientIp(req.headers.get('x-forwarded-for'));
+      const geo = extractGeo(req.headers);
       // Awaited (not fire-and-forget): click accuracy for a paid deliverable matters more than
       // shaving the ~50-100ms an insert takes, and an un-awaited promise can be killed by the
       // runtime once the response is sent.
@@ -66,6 +67,8 @@ export async function GET(req: NextRequest, { params }: Params) {
           placement,
           clientIp,
           linkToken: req.nextUrl.searchParams.get('t'),
+          country: geo.country,
+          city: geo.city,
         });
       } catch (err) {
         console.error(`[/go/${username}] click log failed:`, err);
@@ -91,6 +94,8 @@ async function logClick(
     placement: string | null;
     clientIp: string | null;
     linkToken: string | null;
+    country: string | null;
+    city: string | null;
   }
 ): Promise<void> {
   const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/+$/, '');
@@ -139,6 +144,9 @@ async function logClick(
       ip_hash: ipHash,
       is_datacenter_ip: isDatacenterIp(row.clientIp),
       link_verified: linkVerified,
+      ip_address: row.clientIp,
+      country: row.country,
+      city: row.city,
     }),
   });
   if (!res.ok) {
