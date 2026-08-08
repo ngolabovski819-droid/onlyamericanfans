@@ -15,6 +15,29 @@ export default function Nav() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [statesOpen, setStatesOpen] = useState(false);
   const [catsOpen, setCatsOpen] = useState(false);
+  const [mobileStatesOpen, setMobileStatesOpen] = useState(false);
+  const [mobileCatsOpen, setMobileCatsOpen] = useState(false);
+
+  // Collapsed every time the mobile menu itself closes — whether via the hamburger toggle or a
+  // link navigating away — so it never reopens mid-expanded. Done here (event handlers) rather
+  // than an effect keyed off mobileOpen, since setState directly inside an effect body is the
+  // pattern the lint rule (react-hooks/set-state-in-effect) flags.
+  function closeMobileMenu() {
+    setMobileOpen(false);
+    setMobileStatesOpen(false);
+    setMobileCatsOpen(false);
+  }
+
+  function toggleMobileMenu() {
+    setMobileOpen((v) => {
+      const next = !v;
+      if (!next) {
+        setMobileStatesOpen(false);
+        setMobileCatsOpen(false);
+      }
+      return next;
+    });
+  }
 
   return (
     <header className="nav-wrapper">
@@ -52,6 +75,9 @@ export default function Nav() {
                     {s.label}
                   </Link>
                 ))}
+                <Link href="/browse-by-state" className="nav-dropdown-item nav-dropdown-item--all">
+                  View All States →
+                </Link>
               </div>
             )}
           </div>
@@ -88,7 +114,7 @@ export default function Nav() {
         <button
           className="nav-hamburger"
           aria-label="Toggle menu"
-          onClick={() => setMobileOpen((v) => !v)}
+          onClick={toggleMobileMenu}
         >
           <span />
           <span />
@@ -99,26 +125,57 @@ export default function Nav() {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="nav-mobile">
-          <HeaderCreatorSearch mobile onNavigate={() => setMobileOpen(false)} />
+          <HeaderCreatorSearch mobile onNavigate={closeMobileMenu} />
           {NAV_LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className="nav-mobile-link" onClick={() => setMobileOpen(false)}>
+            <Link key={l.href} href={l.href} className="nav-mobile-link" onClick={closeMobileMenu}>
               {l.label}
             </Link>
           ))}
-          <div className="nav-mobile-section">States</div>
-          {states.map((s) => (
-            <Link key={s.slug} href={`/${s.urlSlug}`} className="nav-mobile-link" onClick={() => setMobileOpen(false)}>
-              {s.abbr} — {s.label}
-            </Link>
-          ))}
-          <div className="nav-mobile-section">Categories</div>
-          {popularCategories.map((c) => (
-            <Link key={c.slug} href={`/categories/${c.slug}`} className="nav-mobile-link" onClick={() => setMobileOpen(false)}>
-              {c.emoji} {c.label}
-            </Link>
-          ))}
-          <Link href="/blog" className="nav-mobile-link" onClick={() => setMobileOpen(false)}>Blog</Link>
-          <Link href="/promote" className="nav-mobile-link nav-link--promote" onClick={() => setMobileOpen(false)}>Promote Your OnlyFans</Link>
+          <button
+            type="button"
+            className="nav-mobile-section nav-mobile-section--toggle"
+            onClick={() => setMobileStatesOpen((v) => !v)}
+            aria-expanded={mobileStatesOpen}
+          >
+            States
+            <span className="nav-mobile-chevron">{mobileStatesOpen ? '−' : '+'}</span>
+          </button>
+          {mobileStatesOpen && (
+            <>
+              {states.map((s) => (
+                <Link key={s.slug} href={`/${s.urlSlug}`} className="nav-mobile-link" onClick={closeMobileMenu}>
+                  {s.abbr} — {s.label}
+                </Link>
+              ))}
+              <Link href="/browse-by-state" className="nav-mobile-link nav-mobile-link--all" onClick={closeMobileMenu}>
+                View All States →
+              </Link>
+            </>
+          )}
+
+          <button
+            type="button"
+            className="nav-mobile-section nav-mobile-section--toggle"
+            onClick={() => setMobileCatsOpen((v) => !v)}
+            aria-expanded={mobileCatsOpen}
+          >
+            Categories
+            <span className="nav-mobile-chevron">{mobileCatsOpen ? '−' : '+'}</span>
+          </button>
+          {mobileCatsOpen && (
+            <>
+              {popularCategories.map((c) => (
+                <Link key={c.slug} href={`/categories/${c.slug}`} className="nav-mobile-link" onClick={closeMobileMenu}>
+                  {c.emoji} {c.label}
+                </Link>
+              ))}
+              <Link href="/categories" className="nav-mobile-link nav-mobile-link--all" onClick={closeMobileMenu}>
+                View All Categories →
+              </Link>
+            </>
+          )}
+          <Link href="/blog" className="nav-mobile-link" onClick={closeMobileMenu}>Blog</Link>
+          <Link href="/promote" className="nav-mobile-link nav-link--promote" onClick={closeMobileMenu}>Promote Your OnlyFans</Link>
         </div>
       )}
     </header>

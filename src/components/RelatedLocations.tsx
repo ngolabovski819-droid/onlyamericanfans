@@ -21,7 +21,10 @@ export default function RelatedLocations({ mode, stateSlug, citySlug, categorySl
   if (mode === 'state-chips') {
     return (
       <div className="related-chips-wrap">
-        <h2 className="related-chips-heading">Browse by State</h2>
+        <div className="related-chips-heading-row">
+          <h2 className="related-chips-heading">Browse by State</h2>
+          <Link href="/browse-by-state" className="section-rail-link">All states & cities →</Link>
+        </div>
         <div className="chips-row">
           {states.map((s) => (
             <Link key={s.slug} href={`/${s.urlSlug}`} className="location-chip">
@@ -62,7 +65,10 @@ export default function RelatedLocations({ mode, stateSlug, citySlug, categorySl
       <div className="related-chips-wrap">
         {parent && (
           <>
-            <h2 className="related-chips-heading">Browse {parent.label}</h2>
+            <div className="related-chips-heading-row">
+              <h2 className="related-chips-heading">Browse {parent.label}</h2>
+              <Link href="/browse-by-state" className="section-rail-link">All states & cities →</Link>
+            </div>
             <div className="chips-row" style={{ marginBottom: '0.75rem' }}>
               <Link href={`/${parent.urlSlug}`} className="location-chip location-chip--state">
                 All {parent.label} ({parent.abbr})

@@ -1,6 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { states } from '@/config/states';
+import { cities } from '@/config/cities';
+import { fetchCachedCreatorCount } from '@/lib/count-cache';
+import { US_TERMS } from '@/config/us-terms';
+import UsMap from '@/components/UsMap';
+import NearbyCreatorsStrip from '@/components/NearbyCreatorsStrip';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
 
@@ -15,45 +20,44 @@ export const metadata: Metadata = {
   },
 };
 
-// US Census Bureau 4-region grouping
-const REGION_GROUPS: { label: string; emoji: string; slugs: string[] }[] = [
-  {
-    label: 'Northeast',
-    emoji: '🗽',
-    slugs: [
-      'connecticut', 'maine', 'massachusetts', 'new-hampshire', 'new-jersey',
-      'new-york', 'pennsylvania', 'rhode-island', 'vermont',
-    ],
-  },
-  {
-    label: 'Midwest',
-    emoji: '🌾',
-    slugs: [
-      'illinois', 'indiana', 'iowa', 'kansas', 'michigan', 'minnesota',
-      'missouri', 'nebraska', 'north-dakota', 'ohio', 'south-dakota', 'wisconsin',
-    ],
-  },
-  {
-    label: 'South',
-    emoji: '🌴',
-    slugs: [
-      'alabama', 'arkansas', 'delaware', 'florida', 'georgia', 'kentucky',
-      'louisiana', 'maryland', 'mississippi', 'north-carolina', 'oklahoma',
-      'south-carolina', 'tennessee', 'texas', 'virginia', 'west-virginia',
-    ],
-  },
-  {
-    label: 'West',
-    emoji: '🏔️',
-    slugs: [
-      'alaska', 'arizona', 'california', 'colorado', 'hawaii', 'idaho',
-      'montana', 'nevada', 'new-mexico', 'oregon', 'utah', 'washington', 'wyoming',
-    ],
-  },
-];
+// This page has no dynamic params, so Next prerenders it once at `next build` and serves that
+// static HTML instantly to every visitor; after this window it revalidates in the BACKGROUND on
+// the next request (stale-while-revalidate) while still serving the old cached page — a live
+// visitor never waits on the fetches below, in production. That's specifically why the window is
+// long (7 days, matching the existing 7-day "About" stat-leaderboard cache in src/lib/supabase.ts
+// — STAT_LEADER_REVALIDATE_SECONDS): city/state creator counts don't need to be fresher than
+// that, and a longer window means the expensive regeneration (304 Supabase count queries, several
+// of which are individually slow `location ILIKE` OR-chains — see AGENTS.md) runs as rarely as
+// possible.
+//
+// IMPORTANT — `next dev` does NOT behave this way: dev mode has no build-time prerender and no
+// background stale-while-revalidate, so every request recomputes synchronously and this page will
+// feel slow locally under `npm run dev`. That slowness is a dev-only artifact; verify real
+// behavior with `next build && next start`, where only the build itself (and rare background
+// revalidations) pay this cost — confirmed by testing that exact cycle.
+// This exact value must be a static literal, not a reference — this Next.js version's build
+// validates `export const revalidate` at the AST level and rejects anything else (e.g. `60 * 10`
+// is explicitly called out as invalid in the docs), so it can't share the constant below even
+// though they're meant to stay in sync. 604800 seconds = 7 days.
+export const revalidate = 604800;
+const COUNT_REVALIDATE_SECONDS = 604800; // keep in sync with the literal above
 
-export default function BrowseByStatePage() {
-  const stateBySlug = new Map(states.map((s) => [s.slug, s]));
+const citiesAlphabetical = [...cities].sort((a, b) => a.label.localeCompare(b.label));
+
+const COUNT_CACHE_TTL_MS = COUNT_REVALIDATE_SECONDS * 1000;
+
+export default async function BrowseByStatePage() {
+  const [totalCreators, stateCounts, cityCounts] = await Promise.all([
+    // Same US_TERMS scope the homepage uses for its "American creators" figure — an unfiltered
+    // count here would include every performer in the underlying dataset, not just the
+    // US-tagged ones this site is specifically about.
+    fetchCachedCreatorCount(US_TERMS, COUNT_CACHE_TTL_MS),
+    Promise.all(states.map((s) => fetchCachedCreatorCount(s.terms, COUNT_CACHE_TTL_MS))),
+    Promise.all(citiesAlphabetical.map((c) => fetchCachedCreatorCount(c.terms, COUNT_CACHE_TTL_MS))),
+  ]);
+  const countByStateSlug = new Map(states.map((s, i) => [s.slug, stateCounts[i]]));
+  const countByCitySlug = new Map(citiesAlphabetical.map((c, i) => [c.slug, cityCounts[i]]));
+  const stateAbbrBySlug = new Map(states.map((s) => [s.slug, s.abbr]));
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
@@ -81,11 +85,17 @@ export default function BrowseByStatePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
 
+      <section className="browse-map-section">
+        <UsMap />
+      </section>
+
+      <NearbyCreatorsStrip />
+
       <div className="browse-hero">
         <div className="browse-hero-inner">
           <p className="browse-eyebrow">Coast to Coast</p>
           <h1 className="browse-h1">
-            Browse Creators by <span className="browse-h1-accent">State</span>
+            Browse USA <span className="browse-h1-accent">OnlyFans</span> Creators by State
           </h1>
           <p className="browse-sub">
             From sunny California to the rocky coast of Maine — discover top American OnlyFans creators
@@ -98,39 +108,67 @@ export default function BrowseByStatePage() {
               <span className="browse-stat-label">States</span>
             </div>
             <div className="browse-stat">
-              <span className="browse-stat-num">200+</span>
+              <span className="browse-stat-num">350+</span>
               <span className="browse-stat-label">Cities</span>
             </div>
             <div className="browse-stat">
-              <span className="browse-stat-num">Daily</span>
-              <span className="browse-stat-label">Updates</span>
+              <span className="browse-stat-num">{Math.floor(totalCreators / 1000)}K+</span>
+              <span className="browse-stat-label">Creators</span>
+            </div>
+            <div className="browse-stat">
+              <span className="browse-stat-num browse-stat-num--emoji" aria-hidden="true">🗺️</span>
+              <span className="browse-stat-label">Interactive Map</span>
             </div>
           </div>
         </div>
       </div>
 
-      {REGION_GROUPS.map((region) => (
-        <section key={region.label} className="browse-region">
-          <h2 className="browse-region-title">
-            <span className="browse-region-emoji" aria-hidden="true">{region.emoji}</span>
-            <span>{region.label}</span>
-            <span className="browse-region-count">{region.slugs.length} states</span>
-          </h2>
-          <div className="browse-grid">
-            {region.slugs.map((slug) => {
-              const s = stateBySlug.get(slug);
-              if (!s) return null;
-              return (
-                <Link key={slug} href={`/${s.urlSlug}/`} className="browse-card">
-                  <span className="browse-card-abbr">{s.abbr}</span>
+      <section className="browse-region">
+        <h2 className="browse-region-title">
+          <span className="browse-region-emoji" aria-hidden="true">🇺🇸</span>
+          <span>All 50 States</span>
+          <span className="browse-region-count">A–Z</span>
+        </h2>
+        <div className="browse-grid">
+          {states.map((s) => {
+            const count = countByStateSlug.get(s.slug) ?? 0;
+            return (
+              <Link key={s.slug} href={`/${s.urlSlug}/`} className="browse-card">
+                <span className="browse-card-abbr">{s.abbr}</span>
+                <span className="browse-card-text">
                   <span className="browse-card-name">{s.label}</span>
-                  <span className="browse-card-arrow" aria-hidden="true">→</span>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      ))}
+                  <span className="browse-card-count">{count.toLocaleString()} creators</span>
+                </span>
+                <span className="browse-card-arrow" aria-hidden="true">→</span>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="browse-region">
+        <h2 className="browse-region-title">
+          <span className="browse-region-emoji" aria-hidden="true">🏙️</span>
+          <span>Browse by City</span>
+          <span className="browse-region-count">{citiesAlphabetical.length} cities</span>
+        </h2>
+        <div className="browse-grid">
+          {citiesAlphabetical.map((c) => {
+            const count = countByCitySlug.get(c.slug) ?? 0;
+            const stateAbbr = stateAbbrBySlug.get(c.parentState) ?? '';
+            return (
+              <Link key={c.slug} href={`/${c.urlSlug}/`} className="browse-card">
+                <span className="browse-card-abbr">{stateAbbr}</span>
+                <span className="browse-card-text">
+                  <span className="browse-card-name">{c.label}</span>
+                  <span className="browse-card-count">{count.toLocaleString()} creators</span>
+                </span>
+                <span className="browse-card-arrow" aria-hidden="true">→</span>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
 
       <section className="browse-footer-cta">
         <h2>Can&apos;t find your state?</h2>

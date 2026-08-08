@@ -2,6 +2,7 @@
 import { fetchScopedCreators } from '@/lib/sponsorship';
 import SearchFilters from '@/components/SearchFilters';
 import CreatorGrid from '@/components/CreatorGrid';
+import NearbyCreatorsStrip from '@/components/NearbyCreatorsStrip';
 import FAQ from '@/components/FAQ';
 import { searchPageFaqs } from '@/lib/faqs';
 import CreatorSearchBox from '@/components/CreatorSearchBox';
@@ -83,6 +84,7 @@ export default async function OnlyFansSearchPage({ searchParams }: Props) {
         </aside>
 
         <div>
+          <NearbyCreatorsStrip />
           <CreatorGrid
             initialCreators={creators}
             initialTotal={total}

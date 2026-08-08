@@ -8,7 +8,9 @@ import CreatorGridSkeleton from '@/components/CreatorGridSkeleton';
 import CreatorStatsSection from '@/components/CreatorStatsSection';
 import FAQ from '@/components/FAQ';
 import CreatorSearchBox from '@/components/CreatorSearchBox';
+import NearbyCreatorsStrip from '@/components/NearbyCreatorsStrip';
 import { homepageFaqs } from '@/lib/faqs';
+import { US_TERMS } from '@/config/us-terms';
 import { Suspense } from 'react';
 
 export const revalidate = 300;
@@ -28,15 +30,6 @@ export const metadata: Metadata = {
   },
 };
 
-// US location terms for homepage feed
-const US_TERMS = [
-  'usa', 'us', 'united states', 'america', 'american',
-  'new york', 'los angeles', 'chicago', 'houston', 'phoenix',
-  'miami', 'dallas', 'san diego', 'las vegas', 'atlanta',
-  'seattle', 'boston', 'denver', 'nashville', 'austin',
-  'san francisco', 'philadelphia', 'portland', 'minneapolis',
-  'california', 'texas', 'florida', 'new york state',
-];
 
 async function TrendingCreators() {
   const { creators, total, hasMore } = await fetchScopedCreators({
@@ -57,13 +50,6 @@ async function TrendingCreators() {
       />
   );
 }
-
-const QUICK_TABS = [
-  { label: 'All Creators', href: '/onlyfans-search' },
-  { label: 'Free OnlyFans', href: '/onlyfans-search?price=free' },
-  { label: 'Verified Only', href: '/onlyfans-search?verified=true' },
-  { label: 'Newest Creators', href: '/onlyfans-search?sort=newest' },
-];
 
 const REVIEWS = [
   { text: "Found my favorite New York creator in under 30 seconds. The filters are actually useful!", author: "User from Los Angeles" },
@@ -108,16 +94,10 @@ export default async function HomePage() {
 
             <CreatorSearchBox />
 
-            <div className="chip-rail">
-              {QUICK_TABS.map(t => (
-                <Link key={t.href} href={t.href} className="chip-glass">{t.label}</Link>
-              ))}
-            </div>
-
             <div style={{ marginTop: '2.25rem', display: 'flex', justifyContent: 'center' }}>
               <div className="glass-stats">
                 <div className="glass-stat">
-                  <div className="glass-stat-num">500K+</div>
+                  <div className="glass-stat-num">280K+</div>
                   <div className="glass-stat-label">US Creators</div>
                 </div>
                 <div className="glass-stat">
@@ -138,16 +118,6 @@ export default async function HomePage() {
         </section>
       </div>
 
-      {/* — Trust strip — */}
-      <div className="page-container">
-        <div className="trust-strip">
-          <span className="trust-item"><span className="trust-item-icon">✓</span> 100% Verified American Profiles</span>
-          <span className="trust-item"><span className="trust-item-icon">✓</span> No Sign-Up Required</span>
-          <span className="trust-item"><span className="trust-item-icon">✓</span> Updated Daily</span>
-          <span className="trust-item"><span className="trust-item-icon">✓</span> 18+ Adults Only</span>
-        </div>
-      </div>
-
       {/* — Browse by State — */}
       <section className="page-container" style={{ paddingBottom: 0 }}>
         <div className="section-rail">
@@ -163,8 +133,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* — Trending Creators — */}
+      {/* — Nearby Creators — */}
       <section className="page-container" style={{ paddingTop: '1rem' }}>
+        <NearbyCreatorsStrip />
+      </section>
+
+      {/* — Trending Creators — */}
+      <section className="page-container">
         <div className="section-rail">
           <h2 className="section-rail-title">🔥 Trending Now</h2>
           <Link href="/onlyfans-search?sort=popular" className="section-rail-link">See all trending →</Link>
@@ -228,7 +203,7 @@ export default async function HomePage() {
         <div className="conversion-strip">
           <div className="conversion-strip-text">
             <h3>Ready to find your favorite American creator?</h3>
-            <p>Use our advanced search to filter 500,000+ verified US creators by state, city, price, and more.</p>
+            <p>Use our advanced search to filter 280,000+ verified US creators by state, city, price, and more.</p>
           </div>
           <div className="conversion-strip-cta">
             <Link href="/onlyfans-search" className="btn-glow">Start Searching →</Link>

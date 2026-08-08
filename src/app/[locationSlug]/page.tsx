@@ -9,6 +9,8 @@ import { fetchScopedCreators } from '@/lib/sponsorship';
 import CreatorGrid from '@/components/CreatorGrid';
 import CreatorStatsSection from '@/components/CreatorStatsSection';
 import RelatedLocations from '@/components/RelatedLocations';
+import LocationMap from '@/components/LocationMap';
+import NearbyCreatorsStrip from '@/components/NearbyCreatorsStrip';
 import { expandLocationFaqs } from '@/lib/faqs';
 
 export const revalidate = 3600;
@@ -161,22 +163,29 @@ export default async function LocationPage({ params }: Props) {
 
         {/* Hero */}
         <section className="detail-hero starfield">
-          <div className="detail-hero-inner">
-            <p className="eyebrow-pill">
-              {isRegion ? 'Region' : isState ? 'State' : 'City'}{parentState ? ` · ${parentState.label}` : ''}
-            </p>
-            <h1>
-              <span className="gradient-accent">{loc.label}</span> OnlyFans
-            </h1>
-            <p className="display-sub" style={{ margin: '0 0 0.5rem', maxWidth: 720 }}>{loc.intro}</p>
-            <div className="detail-hero-meta">
-              <span className="detail-hero-meta-item"><strong>{total.toLocaleString()}</strong> creators</span>
-              <span className="detail-hero-meta-item">📍 {loc.label}{parentState ? `, ${parentState.abbr}` : ''}</span>
-              <span className="detail-hero-meta-item">🔄 Updated daily</span>
-              <span className="detail-hero-meta-item">✓ 100% verified</span>
+          <div className="detail-hero-inner detail-hero-grid">
+            <div>
+              <p className="eyebrow-pill">
+                {isRegion ? 'Region' : isState ? 'State' : 'City'}{parentState ? ` · ${parentState.label}` : ''}
+              </p>
+              <h1>
+                <span className="gradient-accent">{loc.label}</span> OnlyFans
+              </h1>
+              <p className="display-sub" style={{ margin: '0 0 0.5rem', maxWidth: 720 }}>{loc.intro}</p>
+              <div className="detail-hero-meta">
+                <span className="detail-hero-meta-item"><strong>{total.toLocaleString()}</strong> creators</span>
+                <span className="detail-hero-meta-item">📍 {loc.label}{parentState ? `, ${parentState.abbr}` : ''}</span>
+                <span className="detail-hero-meta-item">🔄 Updated daily</span>
+                <span className="detail-hero-meta-item">✓ 100% verified</span>
+              </div>
             </div>
+            {isState && state && <LocationMap stateSlug={state.slug} />}
+            {city && parentState && <LocationMap stateSlug={parentState.slug} highlightCitySlug={city.slug} />}
           </div>
         </section>
+
+        {/* Nearby creators (IP/precise-location based) */}
+        <NearbyCreatorsStrip />
 
         {/* Creator grid */}
         <CreatorGrid

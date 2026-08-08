@@ -5,6 +5,9 @@ export interface FAQ {
 
 export interface StateConfig {
   slug: string;
+  /** Approximate geographic centroid — decorative use only (map pins, nearest-city distance), not surveyed. */
+  lat: number;
+  lng: number;
   urlSlug: string; // e.g. 'california-onlyfans'
   label: string;
   abbr: string;
@@ -21,6 +24,8 @@ export interface StateConfig {
 export const states: StateConfig[] = [
   {
     slug: 'alabama',
+    lat: 32.81,
+    lng: -86.79,
     urlSlug: 'alabama-onlyfans',
     label: 'Alabama',
     abbr: 'AL',
@@ -39,6 +44,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'alaska',
+    lat: 64.2,
+    lng: -149.49,
     urlSlug: 'alaska-onlyfans',
     label: 'Alaska',
     abbr: 'AK',
@@ -57,6 +64,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'arizona',
+    lat: 34.05,
+    lng: -111.09,
     urlSlug: 'arizona-onlyfans',
     label: 'Arizona',
     abbr: 'AZ',
@@ -75,6 +84,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'arkansas',
+    lat: 34.97,
+    lng: -92.37,
     urlSlug: 'arkansas-onlyfans',
     label: 'Arkansas',
     abbr: 'AR',
@@ -93,6 +104,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'california',
+    lat: 36.78,
+    lng: -119.42,
     urlSlug: 'california-onlyfans',
     label: 'California',
     abbr: 'CA',
@@ -112,6 +125,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'colorado',
+    lat: 39.55,
+    lng: -105.78,
     urlSlug: 'colorado-onlyfans',
     label: 'Colorado',
     abbr: 'CO',
@@ -130,6 +145,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'connecticut',
+    lat: 41.6,
+    lng: -72.7,
     urlSlug: 'connecticut-onlyfans',
     label: 'Connecticut',
     abbr: 'CT',
@@ -148,6 +165,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'delaware',
+    lat: 39.32,
+    lng: -75.51,
     urlSlug: 'delaware-onlyfans',
     label: 'Delaware',
     abbr: 'DE',
@@ -166,6 +185,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'florida',
+    lat: 27.66,
+    lng: -81.52,
     urlSlug: 'florida-onlyfans',
     label: 'Florida',
     abbr: 'FL',
@@ -185,6 +206,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'georgia',
+    lat: 32.16,
+    lng: -82.9,
     urlSlug: 'georgia-onlyfans',
     label: 'Georgia',
     abbr: 'GA',
@@ -203,6 +226,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'hawaii',
+    lat: 20.79,
+    lng: -156.33,
     urlSlug: 'hawaii-onlyfans',
     label: 'Hawaii',
     abbr: 'HI',
@@ -221,6 +246,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'idaho',
+    lat: 44.07,
+    lng: -114.74,
     urlSlug: 'idaho-onlyfans',
     label: 'Idaho',
     abbr: 'ID',
@@ -239,6 +266,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'illinois',
+    lat: 40.35,
+    lng: -89,
     urlSlug: 'illinois-onlyfans',
     label: 'Illinois',
     abbr: 'IL',
@@ -257,6 +286,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'indiana',
+    lat: 40.27,
+    lng: -86.13,
     urlSlug: 'indiana-onlyfans',
     label: 'Indiana',
     abbr: 'IN',
@@ -275,6 +306,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'iowa',
+    lat: 42.03,
+    lng: -93.58,
     urlSlug: 'iowa-onlyfans',
     label: 'Iowa',
     abbr: 'IA',
@@ -293,6 +326,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'kansas',
+    lat: 38.53,
+    lng: -98.35,
     urlSlug: 'kansas-onlyfans',
     label: 'Kansas',
     abbr: 'KS',
@@ -311,6 +346,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'kentucky',
+    lat: 37.84,
+    lng: -84.27,
     urlSlug: 'kentucky-onlyfans',
     label: 'Kentucky',
     abbr: 'KY',
@@ -329,6 +366,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'louisiana',
+    lat: 30.98,
+    lng: -91.96,
     urlSlug: 'louisiana-onlyfans',
     label: 'Louisiana',
     abbr: 'LA',
@@ -347,6 +386,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'maine',
+    lat: 45.25,
+    lng: -69.24,
     urlSlug: 'maine-onlyfans',
     label: 'Maine',
     abbr: 'ME',
@@ -365,6 +406,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'maryland',
+    lat: 39.06,
+    lng: -76.8,
     urlSlug: 'maryland-onlyfans',
     label: 'Maryland',
     abbr: 'MD',
@@ -383,6 +426,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'massachusetts',
+    lat: 42.41,
+    lng: -71.38,
     urlSlug: 'massachusetts-onlyfans',
     label: 'Massachusetts',
     abbr: 'MA',
@@ -401,6 +446,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'michigan',
+    lat: 44.31,
+    lng: -85.6,
     urlSlug: 'michigan-onlyfans',
     label: 'Michigan',
     abbr: 'MI',
@@ -419,6 +466,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'minnesota',
+    lat: 46.73,
+    lng: -94.69,
     urlSlug: 'minnesota-onlyfans',
     label: 'Minnesota',
     abbr: 'MN',
@@ -437,6 +486,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'mississippi',
+    lat: 32.35,
+    lng: -89.4,
     urlSlug: 'mississippi-onlyfans',
     label: 'Mississippi',
     abbr: 'MS',
@@ -455,6 +506,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'missouri',
+    lat: 38.46,
+    lng: -92.29,
     urlSlug: 'missouri-onlyfans',
     label: 'Missouri',
     abbr: 'MO',
@@ -473,6 +526,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'montana',
+    lat: 46.88,
+    lng: -110.36,
     urlSlug: 'montana-onlyfans',
     label: 'Montana',
     abbr: 'MT',
@@ -491,6 +546,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'nebraska',
+    lat: 41.49,
+    lng: -99.9,
     urlSlug: 'nebraska-onlyfans',
     label: 'Nebraska',
     abbr: 'NE',
@@ -509,6 +566,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'nevada',
+    lat: 38.8,
+    lng: -116.42,
     urlSlug: 'nevada-onlyfans',
     label: 'Nevada',
     abbr: 'NV',
@@ -527,6 +586,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'new-hampshire',
+    lat: 43.19,
+    lng: -71.57,
     urlSlug: 'new-hampshire-onlyfans',
     label: 'New Hampshire',
     abbr: 'NH',
@@ -545,6 +606,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'new-jersey',
+    lat: 40.06,
+    lng: -74.41,
     urlSlug: 'new-jersey-onlyfans',
     label: 'New Jersey',
     abbr: 'NJ',
@@ -563,6 +626,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'new-mexico',
+    lat: 34.52,
+    lng: -105.87,
     urlSlug: 'new-mexico-onlyfans',
     label: 'New Mexico',
     abbr: 'NM',
@@ -581,6 +646,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'new-york',
+    lat: 42.83,
+    lng: -75.55,
     urlSlug: 'new-york-onlyfans',
     label: 'New York',
     abbr: 'NY',
@@ -600,6 +667,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'north-carolina',
+    lat: 35.63,
+    lng: -79.81,
     urlSlug: 'north-carolina-onlyfans',
     label: 'North Carolina',
     abbr: 'NC',
@@ -618,6 +687,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'north-dakota',
+    lat: 47.53,
+    lng: -99.78,
     urlSlug: 'north-dakota-onlyfans',
     label: 'North Dakota',
     abbr: 'ND',
@@ -636,6 +707,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'ohio',
+    lat: 40.39,
+    lng: -82.76,
     urlSlug: 'ohio-onlyfans',
     label: 'Ohio',
     abbr: 'OH',
@@ -654,6 +727,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'oklahoma',
+    lat: 35.57,
+    lng: -96.93,
     urlSlug: 'oklahoma-onlyfans',
     label: 'Oklahoma',
     abbr: 'OK',
@@ -672,6 +747,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'oregon',
+    lat: 43.8,
+    lng: -120.55,
     urlSlug: 'oregon-onlyfans',
     label: 'Oregon',
     abbr: 'OR',
@@ -690,6 +767,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'pennsylvania',
+    lat: 40.59,
+    lng: -77.21,
     urlSlug: 'pennsylvania-onlyfans',
     label: 'Pennsylvania',
     abbr: 'PA',
@@ -708,6 +787,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'rhode-island',
+    lat: 41.68,
+    lng: -71.51,
     urlSlug: 'rhode-island-onlyfans',
     label: 'Rhode Island',
     abbr: 'RI',
@@ -726,6 +807,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'south-carolina',
+    lat: 33.86,
+    lng: -80.95,
     urlSlug: 'south-carolina-onlyfans',
     label: 'South Carolina',
     abbr: 'SC',
@@ -744,6 +827,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'south-dakota',
+    lat: 44.35,
+    lng: -100.23,
     urlSlug: 'south-dakota-onlyfans',
     label: 'South Dakota',
     abbr: 'SD',
@@ -762,6 +847,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'tennessee',
+    lat: 35.75,
+    lng: -86.69,
     urlSlug: 'tennessee-onlyfans',
     label: 'Tennessee',
     abbr: 'TN',
@@ -780,6 +867,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'texas',
+    lat: 31.05,
+    lng: -97.56,
     urlSlug: 'texas-onlyfans',
     label: 'Texas',
     abbr: 'TX',
@@ -799,6 +888,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'utah',
+    lat: 39.32,
+    lng: -111.09,
     urlSlug: 'utah-onlyfans',
     label: 'Utah',
     abbr: 'UT',
@@ -817,6 +908,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'vermont',
+    lat: 44.06,
+    lng: -72.71,
     urlSlug: 'vermont-onlyfans',
     label: 'Vermont',
     abbr: 'VT',
@@ -835,6 +928,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'virginia',
+    lat: 37.77,
+    lng: -78.17,
     urlSlug: 'virginia-onlyfans',
     label: 'Virginia',
     abbr: 'VA',
@@ -853,6 +948,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'washington',
+    lat: 47.4,
+    lng: -120.7,
     urlSlug: 'washington-onlyfans',
     label: 'Washington',
     abbr: 'WA',
@@ -871,6 +968,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'west-virginia',
+    lat: 38.6,
+    lng: -80.45,
     urlSlug: 'west-virginia-onlyfans',
     label: 'West Virginia',
     abbr: 'WV',
@@ -889,6 +988,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'wisconsin',
+    lat: 44.27,
+    lng: -89.62,
     urlSlug: 'wisconsin-onlyfans',
     label: 'Wisconsin',
     abbr: 'WI',
@@ -907,6 +1008,8 @@ export const states: StateConfig[] = [
   },
   {
     slug: 'wyoming',
+    lat: 42.75,
+    lng: -107.3,
     urlSlug: 'wyoming-onlyfans',
     label: 'Wyoming',
     abbr: 'WY',

@@ -2,8 +2,13 @@
 import { states } from '@/config/states';
 import { popularCategories } from '@/config/categories';
 
-// Four largest US states by population
-const FOOTER_STATE_SLUGS = ['california', 'texas', 'florida', 'new-york'];
+// The four largest US states by population, plus a hand-picked set of less-trafficked ones —
+// this is a sitewide footer, so it's a good place to spread internal link equity to pages
+// (Alaska, Montana, Hawaii, New Mexico) that don't get many other internal links otherwise.
+const FOOTER_STATE_SLUGS = [
+  'california', 'texas', 'florida', 'new-york',
+  'alaska', 'montana', 'new-mexico', 'arizona', 'hawaii', 'pennsylvania', 'illinois', 'ohio',
+];
 
 export default function Footer() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';

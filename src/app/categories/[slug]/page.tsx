@@ -7,6 +7,7 @@ import { cities } from '@/config/cities';
 import { fetchScopedCreators } from '@/lib/sponsorship';
 import CreatorGrid from '@/components/CreatorGrid';
 import CreatorStatsSection from '@/components/CreatorStatsSection';
+import NearbyCreatorsStrip from '@/components/NearbyCreatorsStrip';
 import { categoryFaqs } from '@/lib/faqs';
 
 export const revalidate = 3600;
@@ -108,6 +109,8 @@ export default async function CategoryPage({ params }: Props) {
             </div>
           </div>
         </section>
+
+        <NearbyCreatorsStrip />
 
         <CreatorGrid
           initialCreators={creators}

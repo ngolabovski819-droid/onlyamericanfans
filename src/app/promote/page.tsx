@@ -139,7 +139,7 @@ export default function PromotePage() {
             <div style={{ marginTop: '2.25rem', display: 'flex', justifyContent: 'center' }}>
               <div className="glass-stats">
                 <div className="glass-stat">
-                  <div className="glass-stat-num">500K+</div>
+                  <div className="glass-stat-num">280K+</div>
                   <div className="glass-stat-label">Creator Profiles</div>
                 </div>
                 <div className="glass-stat">

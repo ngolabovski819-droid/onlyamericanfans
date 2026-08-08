@@ -2,6 +2,9 @@
 
 export interface CityConfig {
   slug: string;
+  /** Approximate city-center coordinates — decorative use only (map pins, nearest-city distance), not surveyed. */
+  lat: number;
+  lng: number;
   urlSlug: string; // e.g. 'new-york-city-onlyfans'
   label: string;
   terms: string[];
@@ -18,6 +21,8 @@ export interface CityConfig {
 export const cities: CityConfig[] = [
   {
     slug: 'new-york',
+    lat: 40.71,
+    lng: -74.01,
     urlSlug: 'new-york-city-onlyfans',
     label: 'New York City',
     terms: ['new york', 'nyc', 'brooklyn', 'manhattan', 'bronx', 'queens', 'staten island', 'harlem', 'williamsburg', 'astoria'],
@@ -36,6 +41,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'los-angeles',
+    lat: 34.05,
+    lng: -118.24,
     urlSlug: 'los-angeles-onlyfans',
     label: 'Los Angeles',
     terms: ['los angeles', 'hollywood', 'west hollywood', 'venice beach', 'santa monica', 'malibu', 'beverly hills', 'compton', 'inglewood', 'burbank', 'pasadena', 'long beach', 'south central', 'silver lake', 'echo park'],
@@ -54,6 +61,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'miami',
+    lat: 25.76,
+    lng: -80.19,
     urlSlug: 'miami-onlyfans',
     label: 'Miami',
     terms: ['miami', 'south beach', 'miami beach', 'wynwood', 'little havana', 'coral gables', 'miami dade', 'brickell', 'coconut grove', 'doral'],
@@ -72,6 +81,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'chicago',
+    lat: 41.88,
+    lng: -87.63,
     urlSlug: 'chicago-onlyfans',
     label: 'Chicago',
     terms: ['chicago', 'windy city', 'wicker park', 'lincoln park', 'lakeview', 'bucktown', 'pilsen', 'bronzeville', 'wrigleyville', 'andersonville', 'ukrainian village'],
@@ -90,6 +101,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'las-vegas',
+    lat: 36.17,
+    lng: -115.14,
     urlSlug: 'las-vegas-onlyfans',
     label: 'Las Vegas',
     terms: ['las vegas', 'vegas', 'henderson', 'north las vegas', 'summerlin', 'the strip', 'fremont street'],
@@ -108,6 +121,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'atlanta',
+    lat: 33.75,
+    lng: -84.39,
     urlSlug: 'atlanta-onlyfans',
     label: 'Atlanta',
     terms: ['atlanta', 'atl', 'midtown atlanta', 'buckhead', 'east atlanta', 'college park', 'decatur', 'stone mountain', 'marietta'],
@@ -126,6 +141,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'san-diego',
+    lat: 32.72,
+    lng: -117.16,
     urlSlug: 'san-diego-onlyfans',
     label: 'San Diego',
     terms: ['san diego', 'pacific beach', 'mission beach', 'la jolla', 'north park', 'hillcrest', 'ocean beach', 'point loma', 'chula vista', 'el cajon'],
@@ -144,6 +161,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'houston',
+    lat: 29.76,
+    lng: -95.37,
     urlSlug: 'houston-onlyfans',
     label: 'Houston',
     terms: ['houston', 'h-town', 'midtown houston', 'montrose', 'the heights', 'katy', 'sugar land', 'pearland', 'clear lake'],
@@ -162,6 +181,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'dallas',
+    lat: 32.78,
+    lng: -96.8,
     urlSlug: 'dallas-onlyfans',
     label: 'Dallas',
     terms: ['dallas', 'dfw', 'uptown dallas', 'oak lawn', 'deep ellum', 'lower greenville', 'bishop arts', 'fort worth', 'arlington', 'plano', 'frisco', 'mckinney'],
@@ -180,6 +201,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'austin',
+    lat: 30.27,
+    lng: -97.74,
     urlSlug: 'austin-onlyfans',
     label: 'Austin',
     terms: ['austin', 'atx', 'south congress', 'east austin', '6th street', 'rainey street', 'barton springs', 'westlake'],
@@ -198,6 +221,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'phoenix',
+    lat: 33.45,
+    lng: -112.07,
     urlSlug: 'phoenix-onlyfans',
     label: 'Phoenix',
     terms: ['phoenix', 'phx', 'scottsdale', 'mesa', 'tempe', 'chandler', 'gilbert', 'glendale', 'peoria', 'paradise valley', 'cave creek'],
@@ -216,6 +241,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'seattle',
+    lat: 47.61,
+    lng: -122.33,
     urlSlug: 'seattle-onlyfans',
     label: 'Seattle',
     terms: ['seattle', 'capitol hill seattle', 'fremont', 'ballard', 'queen anne', 'belltown', 'south lake union', 'west seattle', 'tacoma'],
@@ -234,6 +261,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'denver',
+    lat: 39.74,
+    lng: -104.99,
     urlSlug: 'denver-onlyfans',
     label: 'Denver',
     terms: ['denver', 'the mile high city', 'cap hill denver', 'lohi', 'five points denver', 'highlands denver', 'rino', 'aurora', 'boulder', 'fort collins'],
@@ -252,6 +281,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'nashville',
+    lat: 36.16,
+    lng: -86.78,
     urlSlug: 'nashville-onlyfans',
     label: 'Nashville',
     terms: ['nashville', 'nash vegas', 'east nashville', 'germantown', '12 south', 'gulch nashville', 'midtown nashville', 'the nations'],
@@ -270,6 +301,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'san-francisco',
+    lat: 37.77,
+    lng: -122.42,
     urlSlug: 'san-francisco-onlyfans',
     label: 'San Francisco',
     terms: ['san francisco', 'the mission', 'castro', 'haight', 'soma', 'richmond', 'sunset san francisco', 'oakland', 'berkeley', 'bay area'],
@@ -288,6 +321,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'new-orleans',
+    lat: 29.95,
+    lng: -90.07,
     urlSlug: 'new-orleans-onlyfans',
     label: 'New Orleans',
     terms: ['new orleans', 'nola', 'the french quarter', 'marigny', 'garden district', 'uptown new orleans', 'bywater', 'treme'],
@@ -306,6 +341,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'orlando',
+    lat: 28.54,
+    lng: -81.38,
     urlSlug: 'orlando-onlyfans',
     label: 'Orlando',
     terms: ['orlando', 'mills 50', 'thornton park', 'college park orlando', 'winter park', 'kissimmee', 'lake nona'],
@@ -324,6 +361,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'boston',
+    lat: 42.36,
+    lng: -71.06,
     urlSlug: 'boston-onlyfans',
     label: 'Boston',
     terms: ['boston', 'allston', 'brighton', 'fenway', 'south end boston', 'south boston', 'cambridge', 'somerville', 'jamaica plain'],
@@ -342,6 +381,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'philadelphia',
+    lat: 39.95,
+    lng: -75.17,
     urlSlug: 'philadelphia-onlyfans',
     label: 'Philadelphia',
     terms: ['philadelphia', 'philly', 'fishtown', 'south philly', 'northern liberties', 'graduate hospital', 'passyunk', 'fairmount', 'center city'],
@@ -360,6 +401,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'portland',
+    lat: 45.52,
+    lng: -122.68,
     urlSlug: 'portland-onlyfans',
     label: 'Portland',
     terms: ['portland', 'pnw', 'alberta arts district', 'hawthorne', 'pearl district', 'SE portland', 'NE portland', 'mississippi ave', 'division'],
@@ -378,6 +421,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'minneapolis',
+    lat: 44.98,
+    lng: -93.27,
     urlSlug: 'minneapolis-onlyfans',
     label: 'Minneapolis',
     terms: ['minneapolis', 'uptown minneapolis', 'northeast minneapolis', 'dinkytown', 'st paul', 'twin cities', 'edina', 'bloomington'],
@@ -396,6 +441,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'san-antonio',
+    lat: 29.42,
+    lng: -98.49,
     urlSlug: 'san-antonio-onlyfans',
     label: 'San Antonio',
     terms: ['san antonio', 'the river walk', 'alamo heights', 'stone oak', 'king william', 'southtown san antonio'],
@@ -414,6 +461,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'detroit',
+    lat: 42.33,
+    lng: -83.05,
     urlSlug: 'detroit-onlyfans',
     label: 'Detroit',
     terms: ['detroit', 'midtown detroit', 'corktown', 'eastern market', 'indian village', 'hamtramck', 'ferndale', 'royal oak', 'ann arbor'],
@@ -432,6 +481,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'san-jose',
+    lat: 37.34,
+    lng: -121.89,
     urlSlug: 'san-jose-onlyfans',
     label: "San Jose",
     terms: ['san jose', 'silicon valley', 'willow glen', 'santana row', 'downtown san jose'],
@@ -450,6 +501,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'sacramento',
+    lat: 38.58,
+    lng: -121.49,
     urlSlug: 'sacramento-onlyfans',
     label: "Sacramento",
     terms: ['sacramento', 'sac', 'midtown sacramento', 'east sacramento', 'land park', 'sac state'],
@@ -468,6 +521,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'fresno',
+    lat: 36.75,
+    lng: -119.77,
     urlSlug: 'fresno-onlyfans',
     label: "Fresno",
     terms: ['fresno', 'tower district', 'clovis', 'central valley'],
@@ -486,6 +541,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'long-beach',
+    lat: 33.77,
+    lng: -118.19,
     urlSlug: 'long-beach-onlyfans',
     label: "Long Beach",
     terms: ['long beach', 'lbc', 'belmont shore', 'downtown long beach', 'signal hill'],
@@ -504,6 +561,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'oakland',
+    lat: 37.8,
+    lng: -122.27,
     urlSlug: 'oakland-onlyfans',
     label: "Oakland",
     terms: ['oakland', 'east bay', 'temescal', 'rockridge', 'jack london square', 'uptown oakland'],
@@ -522,6 +581,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'fort-worth',
+    lat: 32.76,
+    lng: -97.33,
     urlSlug: 'fort-worth-onlyfans',
     label: "Fort Worth",
     terms: ['fort worth', 'dfw', 'sundance square', 'near southside', 'west 7th'],
@@ -540,6 +601,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'el-paso',
+    lat: 31.76,
+    lng: -106.49,
     urlSlug: 'el-paso-onlyfans',
     label: "El Paso",
     terms: ['el paso', 'franklin mountains', 'downtown el paso'],
@@ -558,6 +621,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'arlington-tx',
+    lat: 32.74,
+    lng: -97.11,
     urlSlug: 'arlington-tx-onlyfans',
     label: "Arlington",
     terms: ['arlington', 'arlington tx', 'north arlington', 'at&t stadium', 'globe life'],
@@ -576,6 +641,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'lubbock',
+    lat: 33.58,
+    lng: -101.86,
     urlSlug: 'lubbock-onlyfans',
     label: "Lubbock",
     terms: ['lubbock', 'texas tech', 'south plains'],
@@ -594,6 +661,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'jacksonville',
+    lat: 30.33,
+    lng: -81.66,
     urlSlug: 'jacksonville-onlyfans',
     label: "Jacksonville",
     terms: ['jacksonville', 'jax', 'riverside jacksonville', 'san marco', 'jax beach', 'atlantic beach'],
@@ -612,6 +681,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'tampa',
+    lat: 27.95,
+    lng: -82.46,
     urlSlug: 'tampa-onlyfans',
     label: "Tampa",
     terms: ['tampa', 'ybor', 'hyde park tampa', 'south tampa', 'channelside', 'st petersburg'],
@@ -630,6 +701,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'fort-lauderdale',
+    lat: 26.12,
+    lng: -80.14,
     urlSlug: 'fort-lauderdale-onlyfans',
     label: "Fort Lauderdale",
     terms: ['fort lauderdale', 'las olas', 'wilton manors', 'pompano beach'],
@@ -648,6 +721,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'st-petersburg',
+    lat: 27.77,
+    lng: -82.64,
     urlSlug: 'st-petersburg-onlyfans',
     label: "St. Petersburg",
     terms: ['st petersburg', 'st pete', 'dtsp', 'grand central district', 'st pete beach'],
@@ -666,6 +741,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'tallahassee',
+    lat: 30.44,
+    lng: -84.28,
     urlSlug: 'tallahassee-onlyfans',
     label: "Tallahassee",
     terms: ['tallahassee', 'tally', 'fsu', 'famu', 'midtown tallahassee'],
@@ -684,6 +761,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'buffalo',
+    lat: 42.89,
+    lng: -78.88,
     urlSlug: 'buffalo-onlyfans',
     label: "Buffalo",
     terms: ['buffalo', 'elmwood village', 'allentown buffalo', 'larkinville'],
@@ -702,6 +781,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'rochester-ny',
+    lat: 43.16,
+    lng: -77.61,
     urlSlug: 'rochester-ny-onlyfans',
     label: "Rochester",
     terms: ['rochester', 'rochester ny', 'park avenue rochester', 'roc'],
@@ -720,6 +801,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'albany',
+    lat: 42.65,
+    lng: -73.75,
     urlSlug: 'albany-onlyfans',
     label: "Albany",
     terms: ['albany', 'capital district', 'center square', 'pine hills'],
@@ -738,6 +821,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'syracuse',
+    lat: 43.05,
+    lng: -76.15,
     urlSlug: 'syracuse-onlyfans',
     label: "Syracuse",
     terms: ['syracuse', 'cuse', 'armory square', 'westcott'],
@@ -756,6 +841,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'aurora-il',
+    lat: 41.76,
+    lng: -88.32,
     urlSlug: 'aurora-il-onlyfans',
     label: "Aurora",
     terms: ['aurora', 'aurora il', 'fox valley', 'naperville'],
@@ -774,6 +861,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'rockford',
+    lat: 42.27,
+    lng: -89.09,
     urlSlug: 'rockford-onlyfans',
     label: "Rockford",
     terms: ['rockford', 'forest city', 'rock river'],
@@ -792,6 +881,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'naperville',
+    lat: 41.79,
+    lng: -88.15,
     urlSlug: 'naperville-onlyfans',
     label: "Naperville",
     terms: ['naperville', 'dupage', 'western suburbs chicago'],
@@ -810,6 +901,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'pittsburgh',
+    lat: 40.44,
+    lng: -79.99,
     urlSlug: 'pittsburgh-onlyfans',
     label: "Pittsburgh",
     terms: ['pittsburgh', 'pgh', 'strip district', 'south side pittsburgh', 'lawrenceville', 'shadyside', 'squirrel hill'],
@@ -828,6 +921,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'allentown',
+    lat: 40.6,
+    lng: -75.47,
     urlSlug: 'allentown-onlyfans',
     label: "Allentown",
     terms: ['allentown', 'lehigh valley', 'bethlehem'],
@@ -846,6 +941,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'erie-pa',
+    lat: 42.13,
+    lng: -80.09,
     urlSlug: 'erie-pa-onlyfans',
     label: "Erie",
     terms: ['erie', 'erie pa', 'presque isle'],
@@ -864,6 +961,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'tucson',
+    lat: 32.22,
+    lng: -110.97,
     urlSlug: 'tucson-onlyfans',
     label: "Tucson",
     terms: ['tucson', 'university of arizona', 'u of a', '4th avenue tucson', 'sam hughes'],
@@ -882,6 +981,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'mesa',
+    lat: 33.42,
+    lng: -111.83,
     urlSlug: 'mesa-onlyfans',
     label: "Mesa",
     terms: ['mesa', 'east valley', 'red mountain', 'asu polytechnic'],
@@ -900,6 +1001,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'columbus-oh',
+    lat: 39.96,
+    lng: -83,
     urlSlug: 'columbus-oh-onlyfans',
     label: "Columbus",
     terms: ['columbus', 'columbus oh', 'short north', 'german village', 'clintonville', 'osu', 'ohio state'],
@@ -918,6 +1021,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'cleveland',
+    lat: 41.5,
+    lng: -81.69,
     urlSlug: 'cleveland-onlyfans',
     label: "Cleveland",
     terms: ['cleveland', 'cle', 'tremont', 'ohio city', 'university circle', 'lakewood ohio'],
@@ -936,6 +1041,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'cincinnati',
+    lat: 39.1,
+    lng: -84.51,
     urlSlug: 'cincinnati-onlyfans',
     label: "Cincinnati",
     terms: ['cincinnati', 'cincy', 'otr', 'over the rhine', 'hyde park cincinnati', 'northside cincinnati'],
@@ -954,6 +1061,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'toledo',
+    lat: 41.65,
+    lng: -83.54,
     urlSlug: 'toledo-onlyfans',
     label: "Toledo",
     terms: ['toledo', 'old west end', 'uptown toledo'],
@@ -972,6 +1081,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'charlotte',
+    lat: 35.23,
+    lng: -80.84,
     urlSlug: 'charlotte-onlyfans',
     label: "Charlotte",
     terms: ['charlotte', 'clt', 'noda', 'plaza midwood', 'south end charlotte', 'dilworth', 'uptown charlotte'],
@@ -990,6 +1101,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'raleigh',
+    lat: 35.78,
+    lng: -78.64,
     urlSlug: 'raleigh-onlyfans',
     label: "Raleigh",
     terms: ['raleigh', 'rdu', 'downtown raleigh', 'five points', 'glenwood south'],
@@ -1008,6 +1121,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'greensboro',
+    lat: 36.07,
+    lng: -79.79,
     urlSlug: 'greensboro-onlyfans',
     label: "Greensboro",
     terms: ['greensboro', 'gso', 'triad', 'unc greensboro'],
@@ -1026,6 +1141,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'durham',
+    lat: 35.99,
+    lng: -78.9,
     urlSlug: 'durham-onlyfans',
     label: "Durham",
     terms: ['durham', 'duke', 'american tobacco', 'ninth street', 'rtp'],
@@ -1044,6 +1161,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'augusta',
+    lat: 33.47,
+    lng: -81.97,
     urlSlug: 'augusta-onlyfans',
     label: "Augusta",
     terms: ['augusta', 'augusta ga', 'summerville augusta'],
@@ -1062,6 +1181,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'savannah',
+    lat: 32.08,
+    lng: -81.09,
     urlSlug: 'savannah-onlyfans',
     label: "Savannah",
     terms: ['savannah', 'scad', 'historic savannah', 'tybee island', 'starland district'],
@@ -1080,6 +1201,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'columbus-ga',
+    lat: 32.46,
+    lng: -84.99,
     urlSlug: 'columbus-ga-onlyfans',
     label: "Columbus",
     terms: ['columbus ga', 'fort benning', 'uptown columbus ga'],
@@ -1098,6 +1221,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'grand-rapids',
+    lat: 42.96,
+    lng: -85.67,
     urlSlug: 'grand-rapids-onlyfans',
     label: "Grand Rapids",
     terms: ['grand rapids', 'beer city', 'heritage hill', 'east hills grand rapids'],
@@ -1116,6 +1241,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'lansing',
+    lat: 42.73,
+    lng: -84.55,
     urlSlug: 'lansing-onlyfans',
     label: "Lansing",
     terms: ['lansing', 'east lansing', 'msu', 'michigan state'],
@@ -1134,6 +1261,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'memphis',
+    lat: 35.15,
+    lng: -90.05,
     urlSlug: 'memphis-onlyfans',
     label: "Memphis",
     terms: ['memphis', 'beale street', 'midtown memphis', 'cooper young', 'overton square'],
@@ -1152,6 +1281,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'knoxville',
+    lat: 35.96,
+    lng: -83.92,
     urlSlug: 'knoxville-onlyfans',
     label: "Knoxville",
     terms: ['knoxville', 'rocky top', 'university of tennessee', 'old city knoxville'],
@@ -1170,6 +1301,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'virginia-beach',
+    lat: 36.85,
+    lng: -75.98,
     urlSlug: 'virginia-beach-onlyfans',
     label: "Virginia Beach",
     terms: ['virginia beach', 'oceanfront', 'sandbridge', 'town center virginia beach'],
@@ -1188,6 +1321,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'richmond-va',
+    lat: 37.54,
+    lng: -77.44,
     urlSlug: 'richmond-va-onlyfans',
     label: "Richmond",
     terms: ['richmond', 'rva', 'richmond va', 'the fan', 'carytown', 'scotts addition', 'church hill'],
@@ -1206,6 +1341,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'norfolk',
+    lat: 36.85,
+    lng: -76.29,
     urlSlug: 'norfolk-onlyfans',
     label: "Norfolk",
     terms: ['norfolk', 'ghent norfolk', 'ocean view', 'naval station norfolk'],
@@ -1224,6 +1361,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'spokane',
+    lat: 47.66,
+    lng: -117.43,
     urlSlug: 'spokane-onlyfans',
     label: "Spokane",
     terms: ['spokane', 'spokane wa', 'kendall yards', 'south hill spokane', 'gonzaga'],
@@ -1242,6 +1381,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'tacoma',
+    lat: 47.25,
+    lng: -122.44,
     urlSlug: 'tacoma-onlyfans',
     label: "Tacoma",
     terms: ['tacoma', 't-town', 'proctor', 'stadium district tacoma', 'sixth avenue tacoma'],
@@ -1260,6 +1401,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'colorado-springs',
+    lat: 38.83,
+    lng: -104.82,
     urlSlug: 'colorado-springs-onlyfans',
     label: "Colorado Springs",
     terms: ['colorado springs', 'co springs', 'old colorado city', 'manitou springs', 'garden of the gods'],
@@ -1278,6 +1421,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'fort-collins',
+    lat: 40.59,
+    lng: -105.08,
     urlSlug: 'fort-collins-onlyfans',
     label: "Fort Collins",
     terms: ['fort collins', 'foco', 'csu', 'colorado state', 'old town fort collins'],
@@ -1296,6 +1441,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'henderson',
+    lat: 36.04,
+    lng: -114.98,
     urlSlug: 'henderson-onlyfans',
     label: "Henderson",
     terms: ['henderson', 'green valley', 'seven hills'],
@@ -1314,6 +1461,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'reno',
+    lat: 39.53,
+    lng: -119.81,
     urlSlug: 'reno-onlyfans',
     label: "Reno",
     terms: ['reno', 'biggest little city', 'midtown reno', 'riverwalk reno', 'sparks nv'],
@@ -1332,6 +1481,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'kansas-city',
+    lat: 39.1,
+    lng: -94.58,
     urlSlug: 'kansas-city-onlyfans',
     label: "Kansas City",
     terms: ['kansas city', 'kcmo', 'crossroads kc', 'westport kc', 'plaza kc', 'river market'],
@@ -1350,6 +1501,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'st-louis',
+    lat: 38.63,
+    lng: -90.2,
     urlSlug: 'st-louis-onlyfans',
     label: "St. Louis",
     terms: ['st louis', 'stl', 'the loop', 'soulard', 'central west end', 'lafayette square'],
@@ -1368,6 +1521,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'springfield-mo',
+    lat: 37.21,
+    lng: -93.29,
     urlSlug: 'springfield-mo-onlyfans',
     label: "Springfield",
     terms: ['springfield mo', 'queen city of the ozarks', 'missouri state'],
@@ -1386,6 +1541,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'indianapolis',
+    lat: 39.77,
+    lng: -86.16,
     urlSlug: 'indianapolis-onlyfans',
     label: "Indianapolis",
     terms: ['indianapolis', 'indy', 'broad ripple', 'mass ave', 'fountain square indianapolis', 'speedway'],
@@ -1404,6 +1561,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'fort-wayne',
+    lat: 41.08,
+    lng: -85.14,
     urlSlug: 'fort-wayne-onlyfans',
     label: "Fort Wayne",
     terms: ['fort wayne', 'fwa', 'the fort'],
@@ -1422,6 +1581,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'south-bend',
+    lat: 41.68,
+    lng: -86.25,
     urlSlug: 'south-bend-onlyfans',
     label: "South Bend",
     terms: ['south bend', 'notre dame', 'michiana'],
@@ -1440,6 +1601,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'worcester',
+    lat: 42.26,
+    lng: -71.8,
     urlSlug: 'worcester-onlyfans',
     label: "Worcester",
     terms: ['worcester', 'wormtown', 'canal district worcester', 'holy cross'],
@@ -1458,6 +1621,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'springfield-ma',
+    lat: 42.1,
+    lng: -72.59,
     urlSlug: 'springfield-ma-onlyfans',
     label: "Springfield",
     terms: ['springfield ma', 'western massachusetts', 'metro center springfield'],
@@ -1476,6 +1641,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'saint-paul',
+    lat: 44.95,
+    lng: -93.09,
     urlSlug: 'saint-paul-onlyfans',
     label: "Saint Paul",
     terms: ['saint paul', 'st paul', 'cathedral hill', 'grand avenue st paul', 'lowertown'],
@@ -1494,6 +1661,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'rochester-mn',
+    lat: 44.02,
+    lng: -92.47,
     urlSlug: 'rochester-mn-onlyfans',
     label: "Rochester",
     terms: ['rochester mn', 'mayo clinic', 'southeast minnesota'],
@@ -1512,6 +1681,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'milwaukee',
+    lat: 43.04,
+    lng: -87.91,
     urlSlug: 'milwaukee-onlyfans',
     label: "Milwaukee",
     terms: ['milwaukee', 'mke', 'third ward', 'bay view', 'walkers point', 'riverwest'],
@@ -1530,6 +1701,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'madison',
+    lat: 43.07,
+    lng: -89.4,
     urlSlug: 'madison-onlyfans',
     label: "Madison",
     terms: ['madison', 'uw madison', 'state street madison', 'isthmus', 'willy street'],
@@ -1548,6 +1721,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'green-bay',
+    lat: 44.51,
+    lng: -88.02,
     urlSlug: 'green-bay-onlyfans',
     label: "Green Bay",
     terms: ['green bay', 'packers', 'title town', 'de pere'],
@@ -1566,6 +1741,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'charleston-sc',
+    lat: 32.78,
+    lng: -79.93,
     urlSlug: 'charleston-sc-onlyfans',
     label: "Charleston",
     terms: ['charleston', 'charleston sc', 'folly beach', 'mount pleasant', 'king street charleston', 'isle of palms'],
@@ -1584,6 +1761,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'columbia-sc',
+    lat: 34,
+    lng: -81.03,
     urlSlug: 'columbia-sc-onlyfans',
     label: "Columbia",
     terms: ['columbia sc', 'cola', 'university of south carolina', 'five points columbia'],
@@ -1602,6 +1781,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'baltimore',
+    lat: 39.29,
+    lng: -76.61,
     urlSlug: 'baltimore-onlyfans',
     label: "Baltimore",
     terms: ['baltimore', 'bmore', 'charm city', 'fells point', 'federal hill', 'canton', 'mount vernon baltimore', 'hampden'],
@@ -1620,6 +1801,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'frederick',
+    lat: 39.41,
+    lng: -77.41,
     urlSlug: 'frederick-onlyfans',
     label: "Frederick",
     terms: ['frederick', 'frederick md', 'downtown frederick'],
@@ -1638,6 +1821,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'baton-rouge',
+    lat: 30.45,
+    lng: -91.15,
     urlSlug: 'baton-rouge-onlyfans',
     label: "Baton Rouge",
     terms: ['baton rouge', 'lsu', 'mid city baton rouge'],
@@ -1656,6 +1841,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'oklahoma-city',
+    lat: 35.47,
+    lng: -97.52,
     urlSlug: 'oklahoma-city-onlyfans',
     label: "Oklahoma City",
     terms: ['oklahoma city', 'okc', 'bricktown', 'plaza district okc', 'midtown okc'],
@@ -1674,6 +1861,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'tulsa',
+    lat: 36.15,
+    lng: -95.99,
     urlSlug: 'tulsa-onlyfans',
     label: "Tulsa",
     terms: ['tulsa', 't-town', 'blue dome', 'brookside tulsa', 'cherry street tulsa'],
@@ -1692,6 +1881,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'eugene',
+    lat: 44.05,
+    lng: -123.09,
     urlSlug: 'eugene-onlyfans',
     label: "Eugene",
     terms: ['eugene', 'university of oregon', 'duck country', 'whiteaker eugene'],
@@ -1710,6 +1901,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'birmingham',
+    lat: 33.52,
+    lng: -86.81,
     urlSlug: 'birmingham-onlyfans',
     label: "Birmingham",
     terms: ['birmingham', 'magic city', 'five points south birmingham', 'avondale birmingham', 'uab'],
@@ -1728,6 +1921,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'montgomery',
+    lat: 32.37,
+    lng: -86.3,
     urlSlug: 'montgomery-onlyfans',
     label: "Montgomery",
     terms: ['montgomery', 'montgomery al', 'old alabama town'],
@@ -1746,6 +1941,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'louisville',
+    lat: 38.25,
+    lng: -85.76,
     urlSlug: 'louisville-onlyfans',
     label: "Louisville",
     terms: ['louisville', 'derby city', 'nulu', 'highlands louisville', 'clifton louisville'],
@@ -1764,6 +1961,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'lexington',
+    lat: 38.04,
+    lng: -84.5,
     urlSlug: 'lexington-onlyfans',
     label: "Lexington",
     terms: ['lexington', 'lex', 'university of kentucky', 'horse capital', 'distillery district lexington'],
@@ -1782,6 +1981,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'hartford',
+    lat: 41.76,
+    lng: -72.69,
     urlSlug: 'hartford-onlyfans',
     label: "Hartford",
     terms: ['hartford', 'greater hartford', 'west hartford', 'blue back square'],
@@ -1800,6 +2001,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'new-haven',
+    lat: 41.31,
+    lng: -72.93,
     urlSlug: 'new-haven-onlyfans',
     label: "New Haven",
     terms: ['new haven', 'yale', 'east rock', 'westville new haven'],
@@ -1818,6 +2021,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'omaha',
+    lat: 41.26,
+    lng: -95.94,
     urlSlug: 'omaha-onlyfans',
     label: "Omaha",
     terms: ['omaha', 'old market omaha', 'dundee omaha', 'blackstone omaha', 'benson omaha'],
@@ -1836,6 +2041,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'lincoln-ne',
+    lat: 40.81,
+    lng: -96.68,
     urlSlug: 'lincoln-ne-onlyfans',
     label: "Lincoln",
     terms: ['lincoln ne', 'huskers', 'university of nebraska', 'haymarket lincoln'],
@@ -1854,6 +2061,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'salt-lake-city',
+    lat: 40.76,
+    lng: -111.89,
     urlSlug: 'salt-lake-city-onlyfans',
     label: "Salt Lake City",
     terms: ['salt lake city', 'slc', 'sugar house', '9th and 9th', 'marmalade district', 'the avenues slc'],
@@ -1872,6 +2081,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'provo',
+    lat: 40.23,
+    lng: -111.66,
     urlSlug: 'provo-onlyfans',
     label: "Provo",
     terms: ['provo', 'byu', 'utah valley', 'sundance'],
@@ -1890,6 +2101,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'albuquerque',
+    lat: 35.08,
+    lng: -106.65,
     urlSlug: 'albuquerque-onlyfans',
     label: "Albuquerque",
     terms: ['albuquerque', 'abq', 'old town albuquerque', 'nob hill abq', 'university of new mexico'],
@@ -1908,6 +2121,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'santa-fe',
+    lat: 35.69,
+    lng: -105.94,
     urlSlug: 'santa-fe-onlyfans',
     label: "Santa Fe",
     terms: ['santa fe', 'canyon road', 'santa fe plaza', 'railyard district'],
@@ -1926,6 +2141,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'wichita',
+    lat: 37.69,
+    lng: -97.34,
     urlSlug: 'wichita-onlyfans',
     label: "Wichita",
     terms: ['wichita', 'ict', 'old town wichita', 'delano wichita', 'douglas design district'],
@@ -1944,6 +2161,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'overland-park',
+    lat: 38.98,
+    lng: -94.67,
     urlSlug: 'overland-park-onlyfans',
     label: "Overland Park",
     terms: ['overland park', 'johnson county', 'kansas city ks suburbs'],
@@ -1962,6 +2181,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'little-rock',
+    lat: 34.75,
+    lng: -92.29,
     urlSlug: 'little-rock-onlyfans',
     label: "Little Rock",
     terms: ['little rock', 'river market little rock', 'heights little rock', 'hillcrest little rock'],
@@ -1980,6 +2201,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'fort-smith',
+    lat: 35.39,
+    lng: -94.4,
     urlSlug: 'fort-smith-onlyfans',
     label: "Fort Smith",
     terms: ['fort smith', 'river valley arkansas'],
@@ -1998,6 +2221,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'jackson-ms',
+    lat: 32.3,
+    lng: -90.18,
     urlSlug: 'jackson-ms-onlyfans',
     label: "Jackson",
     terms: ['jackson ms', 'fondren', 'belhaven jackson'],
@@ -2016,6 +2241,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'gulfport',
+    lat: 30.37,
+    lng: -89.09,
     urlSlug: 'gulfport-onlyfans',
     label: "Gulfport",
     terms: ['gulfport', 'biloxi', 'gulf coast mississippi'],
@@ -2034,6 +2261,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'des-moines',
+    lat: 41.59,
+    lng: -93.62,
     urlSlug: 'des-moines-onlyfans',
     label: "Des Moines",
     terms: ['des moines', 'dsm', 'east village des moines', 'beaverdale', 'drake'],
@@ -2052,6 +2281,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'cedar-rapids',
+    lat: 41.98,
+    lng: -91.67,
     urlSlug: 'cedar-rapids-onlyfans',
     label: "Cedar Rapids",
     terms: ['cedar rapids', 'czech village', 'newbo'],
@@ -2070,6 +2301,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'newark',
+    lat: 40.74,
+    lng: -74.17,
     urlSlug: 'newark-onlyfans',
     label: "Newark",
     terms: ['newark', 'newark nj', 'ironbound', 'university heights newark'],
@@ -2088,6 +2321,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'jersey-city',
+    lat: 40.72,
+    lng: -74.08,
     urlSlug: 'jersey-city-onlyfans',
     label: "Jersey City",
     terms: ['jersey city', 'hoboken', 'journal square', 'downtown jc', 'exchange place'],
@@ -2106,6 +2341,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'boise',
+    lat: 43.62,
+    lng: -116.2,
     urlSlug: 'boise-onlyfans',
     label: "Boise",
     terms: ['boise', 'treasure valley', 'north end boise', 'hyde park boise', 'bench boise', 'meridian id'],
@@ -2124,6 +2361,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'meridian-id',
+    lat: 43.61,
+    lng: -116.39,
     urlSlug: 'meridian-id-onlyfans',
     label: "Meridian",
     terms: ['meridian id', 'treasure valley'],
@@ -2142,6 +2381,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'honolulu',
+    lat: 21.31,
+    lng: -157.86,
     urlSlug: 'honolulu-onlyfans',
     label: "Honolulu",
     terms: ['honolulu', 'waikiki', 'ala moana', 'kakaako', 'manoa', 'diamond head', 'oahu'],
@@ -2160,6 +2401,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'hilo',
+    lat: 19.71,
+    lng: -155.09,
     urlSlug: 'hilo-onlyfans',
     label: "Hilo",
     terms: ['hilo', 'big island', 'volcano hawaii', 'hamakua coast'],
@@ -2178,6 +2421,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'anchorage',
+    lat: 61.22,
+    lng: -149.9,
     urlSlug: 'anchorage-onlyfans',
     label: "Anchorage",
     terms: ['anchorage', 'spenard', 'downtown anchorage', 'south anchorage'],
@@ -2196,6 +2441,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'fairbanks',
+    lat: 64.84,
+    lng: -147.72,
     urlSlug: 'fairbanks-onlyfans',
     label: "Fairbanks",
     terms: ['fairbanks', 'interior alaska', 'aurora', 'university of alaska fairbanks'],
@@ -2214,6 +2461,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'charleston-wv',
+    lat: 38.35,
+    lng: -81.63,
     urlSlug: 'charleston-wv-onlyfans',
     label: "Charleston",
     terms: ['charleston wv', 'kanawha', 'east end charleston wv'],
@@ -2232,6 +2481,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'huntington-wv',
+    lat: 38.42,
+    lng: -82.44,
     urlSlug: 'huntington-wv-onlyfans',
     label: "Huntington",
     terms: ['huntington wv', 'marshall university', 'tri-state'],
@@ -2250,6 +2501,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'portland-me',
+    lat: 43.66,
+    lng: -70.26,
     urlSlug: 'portland-me-onlyfans',
     label: "Portland",
     terms: ['portland me', 'maine', 'old port portland', 'west end portland me', 'munjoy hill'],
@@ -2268,6 +2521,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'manchester-nh',
+    lat: 42.99,
+    lng: -71.46,
     urlSlug: 'manchester-nh-onlyfans',
     label: "Manchester",
     terms: ['manchester nh', 'queen city of new hampshire', 'millyard manchester'],
@@ -2286,6 +2541,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'burlington-vt',
+    lat: 44.48,
+    lng: -73.21,
     urlSlug: 'burlington-vt-onlyfans',
     label: "Burlington",
     terms: ['burlington', 'burlington vt', 'church street burlington', 'uvm', 'old north end burlington'],
@@ -2304,6 +2561,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'providence',
+    lat: 41.82,
+    lng: -71.41,
     urlSlug: 'providence-onlyfans',
     label: "Providence",
     terms: ['providence', 'pvd', 'federal hill providence', 'wayland square', 'college hill providence', 'risd', 'brown'],
@@ -2322,6 +2581,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'wilmington',
+    lat: 39.75,
+    lng: -75.55,
     urlSlug: 'wilmington-onlyfans',
     label: "Wilmington",
     terms: ['wilmington', 'wilmington de', 'trolley square', 'riverfront wilmington'],
@@ -2340,6 +2601,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'billings',
+    lat: 45.78,
+    lng: -108.5,
     urlSlug: 'billings-onlyfans',
     label: "Billings",
     terms: ['billings', 'yellowstone county', 'heights billings', 'downtown billings'],
@@ -2358,6 +2621,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'cheyenne',
+    lat: 41.14,
+    lng: -104.82,
     urlSlug: 'cheyenne-onlyfans',
     label: "Cheyenne",
     terms: ['cheyenne', 'wyoming', 'f e warren'],
@@ -2376,6 +2641,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'fargo',
+    lat: 46.88,
+    lng: -96.79,
     urlSlug: 'fargo-onlyfans',
     label: "Fargo",
     terms: ['fargo', 'ndsu', 'downtown fargo', 'red river valley'],
@@ -2394,6 +2661,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'sioux-falls',
+    lat: 43.55,
+    lng: -96.73,
     urlSlug: 'sioux-falls-onlyfans',
     label: "Sioux Falls",
     terms: ['sioux falls', 'downtown sioux falls', 'phillips avenue'],
@@ -2412,6 +2681,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'huntington-beach',
+    lat: 33.66,
+    lng: -118,
     urlSlug: 'huntington-beach-onlyfans',
     label: "Huntington Beach",
     terms: ['huntington beach', 'surf city usa', 'hb california', 'orange county surf'],
@@ -2430,6 +2701,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'san-bernardino',
+    lat: 34.11,
+    lng: -117.29,
     urlSlug: 'san-bernardino-onlyfans',
     label: "San Bernardino",
     terms: ['san bernardino', 'inland empire', 'ie california'],
@@ -2448,6 +2721,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'bakersfield',
+    lat: 35.37,
+    lng: -119.02,
     urlSlug: 'bakersfield-onlyfans',
     label: "Bakersfield",
     terms: ['bakersfield', 'kern county', 'bako'],
@@ -2466,6 +2741,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'anaheim',
+    lat: 33.84,
+    lng: -117.91,
     urlSlug: 'anaheim-onlyfans',
     label: "Anaheim",
     terms: ['anaheim', 'orange county', 'oc california', 'disneyland area'],
@@ -2484,6 +2761,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'riverside',
+    lat: 33.95,
+    lng: -117.4,
     urlSlug: 'riverside-onlyfans',
     label: "Riverside",
     terms: ['riverside california', 'inland empire', 'riverside county'],
@@ -2502,6 +2781,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'stockton',
+    lat: 37.96,
+    lng: -121.29,
     urlSlug: 'stockton-onlyfans',
     label: "Stockton",
     terms: ['stockton california', 'central valley california', 'san joaquin county'],
@@ -2520,6 +2801,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'killeen',
+    lat: 31.12,
+    lng: -97.73,
     urlSlug: 'killeen-onlyfans',
     label: "Killeen",
     terms: ['killeen', 'fort cavazos', 'central texas'],
@@ -2538,6 +2821,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'corpus-christi',
+    lat: 27.8,
+    lng: -97.4,
     urlSlug: 'corpus-christi-onlyfans',
     label: "Corpus Christi",
     terms: ['corpus christi', 'texas gulf coast', 'coastal bend'],
@@ -2556,6 +2841,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'plano',
+    lat: 33.02,
+    lng: -96.7,
     urlSlug: 'plano-onlyfans',
     label: "Plano",
     terms: ['plano texas', 'dfw metroplex', 'collin county texas'],
@@ -2574,6 +2861,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'irving',
+    lat: 32.81,
+    lng: -96.95,
     urlSlug: 'irving-onlyfans',
     label: "Irving",
     terms: ['irving texas', 'las colinas', 'dfw metroplex'],
@@ -2592,6 +2881,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'pensacola',
+    lat: 30.42,
+    lng: -87.22,
     urlSlug: 'pensacola-onlyfans',
     label: "Pensacola",
     terms: ['pensacola', 'florida panhandle', 'perdido key'],
@@ -2610,6 +2901,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'gainesville',
+    lat: 29.65,
+    lng: -82.32,
     urlSlug: 'gainesville-onlyfans',
     label: "Gainesville",
     terms: ['gainesville florida', 'university of florida', 'gator country'],
@@ -2628,6 +2921,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'west-palm-beach',
+    lat: 26.72,
+    lng: -80.05,
     urlSlug: 'west-palm-beach-onlyfans',
     label: "West Palm Beach",
     terms: ['west palm beach', 'palm beach county', 'south florida'],
@@ -2646,6 +2941,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'newport-news',
+    lat: 37.09,
+    lng: -76.47,
     urlSlug: 'newport-news-onlyfans',
     label: "Newport News",
     terms: ['newport news', 'hampton roads', 'virginia peninsula'],
@@ -2664,6 +2961,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'chesapeake',
+    lat: 36.77,
+    lng: -76.29,
     urlSlug: 'chesapeake-onlyfans',
     label: "Chesapeake",
     terms: ['chesapeake virginia', 'hampton roads', 'south hampton roads'],
@@ -2682,6 +2981,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'biloxi',
+    lat: 30.4,
+    lng: -88.89,
     urlSlug: 'biloxi-onlyfans',
     label: "Biloxi",
     terms: ['biloxi', 'mississippi gulf coast', 'gulfport biloxi'],
@@ -2700,6 +3001,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'scottsdale',
+    lat: 33.49,
+    lng: -111.93,
     urlSlug: 'scottsdale-onlyfans',
     label: "Scottsdale",
     terms: ['scottsdale', 'old town scottsdale', 'valley of the sun'],
@@ -2718,6 +3021,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'tempe',
+    lat: 33.43,
+    lng: -111.94,
     urlSlug: 'tempe-onlyfans',
     label: "Tempe",
     terms: ['tempe', 'arizona state university', 'asu', 'mill avenue'],
@@ -2736,6 +3041,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'bangor',
+    lat: 44.8,
+    lng: -68.77,
     urlSlug: 'bangor-onlyfans',
     label: "Bangor",
     terms: ['bangor maine', 'queen city maine'],
@@ -2754,6 +3061,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'nashua',
+    lat: 42.77,
+    lng: -71.47,
     urlSlug: 'nashua-onlyfans',
     label: "Nashua",
     terms: ['nashua new hampshire', 'gate city'],
@@ -2772,6 +3081,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'rutland',
+    lat: 43.61,
+    lng: -72.97,
     urlSlug: 'rutland-onlyfans',
     label: "Rutland",
     terms: ['rutland vermont', 'green mountains'],
@@ -2790,6 +3101,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'warwick',
+    lat: 41.7,
+    lng: -71.42,
     urlSlug: 'warwick-onlyfans',
     label: "Warwick",
     terms: ['warwick rhode island', 'kent county ri'],
@@ -2808,6 +3121,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'dover',
+    lat: 39.16,
+    lng: -75.52,
     urlSlug: 'dover-onlyfans',
     label: "Dover",
     terms: ['dover delaware', 'first state'],
@@ -2826,6 +3141,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'missoula',
+    lat: 46.87,
+    lng: -113.99,
     urlSlug: 'missoula-onlyfans',
     label: "Missoula",
     terms: ['missoula montana', 'university of montana', 'garden city montana'],
@@ -2844,6 +3161,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'casper',
+    lat: 42.87,
+    lng: -106.31,
     urlSlug: 'casper-onlyfans',
     label: "Casper",
     terms: ['casper wyoming', 'oil city wyoming'],
@@ -2862,6 +3181,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'bismarck',
+    lat: 46.81,
+    lng: -100.78,
     urlSlug: 'bismarck-onlyfans',
     label: "Bismarck",
     terms: ['bismarck north dakota', 'state capital nd'],
@@ -2880,6 +3201,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'rapid-city',
+    lat: 44.08,
+    lng: -103.23,
     urlSlug: 'rapid-city-onlyfans',
     label: "Rapid City",
     terms: ['rapid city south dakota', 'black hills', 'gateway to the black hills'],
@@ -2898,6 +3221,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'winston-salem',
+    lat: 36.1,
+    lng: -80.24,
     urlSlug: 'winston-salem-onlyfans',
     label: "Winston-Salem",
     terms: ['winston-salem', 'twin city nc', 'wake forest'],
@@ -2916,6 +3241,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'macon',
+    lat: 32.84,
+    lng: -83.63,
     urlSlug: 'macon-onlyfans',
     label: "Macon",
     terms: ['macon georgia', 'middle georgia'],
@@ -2934,6 +3261,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'akron',
+    lat: 41.08,
+    lng: -81.52,
     urlSlug: 'akron-onlyfans',
     label: "Akron",
     terms: ['akron ohio', 'rubber city'],
@@ -2952,6 +3281,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'chattanooga',
+    lat: 35.05,
+    lng: -85.31,
     urlSlug: 'chattanooga-onlyfans',
     label: "Chattanooga",
     terms: ['chattanooga', 'scenic city tennessee', 'lookout mountain'],
@@ -2970,6 +3301,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'greenville',
+    lat: 34.85,
+    lng: -82.4,
     urlSlug: 'greenville-onlyfans',
     label: "Greenville",
     terms: ['greenville south carolina', 'upstate sc'],
@@ -2988,6 +3321,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'lafayette',
+    lat: 30.22,
+    lng: -92.02,
     urlSlug: 'lafayette-onlyfans',
     label: "Lafayette",
     terms: ['lafayette louisiana', 'cajun country', 'acadiana'],
@@ -3006,6 +3341,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'salem',
+    lat: 44.94,
+    lng: -123.04,
     urlSlug: 'salem-onlyfans',
     label: "Salem",
     terms: ['salem oregon', 'oregon state capital'],
@@ -3024,6 +3361,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'annapolis',
+    lat: 38.98,
+    lng: -76.49,
     urlSlug: 'annapolis-onlyfans',
     label: "Annapolis",
     terms: ['annapolis maryland', 'naval academy', 'chesapeake bay maryland'],
@@ -3042,6 +3381,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'norman',
+    lat: 35.22,
+    lng: -97.44,
     urlSlug: 'norman-onlyfans',
     label: "Norman",
     terms: ['norman oklahoma', 'university of oklahoma', 'ou sooners'],
@@ -3060,6 +3401,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'huntsville',
+    lat: 34.73,
+    lng: -86.59,
     urlSlug: 'huntsville-onlyfans',
     label: "Huntsville",
     terms: ['huntsville alabama', 'rocket city', 'cummings research park'],
@@ -3078,6 +3421,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'bowling-green',
+    lat: 36.99,
+    lng: -86.44,
     urlSlug: 'bowling-green-onlyfans',
     label: "Bowling Green",
     terms: ['bowling green kentucky', 'western kentucky university'],
@@ -3096,6 +3441,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'stamford',
+    lat: 41.05,
+    lng: -73.54,
     urlSlug: 'stamford-onlyfans',
     label: "Stamford",
     terms: ['stamford connecticut', 'fairfield county'],
@@ -3114,6 +3461,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'bellevue-ne',
+    lat: 41.14,
+    lng: -95.91,
     urlSlug: 'bellevue-ne-onlyfans',
     label: "Bellevue",
     terms: ['bellevue nebraska', 'offutt air force base'],
@@ -3132,6 +3481,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'ogden',
+    lat: 41.22,
+    lng: -111.97,
     urlSlug: 'ogden-onlyfans',
     label: "Ogden",
     terms: ['ogden utah', 'wasatch front'],
@@ -3150,6 +3501,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'las-cruces',
+    lat: 32.32,
+    lng: -106.78,
     urlSlug: 'las-cruces-onlyfans',
     label: "Las Cruces",
     terms: ['las cruces', 'new mexico state university', 'rio grande valley'],
@@ -3168,6 +3521,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'topeka',
+    lat: 39.05,
+    lng: -95.68,
     urlSlug: 'topeka-onlyfans',
     label: "Topeka",
     terms: ['topeka kansas', 'kansas state capital'],
@@ -3186,6 +3541,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'fayetteville-ar',
+    lat: 36.06,
+    lng: -94.16,
     urlSlug: 'fayetteville-ar-onlyfans',
     label: "Fayetteville",
     terms: ['fayetteville arkansas', 'university of arkansas', 'ozarks'],
@@ -3204,6 +3561,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'iowa-city',
+    lat: 41.66,
+    lng: -91.53,
     urlSlug: 'iowa-city-onlyfans',
     label: "Iowa City",
     terms: ['iowa city', 'university of iowa', 'hawkeyes'],
@@ -3222,6 +3581,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'atlantic-city',
+    lat: 39.36,
+    lng: -74.42,
     urlSlug: 'atlantic-city-onlyfans',
     label: "Atlantic City",
     terms: ['atlantic city', 'jersey shore', 'ac boardwalk'],
@@ -3240,6 +3601,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'nampa',
+    lat: 43.58,
+    lng: -116.56,
     urlSlug: 'nampa-onlyfans',
     label: "Nampa",
     terms: ['nampa idaho', 'treasure valley'],
@@ -3258,6 +3621,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'kailua',
+    lat: 21.4,
+    lng: -157.74,
     urlSlug: 'kailua-onlyfans',
     label: "Kailua",
     terms: ['kailua hawaii', 'windward oahu'],
@@ -3276,6 +3641,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'juneau',
+    lat: 58.3,
+    lng: -134.42,
     urlSlug: 'juneau-onlyfans',
     label: "Juneau",
     terms: ['juneau alaska', 'alaska state capital'],
@@ -3294,6 +3661,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'morgantown',
+    lat: 39.63,
+    lng: -79.96,
     urlSlug: 'morgantown-onlyfans',
     label: "Morgantown",
     terms: ['morgantown west virginia', 'west virginia university', 'wvu mountaineers'],
@@ -3312,6 +3681,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'carson-city',
+    lat: 39.16,
+    lng: -119.77,
     urlSlug: 'carson-city-onlyfans',
     label: "Carson City",
     terms: ['carson city nevada', 'nevada state capital'],
@@ -3330,6 +3701,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'bellevue-wa',
+    lat: 47.61,
+    lng: -122.2,
     urlSlug: 'bellevue-wa-onlyfans',
     label: "Bellevue",
     terms: ['bellevue washington', 'eastside seattle', 'tech corridor washington'],
@@ -3348,6 +3721,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'boulder',
+    lat: 40.01,
+    lng: -105.27,
     urlSlug: 'boulder-onlyfans',
     label: "Boulder",
     terms: ['boulder colorado', 'university of colorado', 'flatirons'],
@@ -3366,6 +3741,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'cambridge',
+    lat: 42.37,
+    lng: -71.11,
     urlSlug: 'cambridge-onlyfans',
     label: "Cambridge",
     terms: ['cambridge massachusetts', 'harvard', 'mit'],
@@ -3384,6 +3761,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'duluth',
+    lat: 46.79,
+    lng: -92.1,
     urlSlug: 'duluth-onlyfans',
     label: "Duluth",
     terms: ['duluth minnesota', 'lake superior', 'north shore minnesota'],
@@ -3402,6 +3781,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'ann-arbor',
+    lat: 42.28,
+    lng: -83.74,
     urlSlug: 'ann-arbor-onlyfans',
     label: "Ann Arbor",
     terms: ['ann arbor', 'university of michigan', 'wolverines'],
@@ -3420,6 +3801,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'columbia-mo',
+    lat: 38.95,
+    lng: -92.33,
     urlSlug: 'columbia-mo-onlyfans',
     label: "Columbia",
     terms: ['columbia missouri', 'university of missouri', 'mizzou'],
@@ -3438,6 +3821,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'bloomington-in',
+    lat: 39.17,
+    lng: -86.53,
     urlSlug: 'bloomington-in-onlyfans',
     label: "Bloomington",
     terms: ['bloomington indiana', 'indiana university', 'hoosiers'],
@@ -3456,6 +3841,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'kenosha',
+    lat: 42.58,
+    lng: -87.82,
     urlSlug: 'kenosha-onlyfans',
     label: "Kenosha",
     terms: ['kenosha wisconsin', 'lake michigan wisconsin'],
@@ -3474,6 +3861,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'myrtle-beach',
+    lat: 33.69,
+    lng: -78.89,
     urlSlug: 'myrtle-beach-onlyfans',
     label: "Myrtle Beach",
     terms: ['myrtle beach', 'grand strand', 'south carolina coast'],
@@ -3492,6 +3881,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'hattiesburg',
+    lat: 31.33,
+    lng: -89.29,
     urlSlug: 'hattiesburg-onlyfans',
     label: "Hattiesburg",
     terms: ['hattiesburg mississippi', 'university of southern mississippi'],
@@ -3510,6 +3901,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'peoria',
+    lat: 40.69,
+    lng: -89.59,
     urlSlug: 'peoria-onlyfans',
     label: "Peoria",
     terms: ['peoria illinois', 'central illinois'],
@@ -3528,6 +3921,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'scranton',
+    lat: 41.41,
+    lng: -75.66,
     urlSlug: 'scranton-onlyfans',
     label: "Scranton",
     terms: ['scranton pennsylvania', 'electric city', 'northeastern pennsylvania'],
@@ -3546,6 +3941,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'murfreesboro',
+    lat: 35.85,
+    lng: -86.39,
     urlSlug: 'murfreesboro-onlyfans',
     label: "Murfreesboro",
     terms: ['murfreesboro tennessee', 'middle tennessee state university'],
@@ -3564,6 +3961,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'lewiston',
+    lat: 44.1,
+    lng: -70.21,
     urlSlug: 'lewiston-onlyfans',
     label: "Lewiston",
     terms: ['lewiston maine', 'androscoggin county'],
@@ -3582,6 +3981,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'concord',
+    lat: 43.21,
+    lng: -71.54,
     urlSlug: 'concord-onlyfans',
     label: "Concord",
     terms: ['concord new hampshire', 'new hampshire state capital'],
@@ -3600,6 +4001,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'montpelier',
+    lat: 44.26,
+    lng: -72.58,
     urlSlug: 'montpelier-onlyfans',
     label: "Montpelier",
     terms: ['montpelier vermont', 'vermont state capital'],
@@ -3618,6 +4021,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'newport-ri',
+    lat: 41.49,
+    lng: -71.31,
     urlSlug: 'newport-ri-onlyfans',
     label: "Newport",
     terms: ['newport rhode island', 'gilded age mansions', 'narragansett bay'],
@@ -3636,6 +4041,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'newark-de',
+    lat: 39.68,
+    lng: -75.75,
     urlSlug: 'newark-de-onlyfans',
     label: "Newark",
     terms: ['newark delaware', 'university of delaware'],
@@ -3654,6 +4061,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'great-falls',
+    lat: 47.51,
+    lng: -111.28,
     urlSlug: 'great-falls-onlyfans',
     label: "Great Falls",
     terms: ['great falls montana', 'missouri river montana'],
@@ -3672,6 +4081,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'jackson-hole',
+    lat: 43.48,
+    lng: -110.76,
     urlSlug: 'jackson-hole-onlyfans',
     label: "Jackson Hole",
     terms: ['jackson hole wyoming', 'grand teton', 'jackson wy'],
@@ -3690,6 +4101,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'grand-forks',
+    lat: 47.92,
+    lng: -97.03,
     urlSlug: 'grand-forks-onlyfans',
     label: "Grand Forks",
     terms: ['grand forks north dakota', 'university of north dakota'],
@@ -3708,6 +4121,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'aberdeen',
+    lat: 45.46,
+    lng: -98.49,
     urlSlug: 'aberdeen-onlyfans',
     label: "Aberdeen",
     terms: ['aberdeen south dakota', 'northeast south dakota'],
@@ -3726,6 +4141,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'yonkers',
+    lat: 40.93,
+    lng: -73.9,
     urlSlug: 'yonkers-onlyfans',
     label: "Yonkers",
     terms: ['yonkers new york', 'westchester county'],
@@ -3744,6 +4161,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'springfield-il',
+    lat: 39.8,
+    lng: -89.64,
     urlSlug: 'springfield-il-onlyfans',
     label: "Springfield",
     terms: ['springfield illinois', 'illinois state capital', 'lincoln home'],
@@ -3762,6 +4181,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'athens',
+    lat: 33.96,
+    lng: -83.38,
     urlSlug: 'athens-onlyfans',
     label: "Athens",
     terms: ['athens georgia', 'university of georgia', 'uga bulldogs'],
@@ -3780,6 +4201,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'chandler',
+    lat: 33.31,
+    lng: -111.84,
     urlSlug: 'chandler-onlyfans',
     label: "Chandler",
     terms: ['chandler arizona', 'east valley arizona'],
@@ -3798,6 +4221,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'clarksville',
+    lat: 36.53,
+    lng: -87.36,
     urlSlug: 'clarksville-onlyfans',
     label: "Clarksville",
     terms: ['clarksville tennessee', 'fort campbell'],
@@ -3816,6 +4241,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'reading',
+    lat: 40.34,
+    lng: -75.93,
     urlSlug: 'reading-onlyfans',
     label: "Reading",
     terms: ['reading pennsylvania', 'berks county', 'pennsylvania dutch country'],
@@ -3834,6 +4261,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'dayton',
+    lat: 39.76,
+    lng: -84.19,
     urlSlug: 'dayton-onlyfans',
     label: "Dayton",
     terms: ['dayton ohio', 'wright-patterson air force base'],
@@ -3852,6 +4281,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'fayetteville-nc',
+    lat: 35.05,
+    lng: -78.88,
     urlSlug: 'fayetteville-nc-onlyfans',
     label: "Fayetteville",
     terms: ['fayetteville north carolina', 'fort bragg', 'fort liberty'],
@@ -3870,6 +4301,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'alexandria',
+    lat: 38.8,
+    lng: -77.05,
     urlSlug: 'alexandria-onlyfans',
     label: "Alexandria",
     terms: ['alexandria virginia', 'old town alexandria', 'northern virginia'],
@@ -3888,6 +4321,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'sarasota',
+    lat: 27.34,
+    lng: -82.53,
     urlSlug: 'sarasota-onlyfans',
     label: "Sarasota",
     terms: ['sarasota florida', 'gulf coast florida arts'],
@@ -3906,6 +4341,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'cape-coral',
+    lat: 26.56,
+    lng: -81.95,
     urlSlug: 'cape-coral-onlyfans',
     label: "Cape Coral",
     terms: ['cape coral florida', 'southwest florida'],
@@ -3924,6 +4361,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'naples',
+    lat: 26.14,
+    lng: -81.79,
     urlSlug: 'naples-onlyfans',
     label: "Naples",
     terms: ['naples florida', 'gulf coast luxury florida'],
@@ -3942,6 +4381,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'frisco',
+    lat: 33.15,
+    lng: -96.82,
     urlSlug: 'frisco-onlyfans',
     label: "Frisco",
     terms: ['frisco texas', 'dfw metroplex'],
@@ -3960,6 +4401,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'mckinney',
+    lat: 33.2,
+    lng: -96.61,
     urlSlug: 'mckinney-onlyfans',
     label: "McKinney",
     terms: ['mckinney texas', 'dfw metroplex'],
@@ -3978,6 +4421,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'amarillo',
+    lat: 35.22,
+    lng: -101.83,
     urlSlug: 'amarillo-onlyfans',
     label: "Amarillo",
     terms: ['amarillo texas', 'texas panhandle'],
@@ -3996,6 +4441,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'waco',
+    lat: 31.55,
+    lng: -97.15,
     urlSlug: 'waco-onlyfans',
     label: "Waco",
     terms: ['waco texas', 'baylor university', 'magnolia waco'],
@@ -4014,6 +4461,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'irvine',
+    lat: 33.68,
+    lng: -117.83,
     urlSlug: 'irvine-onlyfans',
     label: "Irvine",
     terms: ['irvine california', 'orange county', 'uc irvine'],
@@ -4032,6 +4481,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'chula-vista',
+    lat: 32.64,
+    lng: -117.08,
     urlSlug: 'chula-vista-onlyfans',
     label: "Chula Vista",
     terms: ['chula vista california', 'san diego county'],
@@ -4050,6 +4501,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'modesto',
+    lat: 37.64,
+    lng: -120.99,
     urlSlug: 'modesto-onlyfans',
     label: "Modesto",
     terms: ['modesto california', 'central valley california'],
@@ -4068,6 +4521,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'oxnard',
+    lat: 34.2,
+    lng: -119.18,
     urlSlug: 'oxnard-onlyfans',
     label: "Oxnard",
     terms: ['oxnard california', 'ventura county'],
@@ -4086,6 +4541,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'mobile',
+    lat: 30.69,
+    lng: -88.04,
     urlSlug: 'mobile-onlyfans',
     label: "Mobile",
     terms: ['mobile alabama', 'gulf coast alabama', 'alabama mardi gras'],
@@ -4104,6 +4561,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'sitka',
+    lat: 57.05,
+    lng: -135.33,
     urlSlug: 'sitka-onlyfans',
     label: "Sitka",
     terms: ['sitka alaska', 'tlingit culture'],
@@ -4122,6 +4581,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'jonesboro',
+    lat: 35.84,
+    lng: -90.7,
     urlSlug: 'jonesboro-onlyfans',
     label: "Jonesboro",
     terms: ['jonesboro arkansas', 'arkansas state university', 'arkansas delta'],
@@ -4140,6 +4601,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'bridgeport',
+    lat: 41.18,
+    lng: -73.19,
     urlSlug: 'bridgeport-onlyfans',
     label: "Bridgeport",
     terms: ['bridgeport connecticut', 'fairfield county'],
@@ -4158,6 +4621,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'rehoboth-beach',
+    lat: 38.72,
+    lng: -75.08,
     urlSlug: 'rehoboth-beach-onlyfans',
     label: "Rehoboth Beach",
     terms: ['rehoboth beach delaware', 'delaware shore'],
@@ -4176,6 +4641,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'kahului',
+    lat: 20.89,
+    lng: -156.47,
     urlSlug: 'kahului-onlyfans',
     label: "Kahului",
     terms: ['kahului hawaii', 'maui hawaii'],
@@ -4194,6 +4661,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'coeur-dalene',
+    lat: 47.68,
+    lng: -116.78,
     urlSlug: 'coeur-dalene-onlyfans',
     label: "Coeur d'Alene",
     terms: ["coeur d'alene idaho", 'north idaho', 'lake coeur dalene'],
@@ -4212,6 +4681,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'davenport',
+    lat: 41.52,
+    lng: -90.58,
     urlSlug: 'davenport-onlyfans',
     label: "Davenport",
     terms: ['davenport iowa', 'quad cities'],
@@ -4230,6 +4701,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'lawrence-ks',
+    lat: 38.97,
+    lng: -95.24,
     urlSlug: 'lawrence-ks-onlyfans',
     label: "Lawrence",
     terms: ['lawrence kansas', 'university of kansas', 'jayhawks'],
@@ -4248,6 +4721,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'covington-ky',
+    lat: 39.08,
+    lng: -84.51,
     urlSlug: 'covington-ky-onlyfans',
     label: "Covington",
     terms: ['covington kentucky', 'cincinnati metro'],
@@ -4266,6 +4741,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'shreveport',
+    lat: 32.53,
+    lng: -93.75,
     urlSlug: 'shreveport-onlyfans',
     label: "Shreveport",
     terms: ['shreveport louisiana', 'north louisiana'],
@@ -4284,6 +4761,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'augusta-me',
+    lat: 44.31,
+    lng: -69.78,
     urlSlug: 'augusta-me-onlyfans',
     label: "Augusta",
     terms: ['augusta maine', 'maine state capital'],
@@ -4302,6 +4781,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'rockville',
+    lat: 39.08,
+    lng: -77.15,
     urlSlug: 'rockville-onlyfans',
     label: "Rockville",
     terms: ['rockville maryland', 'dc suburbs maryland'],
@@ -4320,6 +4801,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'bozeman',
+    lat: 45.68,
+    lng: -111.04,
     urlSlug: 'bozeman-onlyfans',
     label: "Bozeman",
     terms: ['bozeman montana', 'montana state university', 'yellowstone gateway'],
@@ -4338,6 +4821,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'grand-island',
+    lat: 40.92,
+    lng: -98.34,
     urlSlug: 'grand-island-onlyfans',
     label: "Grand Island",
     terms: ['grand island nebraska', 'central nebraska'],
@@ -4356,6 +4841,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'portsmouth-nh',
+    lat: 43.08,
+    lng: -70.75,
     urlSlug: 'portsmouth-nh-onlyfans',
     label: "Portsmouth",
     terms: ['portsmouth new hampshire', 'nh seacoast'],
@@ -4374,6 +4861,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'trenton',
+    lat: 40.22,
+    lng: -74.76,
     urlSlug: 'trenton-onlyfans',
     label: "Trenton",
     terms: ['trenton new jersey', 'new jersey state capital'],
@@ -4392,6 +4881,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'roswell',
+    lat: 33.39,
+    lng: -104.52,
     urlSlug: 'roswell-onlyfans',
     label: "Roswell",
     terms: ['roswell new mexico', 'ufo capital'],
@@ -4410,6 +4901,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'minot',
+    lat: 48.23,
+    lng: -101.3,
     urlSlug: 'minot-onlyfans',
     label: "Minot",
     terms: ['minot north dakota', 'minot air force base'],
@@ -4428,6 +4921,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'broken-arrow',
+    lat: 36.06,
+    lng: -95.79,
     urlSlug: 'broken-arrow-onlyfans',
     label: "Broken Arrow",
     terms: ['broken arrow oklahoma', 'tulsa metro'],
@@ -4446,6 +4941,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'bend',
+    lat: 44.06,
+    lng: -121.31,
     urlSlug: 'bend-onlyfans',
     label: "Bend",
     terms: ['bend oregon', 'central oregon', 'deschutes county'],
@@ -4464,6 +4961,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'cranston',
+    lat: 41.78,
+    lng: -71.44,
     urlSlug: 'cranston-onlyfans',
     label: "Cranston",
     terms: ['cranston rhode island', 'providence suburbs'],
@@ -4482,6 +4981,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'brookings',
+    lat: 44.31,
+    lng: -96.8,
     urlSlug: 'brookings-onlyfans',
     label: "Brookings",
     terms: ['brookings south dakota', 'south dakota state university'],
@@ -4500,6 +5001,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'st-george',
+    lat: 37.1,
+    lng: -113.58,
     urlSlug: 'st-george-onlyfans',
     label: "St. George",
     terms: ['st george utah', 'southern utah', 'red rock utah'],
@@ -4518,6 +5021,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'brattleboro',
+    lat: 42.85,
+    lng: -72.56,
     urlSlug: 'brattleboro-onlyfans',
     label: "Brattleboro",
     terms: ['brattleboro vermont', 'southern vermont'],
@@ -4536,6 +5041,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'wheeling',
+    lat: 40.06,
+    lng: -80.72,
     urlSlug: 'wheeling-onlyfans',
     label: "Wheeling",
     terms: ['wheeling west virginia', 'ohio valley', 'northern panhandle'],
@@ -4554,6 +5061,8 @@ export const cities: CityConfig[] = [
   },
   {
     slug: 'laramie',
+    lat: 41.31,
+    lng: -105.59,
     urlSlug: 'laramie-onlyfans',
     label: "Laramie",
     terms: ['laramie wyoming', 'university of wyoming'],

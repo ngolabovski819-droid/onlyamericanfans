@@ -10,8 +10,27 @@
  * always comes with an override too.
  *
  * A "scope" is one rendering context: 'home', `category:<slug>`, `state:<slug>`, `city:<slug>`,
- * or `region:<slug>` (this site is US-only — there's no country dimension, unlike sites that
- * pin per-country). Every scope maps to a ScopeRule:
+ * `region:<slug>`, or `nearby:<citySlug>` (this site is US-only — there's no country dimension,
+ * unlike sites that pin per-country). Every scope maps to a ScopeRule:
+ *
+ * `nearby:<citySlug>` is the "Showing creators near <city>" strip (src/components/
+ * NearbyCreatorsStrip.tsx, fetched via src/app/api/nearby/route.ts) that renders above the
+ * CreatorGrid on every page, site-wide. Its `citySlug` is whichever src/config/cities.ts entry
+ * is geographically nearest to the VISITOR (by IP geo, or precise browser geolocation once they
+ * click "Use precise location") — NOT the page's own scope. It is deliberately independent of
+ * that city's own `city:<slug>` page scope: pinning a creator on the Miami city page does NOT
+ * automatically pin them into the Miami nearby-widget, and vice versa. Use pinAllNearbyCities()
+ * below to pin across every nearby-widget scope at once, same pattern as pinAllCities().
+ *
+ * IMPORTANT: this scope's pageSize is always 5 (see NearbyCreatorsStrip) — never reuse a
+ * `nearby:<slug>` position number copied from a `city:<slug>` pin, they are different pagesizes
+ * on different pagination math.
+ *
+ * `nearby:fallback` is the ONE extra scope in this family: when a visitor has no location signal
+ * at all (no IP geo, geolocation denied/unavailable — always true in local dev), the widget shows
+ * a plain "Popular creators" list instead of a city-based one, so it's never a dead end. Pin here
+ * with `pin('nearby:fallback', username, position)` if a campaign should also show up for those
+ * visitors specifically.
  *   - pinned: creators forced to an exact 1-based GLOBAL position in that scope's paginated
  *     list, fetched even if they wouldn't naturally rank there.
  *   - excluded: creators hidden entirely from that scope.
@@ -82,6 +101,11 @@ function buildPlacements(): PlacementMap {
   /** Pin a creator at `position` across every region page at once. */
   function pinAllRegions(username: string, position: number, except: string[] = []): void {
     for (const r of regions) if (!except.includes(r.slug)) pin(`region:${r.slug}`, username, position);
+  }
+
+  /** Pin a creator at `position` across every city's "Showing creators near <city>" widget scope at once (pageSize 5 — see the nearby:<citySlug> note above). */
+  function pinAllNearbyCities(username: string, position: number, except: string[] = []): void {
+    for (const c of cities) if (!except.includes(c.slug)) pin(`nearby:${c.slug}`, username, position);
   }
 
   /** Pin a creator at `position` across a hand-picked list of state slugs (e.g. a "Tier 1" bundle you define per order). */
