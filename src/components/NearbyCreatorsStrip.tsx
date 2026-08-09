@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import type { Creator } from '@/types/creator';
 import { buildImageUrl } from '@/lib/image';
 
@@ -16,8 +16,9 @@ type PreciseState = 'idle' | 'loading' | 'denied' | 'error';
 
 function formatDistance(distanceKm: number): string {
   const miles = distanceKm * 0.621371;
-  if (miles < 1) return '<1 mi away';
-  return `${Math.round(miles)} mi away`;
+  if (miles < 1) return '<1 mile away';
+  const rounded = Math.round(miles);
+  return `${rounded} ${rounded === 1 ? 'mile' : 'miles'} away`;
 }
 
 /**
@@ -31,11 +32,13 @@ function formatDistance(distanceKm: number): string {
  * untouched.
  *
  * Always shows creators once loaded — /api/nearby falls back to a plain popular scope (no "near
- * you" claim) when it has no location signal at all, so the widget is never a dead end. On mount
- * it also makes a silent, best-effort attempt at precise browser geolocation (no click required);
- * if the visitor already granted permission (or grants it on the automatic prompt) the strip
- * upgrades in place. The manual "Use precise location" control stays available for anyone who
- * dismissed that prompt and wants to retry deliberately.
+ * you" claim) when it has no location signal at all, so the widget is never a dead end. The
+ * initial render relies ONLY on IP-based geo (read server-side from Vercel's request headers by
+ * /api/nearby) — no browser permission prompt involved. Browser geolocation only fires when the
+ * visitor explicitly clicks "Use precise location": firing it automatically on mount would pop
+ * the browser's native permission prompt the instant the page loads, before the visitor has any
+ * context for why the site wants their location — a bad first impression, and needless besides,
+ * since IP geo already gets them a "near you" result with zero friction.
  *
  * Distance shown is honest: it's the real distance from the visitor's detected location to the
  * centroid of the nearest city we index (src/config/cities.ts) — never a fabricated per-creator
@@ -45,7 +48,6 @@ function formatDistance(distanceKm: number): string {
 export default function NearbyCreatorsStrip() {
   const [data, setData] = useState<NearbyResponse | null>(null);
   const [preciseState, setPreciseState] = useState<PreciseState>('idle');
-  const upgradedRef = useRef(false);
 
   const fetchPrecise = useCallback((silent: boolean) => {
     if (!navigator.geolocation) {
@@ -80,17 +82,10 @@ export default function NearbyCreatorsStrip() {
         if (isCurrent) setData(null);
       });
 
-    // Best-effort, silent upgrade — doesn't block or replace the IP-based result above, and
-    // never surfaces an error if the visitor ignores/denies the browser's permission prompt.
-    if (!upgradedRef.current) {
-      upgradedRef.current = true;
-      fetchPrecise(true);
-    }
-
     return () => {
       isCurrent = false;
     };
-  }, [fetchPrecise]);
+  }, []);
 
   const usePreciseLocation = useCallback(() => fetchPrecise(false), [fetchPrecise]);
 
@@ -100,14 +95,14 @@ export default function NearbyCreatorsStrip() {
 
   return (
     <div className="nearby-strip">
+      <div className="section-rail">
+        <h2 className="section-rail-title">OnlyFans Creators Near You</h2>
+      </div>
       <div className="nearby-strip-header">
         <p className="nearby-strip-title">
           {city ? (
             <>
               📍 Showing creators near <strong>{city.label}{city.stateAbbr ? `, ${city.stateAbbr}` : ''}</strong>
-              {typeof distanceKm === 'number' && (
-                <span className="nearby-strip-distance"> · {formatDistance(distanceKm)}</span>
-              )}
             </>
           ) : (
             <>🔥 <strong>Popular creators</strong></>
@@ -129,7 +124,7 @@ export default function NearbyCreatorsStrip() {
 
       <div className="nearby-strip-avatars">
         {creators.map((creator) => (
-          <NearbyAvatar key={creator.id} creator={creator} />
+          <NearbyAvatar key={creator.id} creator={creator} distanceKm={distanceKm ?? null} />
         ))}
       </div>
     </div>
@@ -141,7 +136,7 @@ function formatPrice(price: number | null): string {
   return price === 0 ? 'Free' : `$${price.toFixed(2)}/mo`;
 }
 
-function NearbyAvatar({ creator }: { creator: Creator }) {
+function NearbyAvatar({ creator, distanceKm }: { creator: Creator; distanceKm: number | null }) {
   const displayName = creator.name ?? creator.username;
   const image = creator.imageOverride ?? creator.avatarC144 ?? creator.avatar;
   const isTracked = creator.sponsorTracked || creator.sponsored;
@@ -170,7 +165,18 @@ function NearbyAvatar({ creator }: { creator: Creator }) {
         <span className="nearby-avatar-name-text">{displayName}</span>
         {creator.isVerified && <span className="creator-verified-check" title="Verified creator">✓</span>}
       </span>
-      {price && <span className={`nearby-avatar-price${creator.subscribePrice === 0 ? ' nearby-avatar-price--free' : ''}`}>{price}</span>}
+      {/* Same real visitor -> nearest-city distance shown in the strip's header — every creator
+          here was matched into this scope precisely because they're tied to that city, so this
+          is honest, just repositioned under each card instead of stated once up top. Not a
+          fabricated per-creator GPS distance — see the component-level doc comment. */}
+      {typeof distanceKm === 'number' && (
+        <span className="nearby-avatar-distance">📍 {formatDistance(distanceKm)}</span>
+      )}
+      {price && (
+        <span className={`nearby-avatar-price${creator.subscribePrice === 0 ? ' nearby-avatar-price--free' : ''}`}>
+          {creator.subscribePrice === 0 && '🔓 '}{price}
+        </span>
+      )}
     </a>
   );
 }

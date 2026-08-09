@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { findNearestCity } from '@/lib/geo';
+import { findNearestCity, lookupIpGeo } from '@/lib/geo';
 import { fetchScopedCreators } from '@/lib/sponsorship';
 import { states } from '@/config/states';
 
@@ -29,6 +29,19 @@ function parseCoord(raw: string | null): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+async function popularFallback() {
+  const { creators } = await fetchScopedCreators({
+    scope: 'nearby:fallback',
+    pageSize: 5,
+    sort: 'popular',
+    revalidate: 300,
+  });
+  return NextResponse.json(
+    { available: true, precise: false, city: null, distanceKm: null, creators },
+    { headers: { 'Cache-Control': 'private, max-age=30' } },
+  );
+}
+
 export async function GET(req: NextRequest) {
   const forwarded = req.headers.get('x-forwarded-for');
   const ip = forwarded ? forwarded.split(',')[0].trim() : 'unknown';
@@ -43,26 +56,33 @@ export async function GET(req: NextRequest) {
   const preciseLng = parseCoord(searchParams.get('lng'));
   const isPrecise = preciseLat !== null && preciseLng !== null;
 
-  const lat = isPrecise ? preciseLat : parseCoord(req.headers.get('x-vercel-ip-latitude'));
-  const lng = isPrecise ? preciseLng : parseCoord(req.headers.get('x-vercel-ip-longitude'));
+  let lat = isPrecise ? preciseLat : parseCoord(req.headers.get('x-vercel-ip-latitude'));
+  let lng = isPrecise ? preciseLng : parseCoord(req.headers.get('x-vercel-ip-longitude'));
 
-  // No location signal at all (local dev always lands here — Vercel only sets these headers in
-  // production — or a visitor whose browser/network gives us nothing). We still always show
-  // creators (never an empty widget) — just without a "near you" claim we can't back up, falling
-  // back to a plain popular scope instead of a fabricated location.
-  if (lat === null || lng === null) {
-    const { creators } = await fetchScopedCreators({
-      scope: 'nearby:fallback',
-      pageSize: 5,
-      sort: 'popular',
-      revalidate: 300,
-    });
-    return NextResponse.json(
-      { available: true, precise: false, city: null, distanceKm: null, creators },
-      { headers: { 'Cache-Control': 'private, max-age=30' } },
-    );
+  // Vercel's IP-geo headers are production-only (they're attached at Vercel's edge network, which
+  // local dev never passes through). Rather than only ever showing "near you" once deployed, fall
+  // back to a best-effort public IP-geolocation lookup — still silent, still no browser permission
+  // prompt involved, just a different source for the same lat/lng. See lookupIpGeo's own comment
+  // for why this is safe to call unconditionally: it degrades to null (never throws/hangs) on any
+  // failure, and in production it essentially never fires since the Vercel headers above already
+  // cover it.
+  if (!isPrecise && (lat === null || lng === null)) {
+    const looked = await lookupIpGeo(ip === 'unknown' ? null : ip);
+    if (looked) {
+      lat = looked.lat;
+      lng = looked.lng;
+    }
   }
 
+  // No location signal at all (IP lookup unavailable/failed too). We still always show creators
+  // (never an empty widget) — just without a "near you" claim we can't back up, falling back to a
+  // plain popular scope instead of a fabricated location.
+  if (lat === null || lng === null) {
+    return popularFallback();
+  }
+
+  // Always the honest nearest-city distance, however large — never suppressed into the generic
+  // "Popular creators" fallback just because a visitor happens to be far from every indexed city.
   const { city, distanceKm } = findNearestCity(lat, lng);
   const state = states.find((s) => s.slug === city.parentState);
 

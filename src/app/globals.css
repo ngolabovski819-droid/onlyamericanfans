@@ -71,6 +71,18 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   border-bottom: 1px solid rgba(200, 16, 46, 0.2);
   box-shadow: 0 1px 0 rgba(200, 16, 46, 0.15), 0 2px 12px rgba(0,0,0,0.4);
 }
+@media (max-width: 768px) {
+  /* A sticky element with a blur filter forces the browser to recompute that blur against
+     whatever's now behind it on every scroll frame — on mobile GPUs this is the single biggest
+     cause of scrolling feeling heavy/janky site-wide (not specific to any one section). Drop the
+     blur and go near-opaque instead below the breakpoint where it actually matters; visually
+     almost identical, but scroll compositing no longer has to redo it every frame. */
+  .nav-wrapper {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(7, 9, 15, 0.98);
+  }
+}
 
 /* Patriotic red-white-blue stripe at the top of the nav */
 .nav-wrapper::before {
@@ -3079,17 +3091,18 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   padding: 0 0 1.75rem;
   border-bottom: 1px solid var(--border-subtle);
 }
+.nearby-strip .section-rail { margin-top: 0; }
 .nearby-strip-header {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
-  text-align: center;
-  gap: 0.5rem;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
   margin-bottom: 1.5rem;
 }
-.nearby-strip-title { font-size: 1.15rem; font-weight: 600; color: var(--text-muted); margin: 0; }
+.nearby-strip-title { font-size: 1rem; font-weight: 600; color: var(--text-muted); margin: 0; }
 .nearby-strip-title strong { color: var(--text); font-weight: 800; }
-.nearby-strip-distance { color: var(--text-muted); }
 .nearby-strip-precise {
   font-size: 0.95rem;
   font-weight: 700;
@@ -3106,10 +3119,21 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 .nearby-strip-avatars {
   display: flex;
-  justify-content: center;
-  gap: 2.25rem;
+  /* `safe center`: centers the row when it fits, but falls back to start-alignment instead of
+     clipping the leading item when it overflows — plain `center` on an overflow-x:auto flex row
+     lets the centered content spill into negative scroll offset that most browsers won't scroll
+     to, so the first avatar renders partially cropped and can never be scrolled into full view. */
+  justify-content: safe center;
+  gap: 2rem;
   overflow-x: auto;
-  padding: 0.25rem 0.25rem 4px;
+  overflow-y: hidden;
+  padding: 0.35rem 0.25rem 6px;
+  /* Momentum scrolling + don't let reaching either end of this row hand the gesture off to the
+     page's own vertical scroll (that handoff is what makes a small horizontal strip feel like it
+     "fights" the page mid-swipe). */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scroll-behavior: auto;
 }
 .nearby-avatar {
   display: flex;
@@ -3117,19 +3141,33 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   align-items: center;
   gap: 0.6rem;
   flex: 0 0 auto;
-  width: 132px;
+  width: 124px;
   text-align: center;
   text-decoration: none;
 }
-.nearby-avatar-img-wrap { position: relative; width: 96px; height: 96px; }
+.nearby-avatar-img-wrap {
+  position: relative;
+  width: 92px; height: 92px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  padding: 3px;
+  background: var(--accent-gradient);
+}
+/* Hover-driven transform gated to real pointer devices — on touch, :hover can latch on
+   touchstart and ride along with the drag, so a scale animation would fire per avatar swiped
+   past mid-scroll and stack with the browser's own momentum scroll, which is exactly what reads
+   as "heavy"/janky rather than a clean native swipe. */
+@media (hover: hover) and (pointer: fine) {
+  .nearby-avatar-img-wrap { transition: transform 0.15s; }
+  .nearby-avatar:hover .nearby-avatar-img-wrap { transform: scale(1.05); }
+}
 .nearby-avatar-img {
-  width: 96px; height: 96px;
+  width: 100%; height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid var(--border);
-  transition: border-color 0.15s, transform 0.15s;
+  display: block;
+  border: 2px solid var(--bg);
 }
-.nearby-avatar:hover .nearby-avatar-img { border-color: var(--accent-light); transform: scale(1.03); }
 .nearby-avatar-ad {
   position: absolute; bottom: -1px; right: -1px;
   background: var(--accent); color: #fff;
@@ -3139,11 +3177,35 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   text-transform: uppercase;
 }
 .nearby-avatar-name {
-  font-size: 1rem; font-weight: 700; color: var(--text);
+  font-size: 0.95rem; font-weight: 700; color: var(--text);
   display: inline-flex; align-items: center; gap: 0.3rem;
   max-width: 100%;
 }
 .nearby-avatar-name .creator-verified-check { flex-basis: 18px; width: 18px; height: 18px; font-size: 11px; }
 .nearby-avatar-name-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
-.nearby-avatar-price { font-size: 0.88rem; color: var(--text-muted); }
-.nearby-avatar-price--free { color: var(--success); font-weight: 700; }
+.nearby-avatar-distance {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-top: -0.35rem;
+}
+.nearby-avatar-price {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--text);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid var(--border-subtle);
+  padding: 3px 12px;
+  border-radius: 999px;
+}
+.nearby-avatar-price--free { color: #eafff1; background: var(--success); border-color: var(--success); }
+
+@media (max-width: 640px) {
+  .nearby-strip-header { flex-direction: column; align-items: flex-start; }
+  .nearby-strip-avatars { justify-content: flex-start; gap: 1.35rem; }
+  .nearby-avatar { width: 100px; }
+  .nearby-avatar-img-wrap { width: 80px; height: 80px; }
+  .nearby-avatar-name { font-size: 0.85rem; }
+}

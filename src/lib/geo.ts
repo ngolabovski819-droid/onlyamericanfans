@@ -23,6 +23,45 @@ export interface NearestCityResult {
   distanceKm: number;
 }
 
+const PRIVATE_IP_RE = /^(10\.|127\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|::1$|fc|fd)/i;
+
+/**
+ * Best-effort IP -> lat/lng lookup for when Vercel's x-vercel-ip-* headers aren't present —
+ * which is always, in local dev (Vercel only attaches those headers to requests that actually
+ * pass through its edge network), and would also be true for any deploy target that isn't
+ * Vercel. Without this, "near you" only ever works in production, and every local check of the
+ * widget necessarily falls back to the plain "Popular creators" state, which looks identical to
+ * a real bug even when nothing is wrong.
+ *
+ * Deliberately never throws and never blocks the caller for long: on a missing/private IP,
+ * network failure, timeout, or rate-limited response, this just returns null so the caller falls
+ * through to the honest "no location signal" fallback instead of hanging or crashing the route.
+ *
+ * When `ip` is missing/unroutable (the common case in bare `next dev`, which has no reverse
+ * proxy in front of it to populate X-Forwarded-For), this queries the lookup service with no IP
+ * argument, which resolves to the caller's OWN outbound public IP — i.e. the developer's real
+ * location when run locally. In production behind Vercel this branch essentially never fires,
+ * since Vercel always supplies the geo headers this function exists to work around.
+ */
+export async function lookupIpGeo(ip: string | null): Promise<{ lat: number; lng: number } | null> {
+  const usableIp = ip && ip !== 'unknown' && !PRIVATE_IP_RE.test(ip) ? ip : '';
+  const url = `http://ip-api.com/json/${usableIp}?fields=status,lat,lon`;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 2500);
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { status?: string; lat?: unknown; lon?: unknown };
+    if (json.status !== 'success' || typeof json.lat !== 'number' || typeof json.lon !== 'number') return null;
+    return { lat: json.lat, lng: json.lon };
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 /**
  * Nearest indexed city (src/config/cities.ts) to an arbitrary lat/lng, by straight-line distance.
  * Always returns the closest city we have — even a very large distanceKm for a non-US visitor —
