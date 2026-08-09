@@ -84,6 +84,10 @@ function mapCreator(raw: Record<string, unknown>): Creator {
   };
 }
 
+/** Ranking candidate pool cap for search_creators_capped() (migration 013) — see that migration
+ *  and fetchCreatorsCappedInner()'s comment for why this exists and what it trades off. */
+const SEARCH_CANDIDATE_LIMIT = 1000;
+
 /**
  * Fetches creators plus a resilience fallback: when `fallbackToPopularIfEmpty` is set and the
  * filtered query comes back with zero rows (a genuine zero-match term, or a filtered query that
@@ -92,7 +96,17 @@ function mapCreator(raw: Record<string, unknown>): Creator {
  * terms stripped so the page shows a reasonable amount of content instead of nothing.
  */
 export async function fetchCreators(params: SearchParams): Promise<SearchResult> {
-  const result = await fetchCreatorsInner(params);
+  // Free-text (q), category, and filter-group searches can match an unbounded number of rows
+  // (a broad term can hit tens of thousands out of ~2M) — ranking every match by popularity is
+  // what made these slow even with migration 012's indexes in place. Location-only/unfiltered
+  // browsing never has this problem (bounded by the location index, or not filtered at all), so
+  // it keeps using the plain query below unchanged.
+  const usesCappedSearch = !!(
+    (params.q && params.q.trim()) ||
+    (params.categoryTerms && params.categoryTerms.length) ||
+    (params.filterGroups && Object.keys(params.filterGroups).length)
+  );
+  const result = await (usesCappedSearch ? fetchCreatorsCappedInner(params) : fetchCreatorsInner(params));
 
   // Deliberately excludes `q` — a free-text search that genuinely matches nothing should show
   // "no results," not paper over it with unrelated popular creators. This fallback is for
@@ -219,6 +233,91 @@ function andClausesToRawFilter(andClauses: string[]): string {
   if (andClauses.length === 1) return `&or=${andClauses[0]}`;
   if (andClauses.length > 1) return `&and=(${andClauses.map((c) => `or${c}`).join(',')})`;
   return '';
+}
+
+/**
+ * Routes through the search_creators_capped() Postgres function (migration 013) instead of a
+ * plain filtered table query — same {creators, total, hasMore} contract as fetchCreatorsInner,
+ * so fetchCreators() can swap between the two transparently. Ranks within a candidate pool capped
+ * at SEARCH_CANDIDATE_LIMIT rather than every matching row, so a broad/generic term (thousands of
+ * matches) costs about the same as a narrow one (a handful of matches) instead of scaling with how
+ * common the term is.
+ *
+ * hasMore intentionally goes false once the capped pool is exhausted (offset + pageSize reaches
+ * SEARCH_CANDIDATE_LIMIT), even if more matches technically exist beyond that boundary — see the
+ * migration's comment for why that's an accepted, deliberate trade-off (nothing past the cap is
+ * reachable via Load More) rather than a bug. total is likewise an approximation, not an exact
+ * count: capped while more pages remain, exact once hasMore goes false.
+ *
+ * Uses POST (not GET) for the RPC call despite this function being STABLE (which would allow
+ * GET) — reliable JSON encoding of array/jsonb parameters matters more here than Next.js's
+ * fetch-level Data Cache, which only applies to GET requests anyway; the outer /api/search
+ * route's own Cache-Control still covers repeat-request caching regardless.
+ */
+async function fetchCreatorsCappedInner(params: SearchParams): Promise<SearchResult> {
+  const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/+$/, '');
+  const supabaseKey = process.env.SUPABASE_KEY;
+
+  if (!supabaseUrl || !supabaseKey || supabaseUrl.includes('your-project')) {
+    return { creators: [], total: 0, hasMore: false };
+  }
+
+  const page = params.page ?? 1;
+  const pageSize = params.pageSize ?? 20;
+  const offset = params.offsetOverride ?? (page - 1) * pageSize;
+
+  const textTerms =
+    params.q && params.q.trim()
+      ? params.q.split(/[|,]/).map((t) => t.trim()).filter(Boolean)
+      : null;
+  const categoryTerms = params.categoryTerms && params.categoryTerms.length ? params.categoryTerms : null;
+  const locationTerms = params.locationTerms && params.locationTerms.length ? params.locationTerms : null;
+  const filterGroups =
+    params.filterGroups && Object.keys(params.filterGroups).length ? params.filterGroups : null;
+  const excludeUsernames =
+    params.excludeUsernames && params.excludeUsernames.length
+      ? params.excludeUsernames.map(sanitizeUsername).filter(Boolean)
+      : null;
+
+  let res: Response;
+  try {
+    res = await fetch(`${supabaseUrl}/rest/v1/rpc/search_creators_capped`, {
+      method: 'POST',
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+        'Accept-Profile': 'public',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        p_text_terms: textTerms,
+        p_category_terms: categoryTerms,
+        p_location_terms: locationTerms,
+        p_filter_groups: filterGroups,
+        p_verified: params.verified ?? null,
+        p_price_filter: params.price ?? null,
+        p_sort: params.sort === 'newest' ? 'newest' : 'popular',
+        p_exclude_usernames: excludeUsernames,
+        p_candidate_limit: SEARCH_CANDIDATE_LIMIT,
+        p_page_size: pageSize,
+        p_offset: offset,
+      }),
+    });
+  } catch {
+    return { creators: [], total: 0, hasMore: false };
+  }
+
+  if (!res.ok) {
+    return { creators: [], total: 0, hasMore: false };
+  }
+
+  const data: Record<string, unknown>[] = await res.json();
+  const creators = data.map(mapCreator);
+
+  const hasMore = creators.length === pageSize && offset + pageSize < SEARCH_CANDIDATE_LIMIT;
+  const total = hasMore ? SEARCH_CANDIDATE_LIMIT : offset + creators.length;
+
+  return { creators, total, hasMore };
 }
 
 async function fetchCreatorsInner(params: SearchParams): Promise<SearchResult> {
