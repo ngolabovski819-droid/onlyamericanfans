@@ -374,7 +374,8 @@ async function fetchCreatorsInner(params: SearchParams): Promise<SearchResult> {
   // filter expressions (or/and) are NOT percent-encoded (PostgREST requires raw parens/commas)
   const qp = new URLSearchParams();
   qp.set('select', CARD_COLS);
-  qp.set('isperformer', 'eq.true');
+  // No isperformer filter here — the lean table only ever contains isperformer=true rows by
+  // construction (see scripts/sync-lean-creators.mjs), and doesn't have the column at all.
 
   const andClauses = buildScopeAndClauses(params);
   let rawFilter = andClausesToRawFilter(andClauses);
@@ -530,7 +531,7 @@ export async function fetchCreatorStatLeaders(
 
   const qp = new URLSearchParams();
   qp.set('select', `username,name,${metric}`);
-  qp.set('isperformer', 'eq.true');
+  // No isperformer filter — see the comment in fetchCreatorsInner.
   qp.set(metric, 'gt.0');
   // Subscriber count is a creator-controlled visibility setting on OnlyFans — some creators hide
   // it from public view entirely. Even though we may have a scraped value on file, it would be

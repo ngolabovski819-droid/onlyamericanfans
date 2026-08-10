@@ -124,7 +124,13 @@ BEGIN
   END IF;
 
   sql := format(
-    'SELECT * FROM (SELECT * FROM onlyfans_profiles WHERE %s LIMIT %L) capped ORDER BY %s LIMIT %L OFFSET %L',
+    -- ORDER BY id on the inner candidate-selection query isn't just cosmetic: without ANY
+    -- ORDER BY, Postgres gives zero ordering guarantee for a LIMIT-only query (documented
+    -- behavior, not a bug) — confirmed via direct testing that two back-to-back calls with
+    -- identical parameters returned genuinely different top-ranked results despite no
+    -- concurrent writes and no parallel workers involved. Ordering by the (indexed) primary key
+    -- makes the candidate pool deterministic and repeatable at negligible extra cost.
+    'SELECT * FROM (SELECT * FROM onlyfans_profiles WHERE %s ORDER BY id LIMIT %L) capped ORDER BY %s LIMIT %L OFFSET %L',
     where_sql, p_candidate_limit, order_sql, p_page_size, p_offset
   );
 
