@@ -53,6 +53,85 @@ card's outbound link through `/go/[username]` whenever `sponsored` OR `sponsorTr
 everyone else still links straight to `onlyfans.com` as before (no redirect hop added for the
 ~500k non-sponsored creators).
 
+## Static browsing pages (states/cities/regions/categories)
+
+As of 2026-08-10, every state/city/region/category page — plus their pagination — is **fully
+static**, pre-built at deploy time via `generateStaticParams()`, with zero live database calls
+per visitor. This replaced the original live "Load More" pattern for these surfaces because (a)
+this project's `onlyfans_profiles` no longer gets fresh rows from the scraper on this app's
+behalf — per the project owner, only sponsored creators get added going forward, always via a
+config change + redeploy, never a bulk data refresh — and (b) sponsor changes already require a
+redeploy regardless, so ISR's background auto-refresh wasn't buying anything a redeploy doesn't
+already cover.
+
+- **Routes**: `src/app/[locationSlug]/page.tsx` (page 1 of every state/city/region) +
+  `src/app/[locationSlug]/[page]/page.tsx` (page 2+), and the identical pair under
+  `src/app/categories/[slug]/`. All four render `StaticCreatorGrid`
+  (`src/components/StaticCreatorGrid.tsx` — real `<Link>` Prev/Next, no client-side fetch)
+  instead of `CreatorGrid` (client-side "Load More" — still used by the homepage and search).
+- **Pagination is capped at 1000 results (~42 pages) per scope** — `src/lib/pagination.ts`'s
+  `cappedPageCount()`. Nobody scrolls 42 pages deep; this bounds how many pages get pre-built for
+  a large state/category instead of potentially thousands.
+- **`export const revalidate = false`** on all four route files — pages are cached indefinitely,
+  no background auto-refresh, ever. **Setting this alone does NOT freeze a route** — per
+  `node_modules/next/dist/docs/01-app/02-guides/caching-without-cache-components.md`, Next.js
+  takes the LOWEST revalidate value found anywhere in the route (segment config + every
+  individual `fetch()` call) to determine the whole route's real refresh behavior. Every fetch
+  these pages can reach — `fetchCreatorsInner`, `fetchCreatorsCappedInner`,
+  `fetchCreatorsByUsernames`, `fetchCreatorStatLeaders` (all in `src/lib/supabase.ts`) — accepts
+  an optional `revalidate` param for exactly this reason, and the frozen route files explicitly
+  pass `revalidate: false` through `fetchScopedCreators`/`CreatorStatsSection` at every call
+  site. Adding a new fetch reachable from one of these pages without the same explicit
+  `revalidate: false` will silently drag the whole route back onto a timer.
+- **Gotcha**: sizing each scope's pagination is a `pageSize: 1` count-only lookup inside
+  `generateStaticParams()`. This MUST call `fetchCreators()` directly (`src/lib/supabase.ts`),
+  never `fetchScopedCreators()` (`src/lib/sponsorship.ts`) — the latter slots sponsor pins into
+  the requested page before deciding how many organic rows to fetch, and every scope has a pin
+  at position 1, so with `pageSize: 1` the single pinned slot fills the whole "page," the real
+  count query never runs, and `total` collapses to just the pinned count (3). This silently
+  generated ZERO page-2+ routes for every state/category the first time it shipped — the build
+  succeeded either way, just with far fewer pages than it should have; only caught by inspecting
+  actual build output, not by the build passing.
+- **Not yet static**: the homepage (`/`) still uses live `CreatorGrid`/"Load More" for its
+  Trending section — same live-per-click-query pattern as before, on the site's highest-traffic
+  page. Known follow-up, intentionally not yet fixed (as of 2026-08-10). Likely fix: drop its
+  Load More entirely and let the existing "See all trending →" link send overflow traffic to the
+  always-live `/onlyfans-search` page instead, rather than building homepage-specific
+  pagination.
+- **`/onlyfans-search` and `/api/search` remain live/dynamic on purpose** — free-text search
+  can't be pre-built. This is the only surface on the site that still queries the database on
+  every visitor request.
+- **Deploy cost — don't redeploy casually.** Every deploy rebuilds all ~6,450 static pages, each
+  one querying the database at build time (capped at 2 concurrent workers via `next.config.ts`'s
+  `experimental.cpus: 2`, specifically so a deploy's build-time query burst can't repeat the
+  lean-project outage below). Locally this takes ~7 minutes. Because pages are frozen rather than
+  on a timer, there's no freshness reason to ever redeploy — only deploy for an actual code
+  change, and batch multiple small changes into one deploy instead of shipping them one at a
+  time.
+
+## Abandoned: dedicated "lean" Supabase project
+
+Tried and fully reverted on 2026-08-10 — noted here so a future session doesn't rediscover and
+retry the same dead end. The idea: move the ~214k US-matching rows (and only the ~31 columns the
+app actually uses) to a separate, dedicated free-tier Supabase project, to get off the original
+shared project's contended compute. It was built, tested, and cut over to production — and
+immediately failed under real visitor load: the free tier's PostgREST layer (not Postgres
+itself) couldn't keep up, causing timeouts and a real production outage. A paid compute upgrade
+was considered and rejected once the fully-static approach above made the original performance
+problem moot anyway — a static page never queries any database on a visitor request, lean
+project or not.
+
+**Fully reverted** — if you find references to any of this, they're stale:
+- `SUPABASE_URL`/`SUPABASE_KEY` point at the original project again (both local `.env.local` and
+  Vercel production).
+- `LEAN_SUPABASE_POOLER_URL`, `SOURCE_SUPABASE_POOLER_URL`, and `CRON_SECRET` env vars were
+  deleted from Vercel — they only existed to support the sync job below.
+- `src/app/api/cron/sync-creators/route.ts` and `vercel.json` (the 6-hourly cron that kept the
+  lean project's data fresh) were deleted entirely.
+- `scripts/sync-lean-creators.mjs` (the one-off manual backfill script) still exists but is now
+  orphaned dead code — nothing calls it anymore. Safe to delete whenever; left in place since
+  removing it wasn't blocking anything.
+
 ## `/go/[username]` redirect (`src/app/go/[username]/route.ts`)
 
 Looks up the sponsor override, logs a click row (if `clickTable` is set and the User-Agent isn't
