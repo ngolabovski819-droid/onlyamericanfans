@@ -15,8 +15,10 @@ export interface SearchParams {
   filterGroups?: Record<string, string[]>;
   /** Skip the AU location filter entirely (e.g. category pages that search globally) */
   skipLocationFilter?: boolean;
-  /** Revalidate tag for Next.js fetch caching */
-  revalidate?: number;
+  /** Revalidate tag for Next.js fetch caching. `false` caches indefinitely — no automatic
+   *  background refresh at all (see the fully-static location/category pages, which pass this
+   *  explicitly since their whole point is zero ongoing database dependency). */
+  revalidate?: number | false;
   /** Usernames to exclude at the DB level (case-sensitive exact match) — used by fetchScopedCreators
    *  to keep pinned/excluded sponsor placements out of the organic result set so pagination offsets
    *  stay aligned and nothing shows twice. */
@@ -137,7 +139,10 @@ export async function fetchCreators(params: SearchParams): Promise<SearchResult>
 /** Fetch a fixed, small set of creators by exact username — used by fetchScopedCreators to pull
  *  pinned placements regardless of whether they'd naturally rank. Order is NOT guaranteed to
  *  match `usernames`; callers must re-sort. */
-export async function fetchCreatorsByUsernames(usernames: string[]): Promise<Creator[]> {
+export async function fetchCreatorsByUsernames(
+  usernames: string[],
+  revalidate: number | false = 300,
+): Promise<Creator[]> {
   const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/+$/, '');
   const supabaseKey = process.env.SUPABASE_KEY;
   const safe = usernames.map(sanitizeUsername).filter(Boolean);
@@ -157,7 +162,7 @@ export async function fetchCreatorsByUsernames(usernames: string[]): Promise<Cre
         Authorization: `Bearer ${supabaseKey}`,
         'Accept-Profile': 'public',
       },
-      next: { revalidate: 300 },
+      next: { revalidate },
     });
   } catch {
     return [];
@@ -269,6 +274,7 @@ async function callSearchCreatorsCapped(
       'Accept-Profile': 'public',
       'Content-Type': 'application/json',
     },
+    next: { revalidate: params.revalidate ?? 300 },
     body: JSON.stringify({
       p_text_terms: textTerms,
       p_category_terms: categoryTerms,
@@ -521,6 +527,7 @@ export async function fetchCreatorStatLeaders(
   metric: StatMetric,
   params: StatLeaderParams,
   limit = 5,
+  revalidate: number | false = STAT_LEADER_REVALIDATE_SECONDS,
 ): Promise<StatLeader[]> {
   const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/+$/, '');
   const supabaseKey = process.env.SUPABASE_KEY;
@@ -557,7 +564,7 @@ export async function fetchCreatorStatLeaders(
         Authorization: `Bearer ${supabaseKey}`,
         'Accept-Profile': 'public',
       },
-      next: { revalidate: STAT_LEADER_REVALIDATE_SECONDS },
+      next: { revalidate },
     });
   } catch {
     return [];

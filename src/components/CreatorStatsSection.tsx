@@ -203,11 +203,15 @@ export interface CreatorStatsSectionProps {
   pageLabel?: string;
   /** Same scoping terms the page's CreatorGrid uses, so the leaderboard matches what's on screen */
   params: StatLeaderParams;
+  /** Passed straight through to fetchCreatorStatLeaders — `false` for the fully-static
+   *  location/category pages so this never triggers a background refresh. Omit to keep the
+   *  default 7-day cache (pages that aren't frozen, e.g. the homepage). */
+  revalidate?: number | false;
 }
 
-export default async function CreatorStatsSection({ headingLabel, pageLabel, params }: CreatorStatsSectionProps) {
+export default async function CreatorStatsSection({ headingLabel, pageLabel, params, revalidate }: CreatorStatsSectionProps) {
   const results = await Promise.all(
-    STAT_SECTIONS.map((section) => fetchCreatorStatLeaders(section.metric, params, 5)),
+    STAT_SECTIONS.map((section) => fetchCreatorStatLeaders(section.metric, params, 5, revalidate)),
   );
 
   const sections = STAT_SECTIONS.map((config, i) => ({ config, leaders: results[i] })).filter(

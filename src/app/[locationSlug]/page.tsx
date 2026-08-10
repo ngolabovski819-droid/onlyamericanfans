@@ -6,14 +6,22 @@ import { getCityByUrlSlug, getCitiesByState, cities } from '@/config/cities';
 import { getRegionByUrlSlug, regions } from '@/config/regions';
 
 import { fetchScopedCreators } from '@/lib/sponsorship';
-import CreatorGrid from '@/components/CreatorGrid';
+import StaticCreatorGrid from '@/components/StaticCreatorGrid';
 import CreatorStatsSection from '@/components/CreatorStatsSection';
 import RelatedLocations from '@/components/RelatedLocations';
 import LocationMap from '@/components/LocationMap';
 import NearbyCreatorsStrip from '@/components/NearbyCreatorsStrip';
 import { expandLocationFaqs } from '@/lib/faqs';
+import { cappedPageCount } from '@/lib/pagination';
 
-export const revalidate = 3600;
+// false = cache indefinitely, no background regeneration ever. Correct here specifically because
+// (a) this app no longer runs the creator-data scraper against this project (per project owner:
+// only sponsored creators get added, always via a code change + redeploy, never live data drift)
+// and (b) every fetch reachable from this page (organic query, sponsor-pin lookup, stat
+// leaderboard) is explicitly passed revalidate:false below too — see the route segment config
+// doc: the LOWEST revalidate found anywhere in a route wins, so setting only this export without
+// also fixing every inner fetch would NOT actually freeze the page.
+export const revalidate = false;
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
 
@@ -21,14 +29,13 @@ interface Props {
   params: Promise<{ locationSlug: string }>;
 }
 
-// Only states are pre-built at deploy time (50 pages) — cities (254) and regions (8) render
-// on-demand on first visit instead (dynamicParams defaults to true, so nothing 404s; it's a
-// one-time slower first request per page, then cached same as any ISR page via `revalidate`
-// above). Building all ~312 location pages meant Vercel's parallel build workers (11 of them)
-// hitting the database simultaneously throughout the whole build — confirmed this is what
-// tipped an otherwise-healthy database into an outright build failure. States alone is enough
-// concurrent load to stay comfortably under that ceiling while still pre-building the highest-
-// traffic pages.
+// All 312 locations (50 states + 254 cities + 8 regions) are pre-built at deploy time — every
+// browsing page is fully static, zero live database calls. Build-time DB load is bounded by
+// next.config.ts's `experimental.cpus: 2`, which caps how many pages generateStaticParams'
+// workers render concurrently regardless of total page count — this is what previously made
+// building all 312 location pages tip an otherwise-healthy database into an outright build
+// failure (11 parallel workers hitting it at once); capping concurrency fixed the cause, so
+// there's no longer a reason to hold cities/regions back from static generation too.
 export async function generateStaticParams() {
   const locationRoutes = [
     ...states.map((state) => ({ locationSlug: state.urlSlug, source: `state:${state.slug}` })),
@@ -36,9 +43,6 @@ export async function generateStaticParams() {
     ...regions.map((region) => ({ locationSlug: region.urlSlug, source: `region:${region.slug}` })),
   ];
 
-  // Duplicate-slug validation still checks every route (cities/regions included) — this is a
-  // config sanity check, not a build-time data fetch, so it's cheap and worth keeping for all of
-  // them even though only states get pre-built below.
   const owners = new Map<string, string>();
   for (const route of locationRoutes) {
     const existingOwner = owners.get(route.locationSlug);
@@ -50,7 +54,7 @@ export async function generateStaticParams() {
     owners.set(route.locationSlug, route.source);
   }
 
-  return states.map((state) => ({ locationSlug: state.urlSlug }));
+  return locationRoutes.map((route) => ({ locationSlug: route.locationSlug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -88,12 +92,12 @@ export default async function LocationPage({ params }: Props) {
 
   const scope = state ? `state:${state.slug}` : city ? `city:${city.slug}` : `region:${region!.slug}`;
 
-  const { creators, total, hasMore } = await fetchScopedCreators({
+  const { creators, total } = await fetchScopedCreators({
     scope,
     locationTerms: loc.terms,
     pageSize: 24,
     sort: 'popular',
-    revalidate: 3600,
+    revalidate: false,
   });
 
   // Find parent state for city pages
@@ -198,20 +202,21 @@ export default async function LocationPage({ params }: Props) {
         {/* Nearby creators (IP/precise-location based) */}
         <NearbyCreatorsStrip />
 
-        {/* Creator grid */}
-        <CreatorGrid
-          initialCreators={creators}
-          initialTotal={total}
-          initialHasMore={hasMore}
-          locationTerms={loc.terms}
-          pageSize={24}
-          scope={scope}
+        {/* Every location type (state/city/region) uses the fully static, pre-built pagination
+            (src/app/[locationSlug]/[page]/page.tsx) — zero live database calls once built. */}
+        <StaticCreatorGrid
+          creators={creators}
+          total={Math.min(total, cappedPageCount(total, 24) * 24)}
+          currentPage={1}
+          totalPages={cappedPageCount(total, 24)}
+          baseUrl={`/${locationSlug}`}
         />
 
         {/* About / Creator Stats (programmatic SEO) */}
         <CreatorStatsSection
           headingLabel={loc.label}
           params={{ locationTerms: loc.terms }}
+          revalidate={false}
         />
 
         {/* Related locations */}

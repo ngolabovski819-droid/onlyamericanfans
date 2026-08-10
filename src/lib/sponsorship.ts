@@ -63,7 +63,7 @@ export async function fetchScopedCreators(params: ScopedFetchParams): Promise<Sc
         })
       : Promise.resolve<SearchResult>({ creators: [], total: 0, hasMore: false }),
     pinnedInRange.length > 0
-      ? fetchCreatorsByUsernames(pinnedInRange.map((p) => p.username))
+      ? fetchCreatorsByUsernames(pinnedInRange.map((p) => p.username), rest.revalidate)
       : Promise.resolve<Creator[]>([]),
   ]);
 

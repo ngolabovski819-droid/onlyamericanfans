@@ -5,12 +5,16 @@ import { getCategoryBySlug, categories } from '@/config/categories';
 import { states } from '@/config/states';
 import { cities } from '@/config/cities';
 import { fetchScopedCreators } from '@/lib/sponsorship';
-import CreatorGrid from '@/components/CreatorGrid';
+import StaticCreatorGrid from '@/components/StaticCreatorGrid';
 import CreatorStatsSection from '@/components/CreatorStatsSection';
 import NearbyCreatorsStrip from '@/components/NearbyCreatorsStrip';
 import { categoryFaqs } from '@/lib/faqs';
+import { cappedPageCount } from '@/lib/pagination';
 
-export const revalidate = 3600;
+// See the comment in src/app/[locationSlug]/page.tsx — false freezes the page forever, but only
+// works because every fetch this page reaches (organic query, sponsor-pin lookup, stat
+// leaderboard, RPC-based category search) is also explicitly passed revalidate:false below.
+export const revalidate = false;
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
 
@@ -42,13 +46,14 @@ export default async function CategoryPage({ params }: Props) {
   const cat = getCategoryBySlug(slug);
   if (!cat) notFound();
 
-  const { creators, total, hasMore } = await fetchScopedCreators({
+  const { creators, total } = await fetchScopedCreators({
     scope: `category:${slug}`,
     categoryTerms: cat.terms.length > 0 ? cat.terms : undefined,
     price: cat.priceFilter,
     skipLocationFilter: true,
     pageSize: 24,
     sort: 'popular',
+    revalidate: false,
   });
 
   const faqs = categoryFaqs({ label: cat.label, slug, total, priceFilter: cat.priceFilter });
@@ -112,15 +117,12 @@ export default async function CategoryPage({ params }: Props) {
 
         <NearbyCreatorsStrip />
 
-        <CreatorGrid
-          initialCreators={creators}
-          initialTotal={total}
-          initialHasMore={hasMore}
-          categoryTerms={cat.terms.length > 0 ? cat.terms : undefined}
-          price={cat.priceFilter}
-          skipLocationFilter
-          pageSize={24}
-          scope={`category:${slug}`}
+        <StaticCreatorGrid
+          creators={creators}
+          total={Math.min(total, cappedPageCount(total, 24) * 24)}
+          currentPage={1}
+          totalPages={cappedPageCount(total, 24)}
+          baseUrl={`/categories/${slug}`}
         />
 
         {/* About / Creator Stats (programmatic SEO) — strip a trailing "(18+)"-style
@@ -133,6 +135,7 @@ export default async function CategoryPage({ params }: Props) {
             categoryTerms: cat.terms.length > 0 ? cat.terms : undefined,
             price: cat.priceFilter,
           }}
+          revalidate={false}
         />
 
         {/* FAQ */}

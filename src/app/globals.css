@@ -706,6 +706,38 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   margin-bottom: 1rem;
 }
 
+/* ── STATIC PAGINATION (paginated location/category pages) ────── */
+.static-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem 1rem;
+  flex-wrap: wrap;
+}
+.static-pagination-link {
+  background: var(--accent-gradient);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.65rem 1.5rem;
+  border-radius: 999px;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.static-pagination-link:hover { opacity: 0.9; }
+.static-pagination-link--disabled {
+  background: var(--border-subtle);
+  color: var(--text-muted);
+  opacity: 0.5;
+  cursor: default;
+}
+.static-pagination-current {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
 /* ── CHIPS ─────────────────────────────────────── */
 .chips-row {
   display: flex;
