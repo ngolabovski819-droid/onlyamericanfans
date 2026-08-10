@@ -235,6 +235,56 @@ function andClausesToRawFilter(andClauses: string[]): string {
   return '';
 }
 
+/** Reduced candidate pool for the retry attempt in fetchCreatorsCappedInner — smaller pool means
+ *  less work, giving a retry a real chance of completing even if the first attempt was caught in
+ *  a moment of contention on the shared database rather than a structurally slow query. */
+const SEARCH_CANDIDATE_LIMIT_RETRY = 300;
+
+async function callSearchCreatorsCapped(
+  supabaseUrl: string,
+  supabaseKey: string,
+  params: SearchParams,
+  candidateLimit: number,
+  offset: number,
+  pageSize: number,
+): Promise<Response> {
+  const textTerms =
+    params.q && params.q.trim()
+      ? params.q.split(/[|,]/).map((t) => t.trim()).filter(Boolean)
+      : null;
+  const categoryTerms = params.categoryTerms && params.categoryTerms.length ? params.categoryTerms : null;
+  const locationTerms = params.locationTerms && params.locationTerms.length ? params.locationTerms : null;
+  const filterGroups =
+    params.filterGroups && Object.keys(params.filterGroups).length ? params.filterGroups : null;
+  const excludeUsernames =
+    params.excludeUsernames && params.excludeUsernames.length
+      ? params.excludeUsernames.map(sanitizeUsername).filter(Boolean)
+      : null;
+
+  return fetch(`${supabaseUrl}/rest/v1/rpc/search_creators_capped`, {
+    method: 'POST',
+    headers: {
+      apikey: supabaseKey,
+      Authorization: `Bearer ${supabaseKey}`,
+      'Accept-Profile': 'public',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      p_text_terms: textTerms,
+      p_category_terms: categoryTerms,
+      p_location_terms: locationTerms,
+      p_filter_groups: filterGroups,
+      p_verified: params.verified ?? null,
+      p_price_filter: params.price ?? null,
+      p_sort: params.sort === 'newest' ? 'newest' : 'popular',
+      p_exclude_usernames: excludeUsernames,
+      p_candidate_limit: candidateLimit,
+      p_page_size: pageSize,
+      p_offset: offset,
+    }),
+  });
+}
+
 /**
  * Routes through the search_creators_capped() Postgres function (migration 013) instead of a
  * plain filtered table query — same {creators, total, hasMore} contract as fetchCreatorsInner,
@@ -244,10 +294,21 @@ function andClausesToRawFilter(andClauses: string[]): string {
  * common the term is.
  *
  * hasMore intentionally goes false once the capped pool is exhausted (offset + pageSize reaches
- * SEARCH_CANDIDATE_LIMIT), even if more matches technically exist beyond that boundary — see the
- * migration's comment for why that's an accepted, deliberate trade-off (nothing past the cap is
- * reachable via Load More) rather than a bug. total is likewise an approximation, not an exact
- * count: capped while more pages remain, exact once hasMore goes false.
+ * whichever candidate limit was actually used), even if more matches technically exist beyond
+ * that boundary — see the migration's comment for why that's an accepted, deliberate trade-off
+ * (nothing past the cap is reachable via Load More) rather than a bug. total is likewise an
+ * approximation, not an exact count: capped while more pages remain, exact once hasMore is false.
+ *
+ * Resilience: confirmed via EXPLAIN ANALYZE against production that this query is genuinely fast
+ * (~400ms) and correctly index-accelerated under normal conditions — but on a database shared
+ * across multiple projects, a rare request can still land during a moment of real contention and
+ * hit Postgres's own statement_timeout. Previously that surfaced to the visitor as a false "no
+ * results found" (a timeout was being treated identically to a genuine zero-match search, which
+ * it isn't). Now it retries once with a smaller candidate pool (less work, better odds of
+ * finishing even mid-contention), and only if that also fails does it fall back to an unfiltered
+ * popular list — same total-capping convention as fetchCreators()'s existing empty-result
+ * fallback — so a rare infrastructure blip degrades to "here's something" instead of "nothing
+ * matched your search," which would be actively misleading.
  *
  * Uses POST (not GET) for the RPC call despite this function being STABLE (which would allow
  * GET) — reliable JSON encoding of array/jsonb parameters matters more here than Next.js's
@@ -266,58 +327,35 @@ async function fetchCreatorsCappedInner(params: SearchParams): Promise<SearchRes
   const pageSize = params.pageSize ?? 20;
   const offset = params.offsetOverride ?? (page - 1) * pageSize;
 
-  const textTerms =
-    params.q && params.q.trim()
-      ? params.q.split(/[|,]/).map((t) => t.trim()).filter(Boolean)
-      : null;
-  const categoryTerms = params.categoryTerms && params.categoryTerms.length ? params.categoryTerms : null;
-  const locationTerms = params.locationTerms && params.locationTerms.length ? params.locationTerms : null;
-  const filterGroups =
-    params.filterGroups && Object.keys(params.filterGroups).length ? params.filterGroups : null;
-  const excludeUsernames =
-    params.excludeUsernames && params.excludeUsernames.length
-      ? params.excludeUsernames.map(sanitizeUsername).filter(Boolean)
-      : null;
+  for (const candidateLimit of [SEARCH_CANDIDATE_LIMIT, SEARCH_CANDIDATE_LIMIT_RETRY]) {
+    let res: Response;
+    try {
+      res = await callSearchCreatorsCapped(supabaseUrl, supabaseKey, params, candidateLimit, offset, pageSize);
+    } catch {
+      continue; // network-level failure — try the smaller candidate pool before giving up
+    }
 
-  let res: Response;
-  try {
-    res = await fetch(`${supabaseUrl}/rest/v1/rpc/search_creators_capped`, {
-      method: 'POST',
-      headers: {
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
-        'Accept-Profile': 'public',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        p_text_terms: textTerms,
-        p_category_terms: categoryTerms,
-        p_location_terms: locationTerms,
-        p_filter_groups: filterGroups,
-        p_verified: params.verified ?? null,
-        p_price_filter: params.price ?? null,
-        p_sort: params.sort === 'newest' ? 'newest' : 'popular',
-        p_exclude_usernames: excludeUsernames,
-        p_candidate_limit: SEARCH_CANDIDATE_LIMIT,
-        p_page_size: pageSize,
-        p_offset: offset,
-      }),
-    });
-  } catch {
-    return { creators: [], total: 0, hasMore: false };
+    if (!res.ok) continue; // e.g. statement timeout under contention — same, try smaller pool
+
+    const data: Record<string, unknown>[] = await res.json();
+    const creators = data.map(mapCreator);
+    const hasMore = creators.length === pageSize && offset + pageSize < candidateLimit;
+    const total = hasMore ? candidateLimit : offset + creators.length;
+    return { creators, total, hasMore };
   }
 
-  if (!res.ok) {
-    return { creators: [], total: 0, hasMore: false };
-  }
-
-  const data: Record<string, unknown>[] = await res.json();
-  const creators = data.map(mapCreator);
-
-  const hasMore = creators.length === pageSize && offset + pageSize < SEARCH_CANDIDATE_LIMIT;
-  const total = hasMore ? SEARCH_CANDIDATE_LIMIT : offset + creators.length;
-
-  return { creators, total, hasMore };
+  // Both attempts failed (timeout/error, not a genuine zero-match search) — fall back to a plain
+  // popular list rather than showing a false "no results found" for what was actually an
+  // infrastructure hiccup.
+  const fallback = await fetchCreatorsInner({
+    sort: params.sort,
+    page: params.page,
+    pageSize: params.pageSize,
+    offsetOverride: params.offsetOverride,
+    excludeUsernames: params.excludeUsernames,
+    revalidate: 60,
+  });
+  return { ...fallback, total: Math.min(fallback.total, FALLBACK_TOTAL_CAP) };
 }
 
 async function fetchCreatorsInner(params: SearchParams): Promise<SearchResult> {
