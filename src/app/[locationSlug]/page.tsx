@@ -21,6 +21,14 @@ interface Props {
   params: Promise<{ locationSlug: string }>;
 }
 
+// Only states are pre-built at deploy time (50 pages) — cities (254) and regions (8) render
+// on-demand on first visit instead (dynamicParams defaults to true, so nothing 404s; it's a
+// one-time slower first request per page, then cached same as any ISR page via `revalidate`
+// above). Building all ~312 location pages meant Vercel's parallel build workers (11 of them)
+// hitting the database simultaneously throughout the whole build — confirmed this is what
+// tipped an otherwise-healthy database into an outright build failure. States alone is enough
+// concurrent load to stay comfortably under that ceiling while still pre-building the highest-
+// traffic pages.
 export async function generateStaticParams() {
   const locationRoutes = [
     ...states.map((state) => ({ locationSlug: state.urlSlug, source: `state:${state.slug}` })),
@@ -28,6 +36,9 @@ export async function generateStaticParams() {
     ...regions.map((region) => ({ locationSlug: region.urlSlug, source: `region:${region.slug}` })),
   ];
 
+  // Duplicate-slug validation still checks every route (cities/regions included) — this is a
+  // config sanity check, not a build-time data fetch, so it's cheap and worth keeping for all of
+  // them even though only states get pre-built below.
   const owners = new Map<string, string>();
   for (const route of locationRoutes) {
     const existingOwner = owners.get(route.locationSlug);
@@ -39,7 +50,7 @@ export async function generateStaticParams() {
     owners.set(route.locationSlug, route.source);
   }
 
-  return locationRoutes.map(({ locationSlug }) => ({ locationSlug }));
+  return states.map((state) => ({ locationSlug: state.urlSlug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

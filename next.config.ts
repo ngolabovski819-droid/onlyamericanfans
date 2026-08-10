@@ -1,6 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Static generation defaults to using every available CPU core as a parallel worker (11 on
+  // this machine) — each one hits the database simultaneously during build. Confirmed via direct
+  // testing that even with the location column indexed, 11 concurrent connections is enough to
+  // overwhelm the new Supabase free-tier project's shared/limited compute (the query cost per
+  // request isn't the bottleneck — the raw number of simultaneous connections is). Capping this
+  // trades a somewhat longer build for not hammering a small database with a burst of concurrent
+  // load every single deploy.
+  experimental: {
+    cpus: 2,
+  },
   async redirects() {
     return [
       {
