@@ -287,11 +287,12 @@ re-derive it by reading every config file and Supabase table by hand.
     yet (both 404 via REST) before writing the migration. A `sponsor_clicks_rinayanami_fbf`
     table DOES already exist (findbyface's own campaign table — PostgREST's "perhaps you meant"
     hint surfaced it during local click testing). Do not point this app at it.
-  - Status: migration `015_sponsor_clicks_rinayanami_oaf.sql` is written (with the full current
-    column set, since 009/010/011 only ALTER a hard-coded list of older tables) but has NOT been
-    run yet — the local `SOURCE_SUPABASE_POOLER_URL` password no longer authenticates, so it has
-    to be run by hand in the Supabase SQL Editor before deploy. Code not yet deployed either —
-    awaiting the owner's go-ahead along with further edits.
+  - Status: LIVE since 2026-08-27 (commit f17fe8f). Migration `015_sponsor_clicks_rinayanami_oaf.sql`
+    (full current column set, since 009/010/011 only ALTER a hard-coded list of older tables) was
+    run by the owner in the Supabase SQL Editor before deploy — the local
+    `SOURCE_SUPABASE_POOLER_URL` password no longer authenticates, so it couldn't be run from
+    here; the table was confirmed present (REST 200) before pushing. Verified on production after
+    deploy: #1 on home/search/state/city/category, `/go/rinayanami` → `…/c31`, images serve.
 - **cosplaytsumiko** — added 2026-08-27.
   - Placements: #3 position on `home`, `search`, every category, every state, every city (not
     regions — wasn't part of the order). Took the #3 slot from Hanna. (Cities and `search` were
@@ -314,9 +315,10 @@ re-derive it by reading every config file and Supabase table by hand.
     suffix) already exists and is live** (another property's own redirect), and so do
     `sponsor_clicks_cosplaytsumiko_fbf` and `sponsor_clicks_oaussief_cosplaytsumiko` — never point
     this app at any of them. Confirmed 2026-08-27 the `_oaf` name was free (404 via REST).
-  - Status: migration `016_sponsor_clicks_cosplaytsumiko_oaf.sql` is written (full current column
-    set) but has NOT been run yet — same pooler-password problem as 015; run it by hand in the
-    Supabase SQL Editor before deploy. Code not yet deployed — awaiting the owner's go-ahead.
+  - Status: LIVE since 2026-08-27 (commit f17fe8f). Migration `016_sponsor_clicks_cosplaytsumiko_oaf.sql`
+    was run by the owner in the Supabase SQL Editor before deploy (same pooler-password caveat as
+    015); table confirmed present (REST 200) before pushing. Verified on production after deploy:
+    #3 on home/search/state/city/category, `/go/cosplaytsumiko` → `…/c58`, images serve.
 - **emilylopz** — added 2026-07-24; moved from #1 to #7 on 2026-08-26.
   - Placements: #7 position on `home`, `search`, every category, every state, every city (not
     regions — wasn't part of the order). Was #1 until 2026-08-26, when rinayanami took that
