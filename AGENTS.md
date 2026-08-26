@@ -42,6 +42,14 @@ the SAME `scope` string to `<CreatorGrid scope={...}>` so client-side "Load More
 4. Slots pins into their exact index, fills every other slot with organic results in order.
 5. Runs EVERY creator in the result (pinned or not) through `sponsor-overrides.ts` — this is
    what makes `linkOverride`/`imageOverride` follow a creator into organic results too.
+6. **Rotates each sponsor's images per scope** (`rotateSponsorImages` in `sponsorship.ts`, owner's
+   request 2026-08-27): a djb2 hash of the scope string picks where in the creator's
+   `imageOverride` + `galleryImages` set that page's carousel starts, so the same card leads with
+   a different image on the homepage vs. Alabama vs. Los Angeles vs. a category. Deterministic on
+   purpose — the location/category pages are frozen static builds, and a random pick would also
+   break SSR/hydration agreement and desync a page from its own "Load More". `home` always shows
+   the configured lead image; the search-bar dropdown (`/api/sponsor-preview`) is scope-less and
+   also shows the lead. Creators with no `imageOverride` (Emily) are not rotated.
 
 **Position is relative to that scope's real pageSize** (20 on home, 24 everywhere else). If you
 ever change a page's `pageSize`, every pin position for that scope shifts — update
@@ -132,6 +140,41 @@ project or not.
   orphaned dead code — nothing calls it anymore. Safe to delete whenever; left in place since
   removing it wasn't blocking anything.
 
+## "Creators near you" strip (`src/components/NearbyCreatorsStrip.tsx` + `/api/nearby`)
+
+Locates the visitor (Vercel geo headers in prod; a public ip-api.com lookup of the dev machine's
+own IP locally), picks the nearest of the ~255 cities in `src/config/cities.ts`, and shows that
+city's creators with the honest visitor→city distance — **however far, up to
+`MAX_NEAR_DISTANCE_MILES` (2,800 mi, `src/app/api/nearby/route.ts`)**. Those 5 slots are
+**real · Rin · real · Reyna · real**: every `nearby:<citySlug>` scope is pinned with rinayanami
+at 2 and rocketreynaxo at 4 (`pinAllNearbyCities` in `sponsor-placements.ts`, owner's decision
+2026-08-27); the pinned pair show no distance line since they aren't from that city. The header names the
+VISITOR's own detected place, not the indexed city — "Showing creators near Hoboken, NJ" above
+NYC creators — from IP geo (Vercel's `x-vercel-ip-city/-country/-country-region` headers in
+prod, ip-api locally; country names via `Intl.DisplayNames`, see `formatVisitorPlace` in
+`src/lib/geo.ts`). Only when IP geo has no city does it fall back to the indexed city's name. A visitor in Mexico,
+Canada or the Caribbean still gets their nearest US city; that's deliberate. Beyond 2,800 mi
+(i.e. outside the Americas — the nearest indexed city to all of Europe is Bangor, ME at
+3,000–4,400 mi), and when there's no location signal at all, it serves the `nearby:fallback`
+scope instead, which is pinned with the five sponsored creators in campaign order, still headed
+"📍 Showing creators near <visitor's own place>" ("Skopje, North Macedonia") — or "⭐ Featured
+creators" if no place name is known — with no distance line. The place label always comes from
+IP geo, even after a precise-location click (the browser only supplies coordinates, and naming
+them would need a reverse-geocoding call); on a precise request it's kept only if the IP
+location agrees with the coordinates within 250 km (`PLACE_AGREEMENT_KM`), otherwise the header
+falls back to the nearest indexed city's name — so a VPN user gets "near New York City, NY"
+rather than their VPN exit city. A bare country with no city is never used as the place. The strip's avatars carry NO "Ad" badge —
+the owner had it removed on 2026-08-27 (the grid cards' "Ad" badge is unchanged); the sponsored
+avatars still link through `/go/` and are click-logged like any other placement. Owner's decision on 2026-08-27, after seeing
+"Showing creators near Bangor, ME · 4356 miles away" from the Balkans and reporting it as a bug
+(it wasn't — Bangor IS the nearest indexed city to Europe — but it looked like one).
+The "Use precise location" button swaps to "✓ Using precise location" once a browser-geo result
+is applied; before that, a precise result that resolved to the same city (or the same fallback)
+looked like the click did nothing, which was the other half of that report.
+Testing this locally always reflects the DEVELOPER's real location — from Europe the widget
+legitimately shows the fallback; use `/api/nearby?lat=..&lng=..` (or a headless-browser geo
+override) to exercise the near-a-city path.
+
 ## `/go/[username]` redirect (`src/app/go/[username]/route.ts`)
 
 Looks up the sponsor override, logs a click row (if `clickTable` is set and the User-Agent isn't
@@ -167,6 +210,15 @@ arbitrary DDL, so table creation is always a migration file you run by hand, mat
 `001_search_text_gin_index.sql` / `002_location_gin_index.sql`. Create the table BEFORE setting
 `clickTable` in `sponsor-overrides.ts`, or clicks in that window are silently dropped (the
 redirect still works — it just skips logging when the insert fails).
+
+**The 003 template is stale — copy `015_sponsor_clicks_rinayanami_oaf.sql` instead.** The
+later per-column migrations (`009` ip_hash/is_datacenter_ip, `010` link_verified, `011`
+ip_address/country/city) each only ALTER a hard-coded list of the tables that existed when they
+were written, so a new table built from the 003 template would be missing every column the
+`/go/` route now inserts — PostgREST rejects the whole row on the first unknown column, and
+every click is silently dropped while the redirect keeps working. `015` carries the full
+current column set (plus `botid_flagged`, which exists on the live tables but was added
+outside this repo).
 
 ## Resilience (category/location pages under load)
 
@@ -215,17 +267,70 @@ results," not paper over it with unrelated popular creators.
 changed, or ended.** This is the fast answer to "what's live right now" without having to
 re-derive it by reading every config file and Supabase table by hand.
 
-- **emilylopz** — added 2026-07-24.
+- **rinayanami** — added 2026-08-26.
   - Placements: #1 position on `home`, `search`, every category, every state, every city (not
-    regions — wasn't part of the order).
+    regions — wasn't part of the order). Took over the top slot from Emily.
+  - Nearby strip: slot 2 of every `nearby:<city>` scope (the "Creators near you" strip for
+    in-range visitors — real · Rin · real · Reyna · real) AND slot 1 of `nearby:fallback` (the
+    all-sponsored strip for visitors > 2,800 mi from every US city, or with no location) — both
+    added 2026-08-27.
+  - Destination: `https://onlyfans.com/rinayanami/c31`.
+  - Images: 11 campaign images from the client's `rinayanami images` folder, in their supplied
+    numeric order (`1, 3, 4, 5, 6, 7, 8, 9, 13, 14, 16`); the original `15` was a byte-identical
+    (SHA-256) duplicate of `9` and was dropped. Resized to ≤1280px JPEGs as
+    `public/sponsors/rinayanami/rina-01.jpg` … `rina-11.jpg`; `rina-01.jpg` is the lead image.
+  - Card tags: `Petite`, `Asian`, `Nerdy`, `GFE`, and `+5`.
+  - Search bars: FIRST sponsored suggestion (replaced Emily, who is no longer in the search-bar
+    list at all — see her entry below).
+  - Click tracking: `sponsor_clicks_rinayanami_oaf` — isolated `_oaf` table like the others.
+    Confirmed on 2026-08-26 that neither `sponsor_clicks_rinayanami` nor the `_oaf` name existed
+    yet (both 404 via REST) before writing the migration. A `sponsor_clicks_rinayanami_fbf`
+    table DOES already exist (findbyface's own campaign table — PostgREST's "perhaps you meant"
+    hint surfaced it during local click testing). Do not point this app at it.
+  - Status: migration `015_sponsor_clicks_rinayanami_oaf.sql` is written (with the full current
+    column set, since 009/010/011 only ALTER a hard-coded list of older tables) but has NOT been
+    run yet — the local `SOURCE_SUPABASE_POOLER_URL` password no longer authenticates, so it has
+    to be run by hand in the Supabase SQL Editor before deploy. Code not yet deployed either —
+    awaiting the owner's go-ahead along with further edits.
+- **cosplaytsumiko** — added 2026-08-27.
+  - Placements: #3 position on `home`, `search`, every category, every state, every city (not
+    regions — wasn't part of the order). Took the #3 slot from Hanna. (Cities and `search` were
+    added by the owner as a follow-up on 2026-08-27, after the first pass covered only
+    home/categories/states.)
+  - Nearby strip: slot 3 of `nearby:fallback` — added 2026-08-27.
+  - Destination: `https://onlyfans.com/cosplaytsumiko/c58`.
+  - Images: 29 campaign images from the client's `cosplaytsumiko` folder in Downloads. The
+    owner's "1–5 first" = `1.jfif, 2.jfif, 3.jfif, 4.jfif, 5.jpg` (the complete numbered set
+    saved together on 2026-08-19; the June `1.jpg`/`3.jpg`/`9.jpg` are incidental camera names
+    with no 2/4), then the remaining files in natural filename order. Dropped: `2f92f976….jfif`
+    and `c0cdd4ef….jfif` (byte-identical to `1.jfif`/`2.jfif`) and `2ecdd726….jpg` (a
+    re-encode of the same photo as `3.jfif`). Resized to ≤1280px JPEGs as
+    `public/sponsors/cosplaytsumiko/tsumiko-01.jpg` … `tsumiko-29.jpg`; `tsumiko-01.jpg` is
+    the lead image. `5.jpg` (→ `tsumiko-05`) is a landscape shot (EXIF-rotated).
+  - Card tags: `Cosplay`, `Big tits`, `Blonde`, and `+8`.
+  - Search bars: THIRD sponsored suggestion after Rin and Reyna (replaced Hanna, who is no
+    longer in the search-bar list at all).
+  - Click tracking: `sponsor_clicks_cosplaytsumiko_oaf`. **`sponsor_clicks_cosplaytsumiko` (no
+    suffix) already exists and is live** (another property's own redirect), and so do
+    `sponsor_clicks_cosplaytsumiko_fbf` and `sponsor_clicks_oaussief_cosplaytsumiko` — never point
+    this app at any of them. Confirmed 2026-08-27 the `_oaf` name was free (404 via REST).
+  - Status: migration `016_sponsor_clicks_cosplaytsumiko_oaf.sql` is written (full current column
+    set) but has NOT been run yet — same pooler-password problem as 015; run it by hand in the
+    Supabase SQL Editor before deploy. Code not yet deployed — awaiting the owner's go-ahead.
+- **emilylopz** — added 2026-07-24; moved from #1 to #7 on 2026-08-26.
+  - Placements: #7 position on `home`, `search`, every category, every state, every city (not
+    regions — wasn't part of the order). Was #1 until 2026-08-26, when rinayanami took that
+    slot. Positions 4 and 6 are organic (Hanna is #5).
+  - Nearby strip: slot 5 of `nearby:fallback` — added 2026-08-27.
   - Destination: `https://onlyfans.com/emilylopz/c545` (direct — NOT routed through
     fanspedia.net; that was considered and explicitly rejected, see git history).
   - Image: default synced avatar, no override.
   - Card carousel: synced avatar, synced header, then 24 campaign gallery images imported from
     `emily photos.zip` (26 total slides; 29 originals minus 5 SHA-256 duplicates).
   - Card tags: `GFE`, `Feet fetish`, `Squirting`, and `+9` (do not add `Sex toys`).
-  - Search bars: sponsored suggestion at the top of focused, empty homepage, search-page, and
-    responsive header inputs, configured through `src/config/search-sponsor.ts`.
+  - Search bars: REMOVED on 2026-08-26 (was the top sponsored suggestion in the focused, empty
+    homepage, search-page, and responsive header inputs, configured through
+    `src/config/search-sponsor.ts`; rinayanami now holds that slot).
   - Click tracking: `sponsor_clicks_emilylopz_oaf` — an isolated table, deliberately separate
     from `sponsor_clicks_emilylopz` (no `_oaf` suffix), which is a DIFFERENT, live table that
     fanspedia.net's own `/go/emilylopz` redirect already writes to. Do not point this app's
@@ -233,22 +338,28 @@ re-derive it by reading every config file and Supabase table by hand.
   - Status: migration `004_sponsor_clicks_emilylopz_oaf.sql` is live and click logging was
     verified end-to-end on 2026-08-01.
 - **rocketreynaxo** — added 2026-08-01.
-  - Placements: #2 position after Emily on `home`, `search`, every category, every state, and
-    every city (not regions).
+  - Placements: #2 position after Rin (was after Emily until 2026-08-26) on `home`, `search`,
+    every category, every state, and every city (not regions).
+  - Nearby strip: slot 4 of every `nearby:<city>` scope (in-range visitors) AND slot 2 of
+    `nearby:fallback` — both added 2026-08-27.
   - Destination: `https://onlyfans.com/rocketreynaxo/c58`.
   - Images: 10 campaign images in supplied order; `rocket-01.jpg` is the lead image.
   - Card tags: `Asian MILF`, `Busty`, `Curvy`.
-  - Search bars: second sponsored suggestion after Emily.
+  - Search bars: second sponsored suggestion after Rin (after Emily until 2026-08-26).
   - Click tracking: `sponsor_clicks_rocketreynaxo_oaf`, isolated from FansPedia.
   - Status: migration `005_sponsor_clicks_rocketreynaxo_oaf.sql` is live and click logging was
     verified end-to-end on 2026-08-01.
 - **hannazuki** — added 2026-08-01.
-  - Placements: #3 position after Emily and Rocket Reyna on `home`, `search`, every category,
-    every state, and every city (not regions).
+  - Placements: #5 position on `home`, `search`, every category, every state, every city (not
+    regions). Moved down from #3 on 2026-08-27 when cosplaytsumiko took that slot. Was #3
+    everywhere from 2026-08-01 to 2026-08-27 (after Emily and Rocket Reyna until 2026-08-26,
+    then after Rin and Rocket Reyna).
+  - Nearby strip: slot 4 of `nearby:fallback` — added 2026-08-27.
   - Destination: `https://onlyfans.com/hannazuki/c1043`.
   - Images: 7 campaign images in supplied numeric order; `hanna-01.jpg` is the lead image.
   - Card tags: `asian`, `cosplay`, `egirl`, `GFE`.
-  - Search bars: third sponsored suggestion after Emily and Rocket Reyna.
+  - Search bars: REMOVED on 2026-08-27 (was the third sponsored suggestion after Rin and
+    Rocket Reyna; cosplaytsumiko now holds that slot).
   - Click tracking: `sponsor_clicks_hannazuki_oaf`, isolated from FansPedia.
   - Status: migration `006_sponsor_clicks_hannazuki_oaf.sql` is live and click logging was
     verified end-to-end on 2026-08-01.

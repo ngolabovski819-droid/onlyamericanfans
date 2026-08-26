@@ -43,18 +43,32 @@ const PRIVATE_IP_RE = /^(10\.|127\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|::1$|fc
  * location when run locally. In production behind Vercel this branch essentially never fires,
  * since Vercel always supplies the geo headers this function exists to work around.
  */
-export async function lookupIpGeo(ip: string | null): Promise<{ lat: number; lng: number } | null> {
+export interface IpGeo {
+  lat: number;
+  lng: number;
+  /** Visitor's own city name, if the lookup knew it. */
+  city: string | null;
+  /** Region/state code (e.g. "CA"), if known. Only displayed for US visitors. */
+  region: string | null;
+  /** ISO 3166-1 alpha-2, if known. */
+  countryCode: string | null;
+}
+
+export async function lookupIpGeo(ip: string | null): Promise<IpGeo | null> {
   const usableIp = ip && ip !== 'unknown' && !PRIVATE_IP_RE.test(ip) ? ip : '';
-  const url = `http://ip-api.com/json/${usableIp}?fields=status,lat,lon`;
+  const url = `http://ip-api.com/json/${usableIp}?fields=status,lat,lon,city,region,countryCode`;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 2500);
   try {
     const res = await fetch(url, { signal: controller.signal });
     if (!res.ok) return null;
-    const json = (await res.json()) as { status?: string; lat?: unknown; lon?: unknown };
+    const json = (await res.json()) as {
+      status?: string; lat?: unknown; lon?: unknown; city?: unknown; region?: unknown; countryCode?: unknown;
+    };
     if (json.status !== 'success' || typeof json.lat !== 'number' || typeof json.lon !== 'number') return null;
-    return { lat: json.lat, lng: json.lon };
+    const str = (v: unknown) => (typeof v === 'string' && v.trim() ? v.trim() : null);
+    return { lat: json.lat, lng: json.lon, city: str(json.city), region: str(json.region), countryCode: str(json.countryCode) };
   } catch {
     return null;
   } finally {
@@ -63,10 +77,34 @@ export async function lookupIpGeo(ip: string | null): Promise<{ lat: number; lng
 }
 
 /**
+ * Human label for the VISITOR's own detected place — "Austin, TX" for a US visitor, "Skopje,
+ * North Macedonia" for anyone else (country name via Intl, so no hand-maintained code→name map).
+ * The nearby strip heads itself "Showing creators near <this>" for every visitor, so the claim
+ * is about where THEY are rather than which indexed city happened to be closest. Requires a city
+ * name — a bare country is never a "place" here (it would render as "near United States" above
+ * a row of NYC creators), so without one this returns null and the strip falls back to the
+ * nearest indexed city's own name. Never throws (an unknown/odd country code just falls back to
+ * the raw code).
+ */
+export function formatVisitorPlace(city: string | null, region: string | null, countryCode: string | null): string | null {
+  if (!city) return null;
+  const code = countryCode?.toUpperCase() ?? null;
+  if (code === 'US') return region ? `${city}, ${region.toUpperCase()}` : city;
+  if (!code) return city;
+  let country: string;
+  try {
+    country = new Intl.DisplayNames(['en'], { type: 'region' }).of(code) ?? code;
+  } catch {
+    country = code;
+  }
+  return `${city}, ${country}`;
+}
+
+/**
  * Nearest indexed city (src/config/cities.ts) to an arbitrary lat/lng, by straight-line distance.
- * Always returns the closest city we have — even a very large distanceKm for a non-US visitor —
- * because that's the honest answer; see AGENTS.md on why this widget never fabricates a
- * per-creator distance instead.
+ * Always returns the closest city we have, however far — the caller decides whether that distance
+ * is close enough to show (see MAX_NEAR_DISTANCE_MILES in src/app/api/nearby/route.ts; a
+ * European visitor's nearest city is Bangor, ME at 3,000+ mi).
  */
 export function findNearestCity(lat: number, lng: number): NearestCityResult {
   let best: NearestCityResult = { city: cities[0], distanceKm: Infinity };

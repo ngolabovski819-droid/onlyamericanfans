@@ -3148,6 +3148,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .nearby-strip-precise:hover { text-decoration: underline; }
 .nearby-strip-precise:disabled { opacity: 0.6; cursor: default; }
 .nearby-strip-precise--denied { color: var(--text-muted); cursor: default; }
+.nearby-strip-precise--used { color: var(--text-muted); cursor: default; }
 
 .nearby-strip-avatars {
   display: flex;
@@ -3199,14 +3200,6 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   object-fit: cover;
   display: block;
   border: 2px solid var(--bg);
-}
-.nearby-avatar-ad {
-  position: absolute; bottom: -1px; right: -1px;
-  background: var(--accent); color: #fff;
-  font-size: 0.65rem; font-weight: 800;
-  padding: 2px 6px; border-radius: 999px;
-  border: 2px solid var(--bg);
-  text-transform: uppercase;
 }
 .nearby-avatar-name {
   font-size: 0.95rem; font-weight: 700; color: var(--text);

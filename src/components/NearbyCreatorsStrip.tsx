@@ -6,9 +6,14 @@ import { buildImageUrl } from '@/lib/image';
 
 interface NearbyResponse {
   available: boolean;
+  /** true when this response came from browser geolocation (the "Use precise location" click). */
   precise?: boolean;
+  /** true when the visitor WAS located but is > MAX_NEAR_DISTANCE_MILES from every indexed city. */
+  outOfRange?: boolean;
   distanceKm?: number | null;
   city?: { label: string; urlSlug: string; stateAbbr: string | null } | null;
+  /** The visitor's OWN detected place ("Skopje, North Macedonia" / "Austin, TX") — the header names this when known. */
+  place?: string | null;
   creators?: Creator[];
 }
 
@@ -31,8 +36,16 @@ function formatDistance(distanceKm: number): string {
  * CreatorGrid already uses for "Load More" -> /api/search) keeps every page's static generation
  * untouched.
  *
- * Always shows creators once loaded — /api/nearby falls back to a plain popular scope (no "near
- * you" claim) when it has no location signal at all, so the widget is never a dead end. The
+ * Always shows creators once loaded — /api/nearby falls back to the nearby:fallback scope (pinned
+ * with the sponsored creators; no distance line) when it has no location signal at all OR the
+ * visitor is more than MAX_NEAR_DISTANCE_MILES (2,800 mi, see the route) from every indexed city,
+ * i.e. outside the Americas.
+ *
+ * Header: "Showing creators near <the visitor's OWN detected place>" for everyone (owner's call,
+ * 2026-08-27) — "Hoboken, NJ" above NYC creators, "Skopje, North Macedonia" above the sponsored
+ * fallback. Only if IP geo has no place name does it fall back to the nearest indexed city's
+ * name, and to "Featured creators" if there's no city either. Anyone closer than that gets
+ * their honest nearest city however far it is — that's deliberate (owner's call, 2026-08-27). The
  * initial render relies ONLY on IP-based geo (read server-side from Vercel's request headers by
  * /api/nearby) — no browser permission prompt involved. Browser geolocation only fires when the
  * visitor explicitly clicks "Use precise location": firing it automatically on mount would pop
@@ -44,6 +57,11 @@ function formatDistance(distanceKm: number): string {
  * centroid of the nearest city we index (src/config/cities.ts) — never a fabricated per-creator
  * GPS distance, since we don't have real creator coordinates. See src/config/sponsor-placements.ts
  * for how a paid placement can appear here via the nearby:<citySlug> / nearby:fallback scopes.
+ *
+ * After a successful "Use precise location" click the button is replaced by a "✓ Using precise
+ * location" label — without it, a precise result that resolves to the same city (or the same
+ * fallback) is indistinguishable from the click having done nothing, which is exactly how it was
+ * reported ("I clicked it and nothing changed").
  */
 export default function NearbyCreatorsStrip() {
   const [data, setData] = useState<NearbyResponse | null>(null);
@@ -91,7 +109,8 @@ export default function NearbyCreatorsStrip() {
 
   if (!data?.available || !data.creators?.length) return null;
 
-  const { city, creators, distanceKm } = data;
+  const { city, creators, distanceKm, precise, place } = data;
+  const nearLabel = place ?? (city ? `${city.label}${city.stateAbbr ? `, ${city.stateAbbr}` : ''}` : null);
 
   return (
     <div className="nearby-strip">
@@ -100,16 +119,18 @@ export default function NearbyCreatorsStrip() {
       </div>
       <div className="nearby-strip-header">
         <p className="nearby-strip-title">
-          {city ? (
+          {nearLabel ? (
             <>
-              📍 Showing creators near <strong>{city.label}{city.stateAbbr ? `, ${city.stateAbbr}` : ''}</strong>
+              📍 Showing creators near <strong>{nearLabel}</strong>
             </>
           ) : (
-            <>🔥 <strong>Popular creators</strong></>
+            <>⭐ <strong>Featured creators</strong></>
           )}
         </p>
         {preciseState === 'denied' ? (
           <span className="nearby-strip-precise nearby-strip-precise--denied">Location access denied</span>
+        ) : precise ? (
+          <span className="nearby-strip-precise nearby-strip-precise--used">✓ Using precise location</span>
         ) : (
           <button
             type="button"
@@ -159,17 +180,18 @@ function NearbyAvatar({ creator, distanceKm }: { creator: Creator; distanceKm: n
             event.currentTarget.src = '/no-image.png';
           }}
         />
-        {creator.sponsored && <span className="nearby-avatar-ad" title="Advertisement">Ad</span>}
       </span>
       <span className="nearby-avatar-name">
         <span className="nearby-avatar-name-text">{displayName}</span>
         {creator.isVerified && <span className="creator-verified-check" title="Verified creator">✓</span>}
       </span>
-      {/* Same real visitor -> nearest-city distance shown in the strip's header — every creator
-          here was matched into this scope precisely because they're tied to that city, so this
-          is honest, just repositioned under each card instead of stated once up top. Not a
-          fabricated per-creator GPS distance — see the component-level doc comment. */}
-      {typeof distanceKm === 'number' && (
+      {/* Same real visitor -> nearest-city distance shown in the strip's header — every ORGANIC
+          creator here was matched into this scope precisely because they're tied to that city,
+          so this is honest, just repositioned under each card instead of stated once up top. Not
+          a fabricated per-creator GPS distance — see the component-level doc comment. Pinned
+          sponsors (nearby:<city> slots 2 and 4, see sponsor-placements.ts) are NOT from that
+          city, so they get no distance line at all rather than a false "<1 mile away". */}
+      {typeof distanceKm === 'number' && !creator.sponsored && (
         <span className="nearby-avatar-distance">📍 {formatDistance(distanceKm)}</span>
       )}
       {price && (

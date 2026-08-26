@@ -1,7 +1,7 @@
 import type { Creator } from '@/types/creator';
 import { fetchCreators, fetchCreatorsByUsernames, type SearchParams, type SearchResult } from './supabase';
 import { getScopeRule, type ScopeId } from '@/config/sponsor-placements';
-import { getSponsorOverride } from '@/config/sponsor-overrides';
+import { getSponsorOverride, type SponsorOverride } from '@/config/sponsor-overrides';
 
 export interface ScopedFetchParams extends Omit<SearchParams, 'excludeUsernames' | 'offsetOverride' | 'fallbackToPopularIfEmpty'> {
   scope: ScopeId;
@@ -40,7 +40,7 @@ export async function fetchScopedCreators(params: ScopedFetchParams): Promise<Sc
   // Fast path: nothing pinned or excluded anywhere in this scope — skip all the bookkeeping.
   if (rule.pinned.length === 0 && rule.excluded.length === 0) {
     const result = await fetchCreators({ ...rest, page, pageSize, fallbackToPopularIfEmpty: true });
-    return { ...result, creators: applyOverrides(result.creators, EMPTY_SET) };
+    return { ...result, creators: applyOverrides(result.creators, EMPTY_SET, scope) };
   }
 
   const excludeUsernames = [...rule.excluded, ...rule.pinned.map((p) => p.username)];
@@ -88,7 +88,8 @@ export async function fetchScopedCreators(params: ScopedFetchParams): Promise<Sc
 
   const finalCreators = applyOverrides(
     slots.filter((c): c is Creator => c !== null),
-    sponsoredUsernames
+    sponsoredUsernames,
+    scope
   );
 
   // Total visible records = organic total (already net of exclusions) + pinned count, but never
@@ -103,14 +104,53 @@ export async function fetchScopedCreators(params: ScopedFetchParams): Promise<Sc
 
 const EMPTY_SET = new Set<string>();
 
-function applyOverrides(creators: Creator[], sponsoredUsernames: Set<string>): Creator[] {
+/** Small, stable string hash (djb2) — only used to spread scopes across a sponsor's image set. */
+function scopeHash(scope: string): number {
+  let h = 5381;
+  for (let i = 0; i < scope.length; i++) h = ((h << 5) + h + scope.charCodeAt(i)) >>> 0;
+  return h;
+}
+
+/**
+ * Per-scope image rotation for sponsored creators (owner's request, 2026-08-27): a visitor who
+ * browses from the homepage to a state page to a city page should see a DIFFERENT lead image on
+ * the same sponsored card each time, instead of the same one everywhere.
+ *
+ * The rotation is deterministic per scope — a hash of the scope string picks where in the
+ * sponsor's image set (imageOverride + galleryImages, in configured order) that page starts, and
+ * the carousel continues cyclically from there. It must be deterministic, not random: the
+ * state/city/category pages are pre-built and frozen (see AGENTS.md), and even on the live pages
+ * a random pick would make the server-rendered HTML disagree with the client on hydration and
+ * fire a second image request on every load. Deterministic also keeps a scope's SSR page and its
+ * "Load More" (/api/search?scope=...) responses in step, since both pass the same scope here.
+ *
+ * 'home' is deliberately pinned to the configured lead image — that's the one the client
+ * designated as their #1 and the highest-traffic surface — and every other scope is biased AWAY
+ * from it (offset 1..n-1), so leaving the homepage for any state/city/category page is
+ * guaranteed to show a different image, not just probably. Creators without an imageOverride
+ * (emilylopz: synced avatar first, by her order) are left alone entirely.
+ */
+function rotateSponsorImages(
+  override: SponsorOverride,
+  scope: ScopeId,
+): Pick<SponsorOverride, 'imageOverride' | 'galleryImages'> {
+  const { imageOverride, galleryImages } = override;
+  if (!imageOverride || !galleryImages?.length || scope === 'home') return { imageOverride, galleryImages };
+  const pool = [imageOverride, ...galleryImages];
+  const offset = 1 + (scopeHash(scope) % (pool.length - 1));
+  const rotated = [...pool.slice(offset), ...pool.slice(0, offset)];
+  return { imageOverride: rotated[0], galleryImages: rotated.slice(1) };
+}
+
+function applyOverrides(creators: Creator[], sponsoredUsernames: Set<string>, scope: ScopeId): Creator[] {
   return creators.map((c) => {
     const override = getSponsorOverride(c.username);
+    const images = override ? rotateSponsorImages(override, scope) : undefined;
     return {
       ...c,
       ...(override?.linkOverride ? { linkOverride: override.linkOverride } : {}),
-      ...(override?.imageOverride ? { imageOverride: override.imageOverride } : {}),
-      ...(override?.galleryImages?.length ? { sponsorGalleryImages: override.galleryImages } : {}),
+      ...(images?.imageOverride ? { imageOverride: images.imageOverride } : {}),
+      ...(images?.galleryImages?.length ? { sponsorGalleryImages: images.galleryImages } : {}),
       ...(override?.tags?.length ? { sponsorTags: override.tags } : {}),
       ...(override?.additionalTagCount
         ? { sponsorAdditionalTagCount: override.additionalTagCount }
