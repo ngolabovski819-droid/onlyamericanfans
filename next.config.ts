@@ -27,8 +27,11 @@ const nextConfig: NextConfig = {
   },
   images: {
     remotePatterns: [
-      { protocol: "https", hostname: "images.weserv.nl" },
+      { protocol: "https", hostname: "**.onlyfans.com" },
     ],
+    deviceSizes: [640, 720, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [32, 48, 64, 80, 96, 128, 240, 256, 360, 384, 480],
+    minimumCacheTTL: 2592000,
   },
   async headers() {
     return [

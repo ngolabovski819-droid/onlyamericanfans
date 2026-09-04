@@ -12,7 +12,7 @@ export default function PrivacyPage() {
   return (
     <div className="legal-page">
       <h1>Privacy Policy</h1>
-      <p className="legal-page-date">Last updated: January 2026</p>
+      <p className="legal-page-date">Last updated: September 2026</p>
 
       <h2>Information We Collect</h2>
       <p>
@@ -36,8 +36,8 @@ export default function PrivacyPage() {
       <h2>Third-Party Services</h2>
       <p>
         Our site links to OnlyFans creator profiles. When you click a creator link, you leave our
-        site and OnlyFans&apos; privacy policy applies. We use image proxy services (images.weserv.nl)
-        to serve optimised images.
+        site and OnlyFans&apos; privacy policy applies. Creator images hosted by OnlyFans are resized
+        and cached by our site&apos;s image optimisation service.
       </p>
 
       <h2>Data Retention</h2>
