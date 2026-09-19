@@ -67,49 +67,6 @@ const overrides: Record<string, SponsorOverride> = {
     // supabase-migrations/015_sponsor_clicks_rinayanami_oaf.sql — must exist before deploy.
     clickTable: 'sponsor_clicks_rinayanami_oaf',
   },
-  cosplaytsumiko: {
-    linkOverride: 'https://onlyfans.com/cosplaytsumiko/c58',
-    // Client's numbered picks first (1.jfif, 2.jfif, 3.jfif, 4.jfif, 5.jpg), then the rest of the
-    // folder in natural filename order. Two byte-identical duplicates and one near-identical
-    // re-encode of the same photo were dropped. tsumiko-01 leads the card.
-    imageOverride: '/sponsors/cosplaytsumiko/tsumiko-01.jpg',
-    tags: ['Cosplay', 'Big tits', 'Blonde'],
-    additionalTagCount: 8,
-    galleryImages: [
-      '/sponsors/cosplaytsumiko/tsumiko-02.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-03.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-04.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-05.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-06.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-07.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-08.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-09.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-10.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-11.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-12.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-13.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-14.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-15.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-16.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-17.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-18.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-19.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-20.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-21.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-22.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-23.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-24.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-25.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-26.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-27.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-28.jpg',
-      '/sponsors/cosplaytsumiko/tsumiko-29.jpg',
-    ],
-    // Isolated _oaf table. sponsor_clicks_cosplaytsumiko (no suffix) ALREADY EXISTS and is another
-    // property's live table — never point this at it. Created by
-    // supabase-migrations/016_sponsor_clicks_cosplaytsumiko_oaf.sql — must exist before deploy.
-    clickTable: 'sponsor_clicks_cosplaytsumiko_oaf',
-  },
   emilylopz: {
     // Real tracking link — goes straight to OnlyFans (with its own campaign code), NOT through
     // fanspedia.net. fanspedia.net has its own separate /go/emilylopz + sponsor_clicks_emilylopz

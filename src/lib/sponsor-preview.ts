@@ -5,7 +5,7 @@ let cachedPreview: Promise<Creator[]> | null = null;
 
 export function getSponsorPreviews(): Promise<Creator[]> {
   if (!cachedPreview) {
-    cachedPreview = fetch('/api/sponsor-preview?v=2')
+    cachedPreview = fetch('/api/sponsor-preview?v=3')
       .then((response) => (response.ok ? response.json() as Promise<Creator[] | Creator | null> : []))
       .then((payload) => Array.isArray(payload) ? payload : payload ? [payload] : [])
       .catch(() => []);

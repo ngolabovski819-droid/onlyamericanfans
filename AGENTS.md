@@ -156,7 +156,8 @@ prod, ip-api locally; country names via `Intl.DisplayNames`, see `formatVisitorP
 Canada or the Caribbean still gets their nearest US city; that's deliberate. Beyond 2,800 mi
 (i.e. outside the Americas — the nearest indexed city to all of Europe is Bangor, ME at
 3,000–4,400 mi), and when there's no location signal at all, it serves the `nearby:fallback`
-scope instead, which is pinned with the five sponsored creators in campaign order, still headed
+scope instead, which is pinned with the sponsored creators in campaign order (four as of
+2026-09-19, so its fifth slot is an organic popular creator), still headed
 "📍 Showing creators near <visitor's own place>" ("Skopje, North Macedonia") — or "⭐ Featured
 creators" if no place name is known — with no distance line. The place label always comes from
 IP geo, even after a precise-location click (the browser only supplies coordinates, and naming
@@ -267,21 +268,21 @@ results," not paper over it with unrelated popular creators.
 changed, or ended.** This is the fast answer to "what's live right now" without having to
 re-derive it by reading every config file and Supabase table by hand.
 
-- **rinayanami** — added 2026-08-26.
-  - Placements: #1 position on `home`, `search`, every category, every state, every city (not
-    regions — wasn't part of the order). Took over the top slot from Emily.
+- **rinayanami** — added 2026-08-26; moved from #1 to #2 on 2026-09-19.
+  - Placements: #2 position after Emily on `home`, `search`, every category, every state, every
+    city (not regions — wasn't part of the order). Held #1 from 2026-08-26 to 2026-09-19, when
+    Emily took the top slot back.
   - Nearby strip: slot 2 of every `nearby:<city>` scope (the "Creators near you" strip for
-    in-range visitors — real · Rin · real · Reyna · real) AND slot 1 of `nearby:fallback` (the
-    all-sponsored strip for visitors > 2,800 mi from every US city, or with no location) — both
-    added 2026-08-27.
+    in-range visitors — real · Rin · real · Reyna · real) AND slot 2 of `nearby:fallback` (the
+    sponsored strip for visitors > 2,800 mi from every US city, or with no location; slot 1
+    until 2026-09-19) — both added 2026-08-27.
   - Destination: `https://onlyfans.com/rinayanami/c31`.
   - Images: 11 campaign images from the client's `rinayanami images` folder, in their supplied
     numeric order (`1, 3, 4, 5, 6, 7, 8, 9, 13, 14, 16`); the original `15` was a byte-identical
     (SHA-256) duplicate of `9` and was dropped. Resized to ≤1280px JPEGs as
     `public/sponsors/rinayanami/rina-01.jpg` … `rina-11.jpg`; `rina-01.jpg` is the lead image.
   - Card tags: `Petite`, `Asian`, `Nerdy`, `GFE`, and `+5`.
-  - Search bars: FIRST sponsored suggestion (replaced Emily, who is no longer in the search-bar
-    list at all — see her entry below).
+  - Search bars: second sponsored suggestion after Emily (first from 2026-08-26 to 2026-09-19).
   - Click tracking: `sponsor_clicks_rinayanami_oaf` — isolated `_oaf` table like the others.
     Confirmed on 2026-08-26 that neither `sponsor_clicks_rinayanami` nor the `_oaf` name existed
     yet (both 404 via REST) before writing the migration. A `sponsor_clicks_rinayanami_fbf`
@@ -293,46 +294,21 @@ re-derive it by reading every config file and Supabase table by hand.
     `SOURCE_SUPABASE_POOLER_URL` password no longer authenticates, so it couldn't be run from
     here; the table was confirmed present (REST 200) before pushing. Verified on production after
     deploy: #1 on home/search/state/city/category, `/go/rinayanami` → `…/c31`, images serve.
-- **cosplaytsumiko** — added 2026-08-27.
-  - Placements: #3 position on `home`, `search`, every category, every state, every city (not
-    regions — wasn't part of the order). Took the #3 slot from Hanna. (Cities and `search` were
-    added by the owner as a follow-up on 2026-08-27, after the first pass covered only
-    home/categories/states.)
-  - Nearby strip: slot 3 of `nearby:fallback` — added 2026-08-27.
-  - Destination: `https://onlyfans.com/cosplaytsumiko/c58`.
-  - Images: 29 campaign images from the client's `cosplaytsumiko` folder in Downloads. The
-    owner's "1–5 first" = `1.jfif, 2.jfif, 3.jfif, 4.jfif, 5.jpg` (the complete numbered set
-    saved together on 2026-08-19; the June `1.jpg`/`3.jpg`/`9.jpg` are incidental camera names
-    with no 2/4), then the remaining files in natural filename order. Dropped: `2f92f976….jfif`
-    and `c0cdd4ef….jfif` (byte-identical to `1.jfif`/`2.jfif`) and `2ecdd726….jpg` (a
-    re-encode of the same photo as `3.jfif`). Resized to ≤1280px JPEGs as
-    `public/sponsors/cosplaytsumiko/tsumiko-01.jpg` … `tsumiko-29.jpg`; `tsumiko-01.jpg` is
-    the lead image. `5.jpg` (→ `tsumiko-05`) is a landscape shot (EXIF-rotated).
-  - Card tags: `Cosplay`, `Big tits`, `Blonde`, and `+8`.
-  - Search bars: THIRD sponsored suggestion after Rin and Reyna (replaced Hanna, who is no
-    longer in the search-bar list at all).
-  - Click tracking: `sponsor_clicks_cosplaytsumiko_oaf`. **`sponsor_clicks_cosplaytsumiko` (no
-    suffix) already exists and is live** (another property's own redirect), and so do
-    `sponsor_clicks_cosplaytsumiko_fbf` and `sponsor_clicks_oaussief_cosplaytsumiko` — never point
-    this app at any of them. Confirmed 2026-08-27 the `_oaf` name was free (404 via REST).
-  - Status: LIVE since 2026-08-27 (commit f17fe8f). Migration `016_sponsor_clicks_cosplaytsumiko_oaf.sql`
-    was run by the owner in the Supabase SQL Editor before deploy (same pooler-password caveat as
-    015); table confirmed present (REST 200) before pushing. Verified on production after deploy:
-    #3 on home/search/state/city/category, `/go/cosplaytsumiko` → `…/c58`, images serve.
-- **emilylopz** — added 2026-07-24; moved from #1 to #7 on 2026-08-26.
-  - Placements: #7 position on `home`, `search`, every category, every state, every city (not
-    regions — wasn't part of the order). Was #1 until 2026-08-26, when rinayanami took that
-    slot. Positions 4 and 6 are organic (Hanna is #5).
-  - Nearby strip: slot 5 of `nearby:fallback` — added 2026-08-27.
+- **emilylopz** — added 2026-07-24; moved from #1 to #7 on 2026-08-26; back to #1 on 2026-09-19.
+  - Placements: #1 position on `home`, `search`, every category, every state, every city (not
+    regions — wasn't part of the order). Was #7 from 2026-08-26 to 2026-09-19 (Rin held #1),
+    and took the top slot back when cosplaytsumiko's campaign was removed. Positions 4, 6 and 7
+    are organic (Hanna is #5).
+  - Nearby strip: slot 1 of `nearby:fallback` (slot 5 from 2026-08-27 to 2026-09-19).
   - Destination: `https://onlyfans.com/emilylopz/c545` (direct — NOT routed through
     fanspedia.net; that was considered and explicitly rejected, see git history).
   - Image: default synced avatar, no override.
   - Card carousel: synced avatar, synced header, then 24 campaign gallery images imported from
     `emily photos.zip` (26 total slides; 29 originals minus 5 SHA-256 duplicates).
   - Card tags: `GFE`, `Feet fetish`, `Squirting`, and `+9` (do not add `Sex toys`).
-  - Search bars: REMOVED on 2026-08-26 (was the top sponsored suggestion in the focused, empty
-    homepage, search-page, and responsive header inputs, configured through
-    `src/config/search-sponsor.ts`; rinayanami now holds that slot).
+  - Search bars: FIRST sponsored suggestion in the focused, empty homepage, search-page, and
+    responsive header inputs (`src/config/search-sponsor.ts`) — restored 2026-09-19 after
+    being removed from 2026-08-26 to 2026-09-19.
   - Click tracking: `sponsor_clicks_emilylopz_oaf` — an isolated table, deliberately separate
     from `sponsor_clicks_emilylopz` (no `_oaf` suffix), which is a DIFFERENT, live table that
     fanspedia.net's own `/go/emilylopz` redirect already writes to. Do not point this app's
@@ -340,14 +316,15 @@ re-derive it by reading every config file and Supabase table by hand.
   - Status: migration `004_sponsor_clicks_emilylopz_oaf.sql` is live and click logging was
     verified end-to-end on 2026-08-01.
 - **rocketreynaxo** — added 2026-08-01.
-  - Placements: #2 position after Rin (was after Emily until 2026-08-26) on `home`, `search`,
-    every category, every state, and every city (not regions).
-  - Nearby strip: slot 4 of every `nearby:<city>` scope (in-range visitors) AND slot 2 of
-    `nearby:fallback` — both added 2026-08-27.
+  - Placements: #3 position after Emily and Rin on `home`, `search`, every category, every
+    state, and every city (not regions). Was #2 until 2026-09-19 (after Emily until 2026-08-26,
+    then after Rin).
+  - Nearby strip: slot 4 of every `nearby:<city>` scope (in-range visitors) AND slot 3 of
+    `nearby:fallback` (slot 2 until 2026-09-19) — both added 2026-08-27.
   - Destination: `https://onlyfans.com/rocketreynaxo/c58`.
   - Images: 10 campaign images in supplied order; `rocket-01.jpg` is the lead image.
   - Card tags: `Asian MILF`, `Busty`, `Curvy`.
-  - Search bars: second sponsored suggestion after Rin (after Emily until 2026-08-26).
+  - Search bars: third sponsored suggestion after Emily and Rin (second until 2026-09-19).
   - Click tracking: `sponsor_clicks_rocketreynaxo_oaf`, isolated from FansPedia.
   - Status: migration `005_sponsor_clicks_rocketreynaxo_oaf.sql` is live and click logging was
     verified end-to-end on 2026-08-01.
@@ -361,8 +338,21 @@ re-derive it by reading every config file and Supabase table by hand.
   - Images: 7 campaign images in supplied numeric order; `hanna-01.jpg` is the lead image.
   - Card tags: `asian`, `cosplay`, `egirl`, `GFE`.
   - Search bars: REMOVED on 2026-08-27 (was the third sponsored suggestion after Rin and
-    Rocket Reyna; cosplaytsumiko now holds that slot).
+    Rocket Reyna; cosplaytsumiko held that slot until 2026-09-19).
   - Click tracking: `sponsor_clicks_hannazuki_oaf`, isolated from FansPedia.
   - Status: migration `006_sponsor_clicks_hannazuki_oaf.sql` is live and click logging was
     verified end-to-end on 2026-08-01.
+
+## Ended campaigns
+
+- **cosplaytsumiko** — live 2026-08-27, removed 2026-09-19 (owner's call; Emily took #1, Rin
+  and Rocket Reyna each moved down one).
+  - Was: #3 on `home`, `search`, every category, every state, every city; slot 3 of
+    `nearby:fallback`; third search-bar suggestion; destination
+    `https://onlyfans.com/cosplaytsumiko/c58`; tags `Cosplay`, `Big tits`, `Blonde`, `+8`.
+  - Removed: every placement, the search-bar suggestion, the `nearby:fallback` slot, and her
+    `src/config/sponsor-overrides.ts` entry (link, images, tags, click logging).
+    `/go/cosplaytsumiko` now falls through to her plain OnlyFans profile, unlogged.
+  - Kept: the `sponsor_clicks_cosplaytsumiko_oaf` table (click history) and the 29 images in
+    `public/sponsors/cosplaytsumiko/` (now unreferenced).
 <!-- END:nextjs-agent-rules -->
