@@ -18,7 +18,7 @@
  *   set by a per-scope hash so each page leads with a different image — see
  *   rotateSponsorImages() there.
  * - clickTable: name of the per-sponsor Supabase table that logs clicks (see
- *   supabase-migrations/003_sponsor_clicks_template.sql). Only set this once that table has
+ *   supabase-migrations/015_sponsor_clicks_rinayanami_oaf.sql). Only set this once that table has
  *   actually been created — the redirect route will silently no-op (and still redirect
  *   correctly) if the table doesn't exist yet, but you won't be collecting any data.
  * - galleryImages: extra carousel images, appended after imageOverride, avatar, and header.
@@ -44,29 +44,6 @@ export interface SponsorOverride {
 //   clickTable: 'sponsor_clicks_exampleuser',
 // },
 const overrides: Record<string, SponsorOverride> = {
-  rinayanami: {
-    linkOverride: 'https://onlyfans.com/rinayanami/c31',
-    // Campaign images from the client, in their supplied numeric order (1, 3, 4, ... 16); the
-    // original 15 was a byte-identical duplicate of 9 and was dropped. rina-01 leads the card.
-    imageOverride: '/sponsors/rinayanami/rina-01.jpg',
-    tags: ['Petite', 'Asian', 'Nerdy', 'GFE'],
-    additionalTagCount: 5,
-    galleryImages: [
-      '/sponsors/rinayanami/rina-02.jpg',
-      '/sponsors/rinayanami/rina-03.jpg',
-      '/sponsors/rinayanami/rina-04.jpg',
-      '/sponsors/rinayanami/rina-05.jpg',
-      '/sponsors/rinayanami/rina-06.jpg',
-      '/sponsors/rinayanami/rina-07.jpg',
-      '/sponsors/rinayanami/rina-08.jpg',
-      '/sponsors/rinayanami/rina-09.jpg',
-      '/sponsors/rinayanami/rina-10.jpg',
-      '/sponsors/rinayanami/rina-11.jpg',
-    ],
-    // Isolated _oaf table, same pattern as the other campaigns. Created by
-    // supabase-migrations/015_sponsor_clicks_rinayanami_oaf.sql — must exist before deploy.
-    clickTable: 'sponsor_clicks_rinayanami_oaf',
-  },
   emilylopz: {
     // Real tracking link — goes straight to OnlyFans (with its own campaign code), NOT through
     // fanspedia.net. fanspedia.net has its own separate /go/emilylopz + sponsor_clicks_emilylopz
@@ -136,6 +113,131 @@ const overrides: Record<string, SponsorOverride> = {
       '/sponsors/hannazuki/hanna-07.jpg',
     ],
     clickTable: 'sponsor_clicks_hannazuki_oaf',
+  },
+  lucierain: {
+    linkOverride: 'https://onlyfans.com/lucierain/c49',
+    imageOverride: '/sponsors/lucierain/lucierain-01.jpg',
+    tags: ['Fetish friendly', '18 y/o', 'Big tits'],
+    additionalTagCount: 8,
+    galleryImages: [
+      '/sponsors/lucierain/lucierain-02.jpg',
+      '/sponsors/lucierain/lucierain-03.jpg',
+      '/sponsors/lucierain/lucierain-04.jpg',
+      '/sponsors/lucierain/lucierain-05.jpg',
+    ],
+    clickTable: 'sponsor_clicks_lucierain_oaf',
+  },
+  eviecarrol: {
+    linkOverride: 'https://onlyfans.com/eviecarrol/c141',
+    imageOverride: '/sponsors/eviecarrol/eviecarrol-01.jpg',
+    tags: ['18 y/o', 'Petite', 'Blonde'],
+    additionalTagCount: 6,
+    galleryImages: [
+      '/sponsors/eviecarrol/eviecarrol-02.jpg',
+    ],
+    clickTable: 'sponsor_clicks_eviecarrol_oaf',
+  },
+  amymyohmy: {
+    linkOverride: 'https://onlyfans.com/amymyohmy/c206',
+    imageOverride: '/sponsors/amymyohmy/amymyohmy-01.jpg',
+    tags: ['18 y/o', 'Student'],
+    additionalTagCount: 7,
+    galleryImages: [
+      '/sponsors/amymyohmy/amymyohmy-02.jpg',
+    ],
+    clickTable: 'sponsor_clicks_amymyohmy_oaf',
+  },
+  lillyylou: {
+    linkOverride: 'https://onlyfans.com/lillyylou/c385',
+    imageOverride: '/sponsors/lillyylou/lillyylou-01.jpg',
+    tags: ['Fetish friendly', '18 y/o', 'New to OF'],
+    additionalTagCount: 8,
+    galleryImages: [
+      '/sponsors/lillyylou/lillyylou-02.jpg',
+      '/sponsors/lillyylou/lillyylou-03.jpg',
+      '/sponsors/lillyylou/lillyylou-04.jpg',
+      '/sponsors/lillyylou/lillyylou-05.jpg',
+      '/sponsors/lillyylou/lillyylou-06.jpg',
+      '/sponsors/lillyylou/lillyylou-07.jpg',
+    ],
+    clickTable: 'sponsor_clicks_lillyylou_oaf',
+  },
+  aprilcollinsss: {
+    linkOverride: 'https://onlyfans.com/aprilcollinsss/c75',
+    imageOverride: '/sponsors/aprilcollinsss/aprilcollinsss-01.jpg',
+    tags: ['Goon', 'Blonde', '19 y/o'],
+    additionalTagCount: 4,
+    galleryImages: [
+      '/sponsors/aprilcollinsss/aprilcollinsss-02.jpg',
+      '/sponsors/aprilcollinsss/aprilcollinsss-03.jpg',
+      '/sponsors/aprilcollinsss/aprilcollinsss-04.jpg',
+    ],
+    clickTable: 'sponsor_clicks_aprilcollinsss_oaf',
+  },
+  itsgiastar: {
+    linkOverride: 'https://onlyfans.com/itsgiastar/c1',
+    imageOverride: '/sponsors/itsgiastar/itsgiastar-01.jpg',
+    tags: ['Femdom', 'Fetish-friendly'],
+    additionalTagCount: 9,
+    galleryImages: [
+      '/sponsors/itsgiastar/itsgiastar-02.jpg',
+      '/sponsors/itsgiastar/itsgiastar-03.jpg',
+      '/sponsors/itsgiastar/itsgiastar-04.jpg',
+      '/sponsors/itsgiastar/itsgiastar-05.jpg',
+      '/sponsors/itsgiastar/itsgiastar-06.jpg',
+      '/sponsors/itsgiastar/itsgiastar-07.jpg',
+      '/sponsors/itsgiastar/itsgiastar-08.jpg',
+      '/sponsors/itsgiastar/itsgiastar-09.jpg',
+      '/sponsors/itsgiastar/itsgiastar-10.jpg',
+      '/sponsors/itsgiastar/itsgiastar-11.jpg',
+      '/sponsors/itsgiastar/itsgiastar-12.jpg',
+    ],
+    clickTable: 'sponsor_clicks_itsgiastar_oaf',
+  },
+  gracieharper: {
+    linkOverride: 'https://onlyfans.com/gracieharper/c415',
+    imageOverride: '/sponsors/gracieharper/gracieharper-01.jpg',
+    tags: ['Culinary student', 'Big tits', 'Blonde'],
+    additionalTagCount: 5,
+    galleryImages: [
+      '/sponsors/gracieharper/gracieharper-02.jpg',
+      '/sponsors/gracieharper/gracieharper-03.jpg',
+      '/sponsors/gracieharper/gracieharper-04.jpg',
+      '/sponsors/gracieharper/gracieharper-05.jpg',
+      '/sponsors/gracieharper/gracieharper-06.jpg',
+    ],
+    clickTable: 'sponsor_clicks_gracieharper_oaf',
+  },
+  ellaajanee: {
+    linkOverride: 'https://onlyfans.com/ellaajanee/c320',
+    imageOverride: '/sponsors/ellaajanee/ellaajanee-01.jpg',
+    tags: ['Platinum blonde', 'Big tits', '18 y/o'],
+    additionalTagCount: 5,
+    galleryImages: [
+      '/sponsors/ellaajanee/ellaajanee-02.jpg',
+      '/sponsors/ellaajanee/ellaajanee-03.jpg',
+      '/sponsors/ellaajanee/ellaajanee-04.jpg',
+    ],
+    clickTable: 'sponsor_clicks_ellaajanee_oaf',
+  },
+  emillyybrown: {
+    linkOverride: 'https://onlyfans.com/emillyybrown/c510',
+    imageOverride: '/sponsors/emillyybrown/emillyybrown-01.jpg',
+    tags: ['18 y/o', 'Art student', 'New to OF'],
+    additionalTagCount: 4,
+    galleryImages: [
+      '/sponsors/emillyybrown/emillyybrown-02.jpg',
+      '/sponsors/emillyybrown/emillyybrown-03.jpg',
+      '/sponsors/emillyybrown/emillyybrown-04.jpg',
+      '/sponsors/emillyybrown/emillyybrown-05.jpg',
+      '/sponsors/emillyybrown/emillyybrown-06.jpg',
+      '/sponsors/emillyybrown/emillyybrown-07.jpg',
+      '/sponsors/emillyybrown/emillyybrown-08.jpg',
+      '/sponsors/emillyybrown/emillyybrown-09.jpg',
+      '/sponsors/emillyybrown/emillyybrown-10.jpg',
+      '/sponsors/emillyybrown/emillyybrown-11.jpg',
+    ],
+    clickTable: 'sponsor_clicks_emillyybrown_oaf',
   },
 };
 

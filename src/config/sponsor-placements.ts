@@ -30,9 +30,8 @@
  * at all (no IP geo, geolocation denied/unavailable), OR is located but more than
  * MAX_NEAR_DISTANCE_MILES (2,800 mi — src/app/api/nearby/route.ts) from every indexed city, i.e.
  * outside the Americas, the widget shows this scope under a "Featured creators" header instead of
- * a city-based list, so it's never a dead end. It is pinned with every active sponsored creator
- * in campaign order (4 sponsors in 5 slots as of 2026-09-19 — see the block at the bottom of
- * buildPlacements()); a slot without an active campaign fills with organic popular creators.
+ * a city-based list, so it's never a dead end. It has its own five-slot campaign order (see
+ * the block at the bottom of buildPlacements()); grid campaigns do not automatically join it.
  *   - pinned: creators forced to an exact 1-based GLOBAL position in that scope's paginated
  *     list, fetched even if they wouldn't naturally rank there.
  *   - excluded: creators hidden entirely from that scope.
@@ -125,9 +124,8 @@ function buildPlacements(): PlacementMap {
   // ===================================================================
 
   // emilylopz — #1 position on home, every category, every state, every city, and search
-  // results. Back in the top slot on 2026-09-19, when cosplaytsumiko's campaign was removed
-  // (owner's decision: Emily #1, Rin and Rocket Reyna each shift down one). Was #7 from
-  // 2026-08-26 to 2026-09-19.
+  // results. Back in the top slot on 2026-09-19, when cosplaytsumiko's campaign was removed.
+  // Was #7 from 2026-08-26 to 2026-09-19.
   // (Regions — northeast-onlyfans etc. — intentionally NOT included; wasn't part of the ask.)
   pin('home', 'emilylopz', 1);
   pinAllCategories('emilylopz', 1);
@@ -135,15 +133,7 @@ function buildPlacements(): PlacementMap {
   pinAllCities('emilylopz', 1);
   pin('search', 'emilylopz', 1);
 
-  // rinayanami — #2 position after Emily on the same scopes. Held #1 from 2026-08-26 to
-  // 2026-09-19.
-  pin('home', 'rinayanami', 2);
-  pinAllCategories('rinayanami', 2);
-  pinAllStates('rinayanami', 2);
-  pinAllCities('rinayanami', 2);
-  pin('search', 'rinayanami', 2);
-
-  // rocketreynaxo — #3 position after Emily and Rin on the same scopes. Was #2 until
+  // rocketreynaxo — #3 position after Emily and Lucie on the same scopes. Was #2 until
   // 2026-09-19.
   pin('home', 'rocketreynaxo', 3);
   pinAllCategories('rocketreynaxo', 3);
@@ -153,28 +143,47 @@ function buildPlacements(): PlacementMap {
 
   // hannazuki — #5 position (moved down from #3 on 2026-08-27 when Tsumiko took that slot) on
   // the same scopes: home, every category, every state, every city, and search results.
-  // Positions 4, 6 and 7 are organic.
   pin('home', 'hannazuki', 5);
   pinAllCategories('hannazuki', 5);
   pinAllStates('hannazuki', 5);
   pinAllCities('hannazuki', 5);
   pin('search', 'hannazuki', 5);
 
-  // "Creators near you" strip, in-range visitors (every nearby:<citySlug> scope — pageSize 5, see
-  // the note at the top of this file): slots 1 / 3 / 5 are real local creators, slot 2 is Rin
-  // and slot 4 is Reyna. Owner's decision, 2026-08-27 ("real, sponsored, real, sponsored, real").
-  pinAllNearbyCities('rinayanami', 2);
+  // October 2026 orders. "Countries" means all US state and city pages; the owner also
+  // confirmed the same positions on search results. Regions are outside these orders.
+  // Lucie replaces Rin; Rin's campaign is removed from every sponsored surface.
+  const octoberCampaigns = [
+    { username: 'lucierain', position: 2 },
+    { username: 'eviecarrol', position: 4 },
+    { username: 'amymyohmy', position: 6 },
+    { username: 'lillyylou', position: 7 },
+    { username: 'aprilcollinsss', position: 8 },
+    { username: 'itsgiastar', position: 9 },
+    { username: 'gracieharper', position: 10 },
+    { username: 'ellaajanee', position: 11 },
+    { username: 'emillyybrown', position: 12 },
+  ];
+  for (const { username, position } of octoberCampaigns) {
+    pin('home', username, position);
+    pinAllCategories(username, position);
+    pinAllStates(username, position);
+    pinAllCities(username, position);
+    pin('search', username, position);
+  }
+
+  // In-range nearby strip: local, Evie, local, Reyna, Amy (owner's order, 2026-10-26).
+  pinAllNearbyCities('eviecarrol', 2);
   pinAllNearbyCities('rocketreynaxo', 4);
+  pinAllNearbyCities('amymyohmy', 5);
 
   // "Creators near you" strip fallback (visitor > 2,800 mi from every indexed US city, or no
-  // location at all — see the nearby:fallback note at the top of this file): the sponsored
-  // creators in campaign order, then organic popular creators in any slot left over (slot 5
-  // since cosplaytsumiko's campaign was removed on 2026-09-19). Owner's decision, 2026-08-27.
-  // Add/remove a line here whenever a campaign starts or ends.
+  // location at all): retain the existing campaigns, replace Rin with Evie at #2, and
+  // give Amy #5. This five-slot scope is independent of the longer grid campaign list.
   pin('nearby:fallback', 'emilylopz', 1);
-  pin('nearby:fallback', 'rinayanami', 2);
+  pin('nearby:fallback', 'eviecarrol', 2);
   pin('nearby:fallback', 'rocketreynaxo', 3);
   pin('nearby:fallback', 'hannazuki', 4);
+  pin('nearby:fallback', 'amymyohmy', 5);
 
   return rules;
 }

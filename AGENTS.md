@@ -146,9 +146,9 @@ Locates the visitor (Vercel geo headers in prod; a public ip-api.com lookup of t
 own IP locally), picks the nearest of the ~255 cities in `src/config/cities.ts`, and shows that
 city's creators with the honest visitor→city distance — **however far, up to
 `MAX_NEAR_DISTANCE_MILES` (2,800 mi, `src/app/api/nearby/route.ts`)**. Those 5 slots are
-**real · Rin · real · Reyna · real**: every `nearby:<citySlug>` scope is pinned with rinayanami
-at 2 and rocketreynaxo at 4 (`pinAllNearbyCities` in `sponsor-placements.ts`, owner's decision
-2026-08-27); the pinned pair show no distance line since they aren't from that city. The header names the
+**real · Evie · real · Reyna · Amy**: every `nearby:<citySlug>` scope is pinned with eviecarrol
+at 2, rocketreynaxo at 4, and amymyohmy at 5 (`pinAllNearbyCities` in `sponsor-placements.ts`, updated
+2026-10-26); the pinned creators show no distance line since they aren't from that city. The header names the
 VISITOR's own detected place, not the indexed city — "Showing creators near Hoboken, NJ" above
 NYC creators — from IP geo (Vercel's `x-vercel-ip-city/-country/-country-region` headers in
 prod, ip-api locally; country names via `Intl.DisplayNames`, see `formatVisitorPlace` in
@@ -156,8 +156,8 @@ prod, ip-api locally; country names via `Intl.DisplayNames`, see `formatVisitorP
 Canada or the Caribbean still gets their nearest US city; that's deliberate. Beyond 2,800 mi
 (i.e. outside the Americas — the nearest indexed city to all of Europe is Bangor, ME at
 3,000–4,400 mi), and when there's no location signal at all, it serves the `nearby:fallback`
-scope instead, which is pinned with the sponsored creators in campaign order (four as of
-2026-09-19, so its fifth slot is an organic popular creator), still headed
+scope instead, which has five explicitly assigned sponsors as of 2026-10-26:
+Emily, Evie, Rocket Reyna, Hanna, Amy (independent of the grid order), still headed
 "📍 Showing creators near <visitor's own place>" ("Skopje, North Macedonia") — or "⭐ Featured
 creators" if no place name is known — with no distance line. The place label always comes from
 IP geo, even after a precise-location click (the browser only supplies coordinates, and naming
@@ -252,7 +252,7 @@ results," not paper over it with unrelated popular creators.
 4. Add pin(s) in `src/config/sponsor-placements.ts` (use the bulk helpers for multi-scope buys).
 5. Add the entry in `src/config/sponsor-overrides.ts` (`linkOverride` / `imageOverride` /
    `clickTable` as purchased).
-6. If tracking, run the click-table migration (`003_sponsor_clicks_template.sql` copied to a
+6. If tracking, run the click-table migration (`015_sponsor_clicks_rinayanami_oaf.sql` copied to a
    real filename, per step 2's naming) against Supabase BEFORE going live.
 7. Verify locally in a real browser: pin lands at the right position, badge shows, link goes
    through `/go/`, a real click logs a row, scrolling past the card does NOT log a row.
@@ -268,37 +268,11 @@ results," not paper over it with unrelated popular creators.
 changed, or ended.** This is the fast answer to "what's live right now" without having to
 re-derive it by reading every config file and Supabase table by hand.
 
-- **rinayanami** — added 2026-08-26; moved from #1 to #2 on 2026-09-19.
-  - Placements: #2 position after Emily on `home`, `search`, every category, every state, every
-    city (not regions — wasn't part of the order). Held #1 from 2026-08-26 to 2026-09-19, when
-    Emily took the top slot back.
-  - Nearby strip: slot 2 of every `nearby:<city>` scope (the "Creators near you" strip for
-    in-range visitors — real · Rin · real · Reyna · real) AND slot 2 of `nearby:fallback` (the
-    sponsored strip for visitors > 2,800 mi from every US city, or with no location; slot 1
-    until 2026-09-19) — both added 2026-08-27.
-  - Destination: `https://onlyfans.com/rinayanami/c31`.
-  - Images: 11 campaign images from the client's `rinayanami images` folder, in their supplied
-    numeric order (`1, 3, 4, 5, 6, 7, 8, 9, 13, 14, 16`); the original `15` was a byte-identical
-    (SHA-256) duplicate of `9` and was dropped. Resized to ≤1280px JPEGs as
-    `public/sponsors/rinayanami/rina-01.jpg` … `rina-11.jpg`; `rina-01.jpg` is the lead image.
-  - Card tags: `Petite`, `Asian`, `Nerdy`, `GFE`, and `+5`.
-  - Search bars: second sponsored suggestion after Emily (first from 2026-08-26 to 2026-09-19).
-  - Click tracking: `sponsor_clicks_rinayanami_oaf` — isolated `_oaf` table like the others.
-    Confirmed on 2026-08-26 that neither `sponsor_clicks_rinayanami` nor the `_oaf` name existed
-    yet (both 404 via REST) before writing the migration. A `sponsor_clicks_rinayanami_fbf`
-    table DOES already exist (findbyface's own campaign table — PostgREST's "perhaps you meant"
-    hint surfaced it during local click testing). Do not point this app at it.
-  - Status: LIVE since 2026-08-27 (commit f17fe8f). Migration `015_sponsor_clicks_rinayanami_oaf.sql`
-    (full current column set, since 009/010/011 only ALTER a hard-coded list of older tables) was
-    run by the owner in the Supabase SQL Editor before deploy — the local
-    `SOURCE_SUPABASE_POOLER_URL` password no longer authenticates, so it couldn't be run from
-    here; the table was confirmed present (REST 200) before pushing. Verified on production after
-    deploy: #1 on home/search/state/city/category, `/go/rinayanami` → `…/c31`, images serve.
 - **emilylopz** — added 2026-07-24; moved from #1 to #7 on 2026-08-26; back to #1 on 2026-09-19.
   - Placements: #1 position on `home`, `search`, every category, every state, every city (not
     regions — wasn't part of the order). Was #7 from 2026-08-26 to 2026-09-19 (Rin held #1),
-    and took the top slot back when cosplaytsumiko's campaign was removed. Positions 4, 6 and 7
-    are organic (Hanna is #5).
+    and took the top slot back when cosplaytsumiko's campaign was removed. The 2026-10-26
+    batch fills positions 1–12 with sponsors (Hanna remains #5); the owner approved deployment.
   - Nearby strip: slot 1 of `nearby:fallback` (slot 5 from 2026-08-27 to 2026-09-19).
   - Destination: `https://onlyfans.com/emilylopz/c545` (direct — NOT routed through
     fanspedia.net; that was considered and explicitly rejected, see git history).
@@ -306,7 +280,8 @@ re-derive it by reading every config file and Supabase table by hand.
   - Card carousel: synced avatar, synced header, then 24 campaign gallery images imported from
     `emily photos.zip` (26 total slides; 29 originals minus 5 SHA-256 duplicates).
   - Card tags: `GFE`, `Feet fetish`, `Squirting`, and `+9` (do not add `Sex toys`).
-  - Search bars: FIRST sponsored suggestion in the focused, empty homepage, search-page, and
+  - Search bars: FIRST sponsored suggestion (followed by Evie, Gia, Amy, Rocket Reyna as of
+    2026-10-26) in the focused, empty homepage, search-page, and
     responsive header inputs (`src/config/search-sponsor.ts`) — restored 2026-09-19 after
     being removed from 2026-08-26 to 2026-09-19.
   - Click tracking: `sponsor_clicks_emilylopz_oaf` — an isolated table, deliberately separate
@@ -316,15 +291,16 @@ re-derive it by reading every config file and Supabase table by hand.
   - Status: migration `004_sponsor_clicks_emilylopz_oaf.sql` is live and click logging was
     verified end-to-end on 2026-08-01.
 - **rocketreynaxo** — added 2026-08-01.
-  - Placements: #3 position after Emily and Rin on `home`, `search`, every category, every
-    state, and every city (not regions). Was #2 until 2026-09-19 (after Emily until 2026-08-26,
+  - Placements: #3 position after Emily and Lucie (Rin until the 2026-10-26 batch) on `home`,
+    `search`, every category, every state, and every city (not regions). Was #2 until 2026-09-19 (after Emily until 2026-08-26,
     then after Rin).
   - Nearby strip: slot 4 of every `nearby:<city>` scope (in-range visitors) AND slot 3 of
     `nearby:fallback` (slot 2 until 2026-09-19) — both added 2026-08-27.
   - Destination: `https://onlyfans.com/rocketreynaxo/c58`.
   - Images: 10 campaign images in supplied order; `rocket-01.jpg` is the lead image.
   - Card tags: `Asian MILF`, `Busty`, `Curvy`.
-  - Search bars: third sponsored suggestion after Emily and Rin (second until 2026-09-19).
+  - Search bars: fifth sponsored suggestion after Emily, Evie, Gia, Amy as of 2026-10-26
+    (third after Emily and Rin until then; second until 2026-09-19).
   - Click tracking: `sponsor_clicks_rocketreynaxo_oaf`, isolated from FansPedia.
   - Status: migration `005_sponsor_clicks_rocketreynaxo_oaf.sql` is live and click logging was
     verified end-to-end on 2026-08-01.
@@ -343,7 +319,91 @@ re-derive it by reading every config file and Supabase table by hand.
   - Status: migration `006_sponsor_clicks_hannazuki_oaf.sql` is live and click logging was
     verified end-to-end on 2026-08-01.
 
+### October 2026 campaigns — production deployment approved 2026-10-26
+
+All nine are pinned at the positions below on **home, search results, every category, every
+state, and every city**. The owner confirmed that “countries” means US state/city pages;
+regions are not part of the order. Existing Emily #1, Rocket Reyna #3, Hanna #5 stay in place.
+Rin is removed from all sponsorship surfaces. All nine creator rows already existed in the
+shared database; no scraper or profile-table changes were needed.
+
+| Username | Grid position | Exact destination | Card tags | Extra tags | Images |
+| --- | --- | --- | --- | --- | --- |
+| lucierain | 2 | https://onlyfans.com/lucierain/c49 | Fetish friendly, 18 y/o, Big tits | +8 | 5 from Downloads/lucie onlyfans |
+| eviecarrol | 4 | https://onlyfans.com/eviecarrol/c141 | 18 y/o, Petite, Blonde | +6 | Public avatar + header |
+| amymyohmy | 6 | https://onlyfans.com/amymyohmy/c206 | 18 y/o, Student | +7 | Public avatar + header |
+| lillyylou | 7 | https://onlyfans.com/lillyylou/c385 | Fetish friendly, 18 y/o, New to OF | +8 | 7 from Downloads/Lilly |
+| aprilcollinsss | 8 | https://onlyfans.com/aprilcollinsss/c75 | Goon, Blonde, 19 y/o | +4 | 4 from Downloads/April |
+| itsgiastar | 9 | https://onlyfans.com/itsgiastar/c1 | Femdom, Fetish-friendly | +9 | 12 from Downloads/itsgiastar |
+| gracieharper | 10 | https://onlyfans.com/gracieharper/c415 | Culinary student, Big tits, Blonde | +5 | 6 from Downloads/gracieharper |
+| ellaajanee | 11 | https://onlyfans.com/ellaajanee/c320 | Platinum blonde, Big tits, 18 y/o | +5 | 4 from Downloads/ella |
+| emillyybrown | 12 | https://onlyfans.com/emillyybrown/c510 | 18 y/o, Art student, New to OF | +4 | 11 from Downloads/Emily-Luca |
+
+- **Search bars:** Emily, Evie, Gia, Amy, Rocket Reyna. The owner explicitly resolved the two
+  competing #2 requests with Evie #2 and Gia #3; Amy is #4. Lucie is not a search suggestion.
+- **Nearby:** Evie #2 and Amy #5 in every nearby city and fallback scope. In-range order:
+  local, Evie, local, Reyna, Amy. Fallback order: Emily, Evie, Reyna, Hanna, Amy.
+- **Images:** 53 JPEGs, maximum 1280px, under `public/sponsors/<username>/`; first is the
+  homepage/dropdown lead, and the existing deterministic scope rotation applies elsewhere.
+  Numbered files use numeric order; mixed WhatsApp filenames use natural filename order,
+  unsuffixed timestamp before its numbered siblings. Original names, order, and SHA-256 hashes
+  are recorded in `docs/campaigns/2026-10-26-image-manifest.json`. Evie and Amy use freshly
+  downloaded copies of their indexed public avatar/header URLs, in that order.
+- **Click tracking:** separate `sponsor_clicks_<username>_oaf` tables for all nine. The
+  non-suffixed tables belong to FansPedia and already had rows; none were altered. Migration
+  `017_sponsor_clicks_october_2026_oaf.sql` uses the complete 015 schema including `site`.
+  Owner ran it in Supabase on 2026-10-26; all nine full schemas verified via REST before enabling
+  tracking. Real browser clicks verified every exact destination and one `home` click row each;
+  only the identified test rows were removed. Load/scroll/carousels made zero `/go/` requests.
+  Local testing also corrected `/go/` to pass `nextUrl.hostname` to placement attribution:
+  passing `host` included `:3002` and wrongly classified local homepage clicks as external.
+- **Status:** owner reviewed localhost and explicitly approved production deployment on
+  2026-10-26 ("push live please"). These campaigns and Rin's removal ship together in this batch.
+- **Local verification:** exact pin order checked across all 342 grid scopes and 253 nearby
+  city scopes; all six region scopes remain unpinned. Chromium verified home/state/city/category/
+  search rendering, all 53 carousel images, dropdown order, both nearby paths, and 40 unique
+  creators across homepage pages 1–2. TypeScript and targeted ESLint pass. Desktop/mobile
+  preview works at `http://localhost:3002`; Vercel runs the full static build on deployment.
+  Development still reports a hydration attribute warning from the existing imperative
+  `SponsoredLinkTokenizer` decorating streamed links before hydration; the verified redirects
+  and click inserts work. No carousel or page-size logic was changed in this batch.
+
 ## Ended campaigns
+
+- **rinayanami** — live 2026-08-27, removed in the approved 2026-10-26 deployment batch.
+  - Removed: every grid pin, nearby pin, search suggestion, and sponsor override (link, images,
+    tags, click logging). Lucie takes grid #2; Evie takes nearby #2.
+  - `/go/rinayanami` now resolves to her plain OnlyFans profile, unlogged. Organic appearances
+    remain possible and are no longer sponsored.
+  - Kept: `sponsor_clicks_rinayanami_oaf` and all 11 campaign images as history.
+  - Historical campaign details:
+    - **rinayanami** — added 2026-08-26; moved from #1 to #2 on 2026-09-19.
+      - Placements: #2 position after Emily on `home`, `search`, every category, every state, every
+        city (not regions — wasn't part of the order). Held #1 from 2026-08-26 to 2026-09-19, when
+        Emily took the top slot back.
+      - Nearby strip: slot 2 of every `nearby:<city>` scope (the "Creators near you" strip for
+        in-range visitors — real · Rin · real · Reyna · real) AND slot 2 of `nearby:fallback` (the
+        sponsored strip for visitors > 2,800 mi from every US city, or with no location; slot 1
+        until 2026-09-19) — both added 2026-08-27.
+      - Destination: `https://onlyfans.com/rinayanami/c31`.
+      - Images: 11 campaign images from the client's `rinayanami images` folder, in their supplied
+        numeric order (`1, 3, 4, 5, 6, 7, 8, 9, 13, 14, 16`); the original `15` was a byte-identical
+        (SHA-256) duplicate of `9` and was dropped. Resized to ≤1280px JPEGs as
+        `public/sponsors/rinayanami/rina-01.jpg` … `rina-11.jpg`; `rina-01.jpg` is the lead image.
+      - Card tags: `Petite`, `Asian`, `Nerdy`, `GFE`, and `+5`.
+      - Search bars: second sponsored suggestion after Emily (first from 2026-08-26 to 2026-09-19).
+      - Click tracking: `sponsor_clicks_rinayanami_oaf` — isolated `_oaf` table like the others.
+        Confirmed on 2026-08-26 that neither `sponsor_clicks_rinayanami` nor the `_oaf` name existed
+        yet (both 404 via REST) before writing the migration. A `sponsor_clicks_rinayanami_fbf`
+        table DOES already exist (findbyface's own campaign table — PostgREST's "perhaps you meant"
+        hint surfaced it during local click testing). Do not point this app at it.
+      - Status: LIVE since 2026-08-27 (commit f17fe8f). Migration `015_sponsor_clicks_rinayanami_oaf.sql`
+        (full current column set, since 009/010/011 only ALTER a hard-coded list of older tables) was
+        run by the owner in the Supabase SQL Editor before deploy — the local
+        `SOURCE_SUPABASE_POOLER_URL` password no longer authenticates, so it couldn't be run from
+        here; the table was confirmed present (REST 200) before pushing. Verified on production after
+        deploy: #1 on home/search/state/city/category, `/go/rinayanami` → `…/c31`, images serve.
+
 
 - **cosplaytsumiko** — live 2026-08-27, removed 2026-09-19 (owner's call; Emily took #1, Rin
   and Rocket Reyna each moved down one).

@@ -12,7 +12,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfa
  * messaging-app shares and in-app browsers all legitimately strip it. The click is still logged
  * and counted; only the placement attribution is unknown for that row.
  *
- * `requestHost` (from the incoming request's own Host header) is compared alongside
+ * `requestHost` (the incoming request's hostname, without a port) is compared alongside
  * NEXT_PUBLIC_SITE_URL so this still resolves internal paths correctly on localhost/preview
  * deployments where the two differ.
  */

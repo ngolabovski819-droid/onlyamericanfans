@@ -53,7 +53,7 @@ export async function GET(req: NextRequest, { params }: Params) {
     const userAgent = req.headers.get('user-agent');
     if (!isBotUserAgent(userAgent)) {
       const referrer = req.headers.get('referer');
-      const placement = derivePlacement(referrer, req.nextUrl.host);
+      const placement = derivePlacement(referrer, req.nextUrl.hostname);
       const clientIp = extractClientIp(req.headers.get('x-forwarded-for'));
       const geo = extractGeo(req.headers);
       // Awaited (not fire-and-forget): click accuracy for a paid deliverable matters more than
