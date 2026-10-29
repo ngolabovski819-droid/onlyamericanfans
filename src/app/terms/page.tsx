@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://www.onlyamericanfans.net';
 
 export const metadata: Metadata = {
   title: 'Terms of Service — OnlyAmericanFans',

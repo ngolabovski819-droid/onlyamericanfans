@@ -5,7 +5,7 @@ import { states } from '@/config/states';
 import { categories } from '@/config/categories';
 import { getAllPosts } from '@/lib/blog';
 
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com').trim();
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://www.onlyamericanfans.net';
 
 function url(path: string, priority = 0.7, freq = 'weekly'): string {
   return `<url><loc>${SITE_URL}${path}</loc><changefreq>${freq}</changefreq><priority>${priority}</priority></url>`;

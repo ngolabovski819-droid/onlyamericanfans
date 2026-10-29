@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import FAQ from '@/components/FAQ';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://www.onlyamericanfans.net';
 const APPLY_URL = 'https://tally.so/r/kd16Xe';
 
 export const metadata: Metadata = {

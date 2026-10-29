@@ -12,7 +12,7 @@ import { cappedPageCount } from '@/lib/pagination';
 export const revalidate = false;
 export const dynamicParams = false; // beyond the capped page count, there's genuinely no more to show — 404, don't attempt to render on demand
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://www.onlyamericanfans.net';
 const PAGE_SIZE = 24;
 
 interface Props {

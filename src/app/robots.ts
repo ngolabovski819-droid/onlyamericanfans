@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-  const base = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com').trim();
+  const base = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://www.onlyamericanfans.net';
   return {
     rules: [
       {

@@ -11,9 +11,9 @@ import { verifyClickToken } from '@/lib/click-token';
 // of its own — see supabase-migrations/004_sponsor_clicks_emilylopz_add_site.sql).
 const SITE_ID = (() => {
   try {
-    return new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com').hostname.replace(/^www\./, '');
+    return new URL(process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://www.onlyamericanfans.net').hostname.replace(/^www\./, '');
   } catch {
-    return 'onlyamericanfans.com';
+    return 'onlyamericanfans.net';
   }
 })();
 

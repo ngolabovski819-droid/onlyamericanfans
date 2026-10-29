@@ -23,7 +23,7 @@ import { cappedPageCount } from '@/lib/pagination';
 // also fixing every inner fetch would NOT actually freeze the page.
 export const revalidate = false;
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://www.onlyamericanfans.net';
 
 interface Props {
   params: Promise<{ locationSlug: string }>;

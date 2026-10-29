@@ -11,7 +11,7 @@ const FOOTER_STATE_SLUGS = [
 ];
 
 export default function Footer() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://www.onlyamericanfans.net';
   const currentYear = new Date().getFullYear();
 
   return (
@@ -25,7 +25,7 @@ export default function Footer() {
               America&apos;s largest OnlyFans creator directory. Find free and premium American creators updated daily.
             </p>
             <p className="footer-disclaimer">
-              onlyamericanfans.com is not affiliated with or endorsed by OnlyFans or Fenix International Limited.
+              onlyamericanfans.net is not affiliated with or endorsed by OnlyFans or Fenix International Limited.
               All profiles linked are publicly listed. This site is for adults 18+ only.
             </p>
           </div>

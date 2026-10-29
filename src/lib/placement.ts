@@ -3,7 +3,7 @@ import { cities } from '@/config/cities';
 import { regions } from '@/config/regions';
 import { categories } from '@/config/categories';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://www.onlyamericanfans.net';
 
 /**
  * Derives a short `placement` label for a click-log row from the raw Referer header.

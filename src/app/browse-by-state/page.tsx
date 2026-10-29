@@ -7,7 +7,7 @@ import { US_TERMS } from '@/config/us-terms';
 import UsMap from '@/components/UsMap';
 import NearbyCreatorsStrip from '@/components/NearbyCreatorsStrip';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://www.onlyamericanfans.net';
 
 export const metadata: Metadata = {
   title: 'Browse OnlyFans Creators by State — All 50 US States | OnlyAmericanFans',

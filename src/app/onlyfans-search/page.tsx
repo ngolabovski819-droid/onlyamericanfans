@@ -7,7 +7,7 @@ import FAQ from '@/components/FAQ';
 import { searchPageFaqs } from '@/lib/faqs';
 import CreatorSearchBox from '@/components/CreatorSearchBox';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://www.onlyamericanfans.net';
 
 export const metadata: Metadata = {
   title: 'OnlyFans Search — Find American Creators by Name, City & State',

@@ -16,7 +16,7 @@ import { cappedPageCount } from '@/lib/pagination';
 // leaderboard, RPC-based category search) is also explicitly passed revalidate:false below.
 export const revalidate = false;
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://www.onlyamericanfans.net';
 
 interface Props {
   params: Promise<{ slug: string }>;

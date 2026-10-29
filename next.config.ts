@@ -15,6 +15,18 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'onlyamericanfans.com' }],
+        destination: 'https://www.onlyamericanfans.net/:path*',
+        permanent: true,
+      },
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.onlyamericanfans.com' }],
+        destination: 'https://www.onlyamericanfans.net/:path*',
+        permanent: true,
+      },
+      {
         source: '/search',
         destination: '/onlyfans-search',
         permanent: true,

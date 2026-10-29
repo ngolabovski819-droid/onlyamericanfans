@@ -15,7 +15,7 @@ import { Suspense } from 'react';
 
 export const revalidate = 300;
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.onlyamericanfans.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://www.onlyamericanfans.net';
 
 export const metadata: Metadata = {
   title: 'OnlyAmericanFans — Find the Best American OnlyFans Creators',
