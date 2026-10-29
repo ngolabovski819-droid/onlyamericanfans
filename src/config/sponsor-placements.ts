@@ -133,14 +133,6 @@ function buildPlacements(): PlacementMap {
   pinAllCities('emilylopz', 1);
   pin('search', 'emilylopz', 1);
 
-  // rocketreynaxo — #3 position after Emily and Lucie on the same scopes. Was #2 until
-  // 2026-09-19.
-  pin('home', 'rocketreynaxo', 3);
-  pinAllCategories('rocketreynaxo', 3);
-  pinAllStates('rocketreynaxo', 3);
-  pinAllCities('rocketreynaxo', 3);
-  pin('search', 'rocketreynaxo', 3);
-
   // hannazuki — #5 position (moved down from #3 on 2026-08-27 when Tsumiko took that slot) on
   // the same scopes: home, every category, every state, every city, and search results.
   pin('home', 'hannazuki', 5);
@@ -171,17 +163,15 @@ function buildPlacements(): PlacementMap {
     pin('search', username, position);
   }
 
-  // In-range nearby strip: local, Evie, local, Reyna, Amy (owner's order, 2026-10-26).
+  // In-range nearby strip: local creators around the pinned Evie and Amy.
   pinAllNearbyCities('eviecarrol', 2);
-  pinAllNearbyCities('rocketreynaxo', 4);
   pinAllNearbyCities('amymyohmy', 5);
 
   // "Creators near you" strip fallback (visitor > 2,800 mi from every indexed US city, or no
-  // location at all): retain the existing campaigns, replace Rin with Evie at #2, and
-  // give Amy #5. This five-slot scope is independent of the longer grid campaign list.
+  // location at all): Emily #1, Evie #2, Hanna #4, and Amy #5. The open third slot is organic.
+  // This five-slot scope is independent of the longer grid campaign list.
   pin('nearby:fallback', 'emilylopz', 1);
   pin('nearby:fallback', 'eviecarrol', 2);
-  pin('nearby:fallback', 'rocketreynaxo', 3);
   pin('nearby:fallback', 'hannazuki', 4);
   pin('nearby:fallback', 'amymyohmy', 5);
 

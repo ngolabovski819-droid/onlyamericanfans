@@ -146,9 +146,9 @@ Locates the visitor (Vercel geo headers in prod; a public ip-api.com lookup of t
 own IP locally), picks the nearest of the ~255 cities in `src/config/cities.ts`, and shows that
 city's creators with the honest visitor→city distance — **however far, up to
 `MAX_NEAR_DISTANCE_MILES` (2,800 mi, `src/app/api/nearby/route.ts`)**. Those 5 slots are
-**real · Evie · real · Reyna · Amy**: every `nearby:<citySlug>` scope is pinned with eviecarrol
-at 2, rocketreynaxo at 4, and amymyohmy at 5 (`pinAllNearbyCities` in `sponsor-placements.ts`, updated
-2026-10-26); the pinned creators show no distance line since they aren't from that city. The header names the
+**real · Evie · real · real · Amy**: every `nearby:<citySlug>` scope is pinned with eviecarrol
+at 2 and amymyohmy at 5 (`pinAllNearbyCities` in `sponsor-placements.ts`); the pinned creators
+show no distance line since they aren't from that city. The header names the
 VISITOR's own detected place, not the indexed city — "Showing creators near Hoboken, NJ" above
 NYC creators — from IP geo (Vercel's `x-vercel-ip-city/-country/-country-region` headers in
 prod, ip-api locally; country names via `Intl.DisplayNames`, see `formatVisitorPlace` in
@@ -290,20 +290,6 @@ re-derive it by reading every config file and Supabase table by hand.
     `clickTable` at the non-`_oaf` table.
   - Status: migration `004_sponsor_clicks_emilylopz_oaf.sql` is live and click logging was
     verified end-to-end on 2026-08-01.
-- **rocketreynaxo** — added 2026-08-01.
-  - Placements: #3 position after Emily and Lucie (Rin until the 2026-10-26 batch) on `home`,
-    `search`, every category, every state, and every city (not regions). Was #2 until 2026-09-19 (after Emily until 2026-08-26,
-    then after Rin).
-  - Nearby strip: slot 4 of every `nearby:<city>` scope (in-range visitors) AND slot 3 of
-    `nearby:fallback` (slot 2 until 2026-09-19) — both added 2026-08-27.
-  - Destination: `https://onlyfans.com/rocketreynaxo/c58`.
-  - Images: 10 campaign images in supplied order; `rocket-01.jpg` is the lead image.
-  - Card tags: `Asian MILF`, `Busty`, `Curvy`.
-  - Search bars: fifth sponsored suggestion after Emily, Evie, Gia, Amy as of 2026-10-26
-    (third after Emily and Rin until then; second until 2026-09-19).
-  - Click tracking: `sponsor_clicks_rocketreynaxo_oaf`, isolated from FansPedia.
-  - Status: migration `005_sponsor_clicks_rocketreynaxo_oaf.sql` is live and click logging was
-    verified end-to-end on 2026-08-01.
 - **hannazuki** — added 2026-08-01.
   - Placements: #5 position on `home`, `search`, every category, every state, every city (not
     regions). Moved down from #3 on 2026-08-27 when cosplaytsumiko took that slot. Was #3
@@ -339,10 +325,11 @@ shared database; no scraper or profile-table changes were needed.
 | ellaajanee | 11 | https://onlyfans.com/ellaajanee/c320 | Platinum blonde, Big tits, 18 y/o | +5 | 4 from Downloads/ella |
 | emillyybrown | 12 | https://onlyfans.com/emillyybrown/c510 | 18 y/o, Art student, New to OF | +4 | 11 from Downloads/Emily-Luca |
 
-- **Search bars:** Emily, Evie, Gia, Amy, Rocket Reyna. The owner explicitly resolved the two
+- **Search bars:** Emily, Evie, Gia, Amy. The owner explicitly resolved the two
   competing #2 requests with Evie #2 and Gia #3; Amy is #4. Lucie is not a search suggestion.
 - **Nearby:** Evie #2 and Amy #5 in every nearby city and fallback scope. In-range order:
-  local, Evie, local, Reyna, Amy. Fallback order: Emily, Evie, Reyna, Hanna, Amy.
+  local, Evie, local, local, Amy. Fallback pins: Emily, Evie, Hanna, Amy; the third slot is
+  organic.
 - **Images:** 53 JPEGs, maximum 1280px, under `public/sponsors/<username>/`; first is the
   homepage/dropdown lead, and the existing deterministic scope rotation applies elsewhere.
   Numbered files use numeric order; mixed WhatsApp filenames use natural filename order,
@@ -415,4 +402,14 @@ shared database; no scraper or profile-table changes were needed.
     `/go/cosplaytsumiko` now falls through to her plain OnlyFans profile, unlogged.
   - Kept: the `sponsor_clicks_cosplaytsumiko_oaf` table (click history) and the 29 images in
     `public/sponsors/cosplaytsumiko/` (now unreferenced).
+
+- **rocketreynaxo** — active 2026-08-01 through 2026-10-29.
+  - Removed on 2026-10-29 from every grid pin, nearby pin, search suggestion, and sponsor override
+    (tracking destination, campaign images, tags, and click logging). Organic appearances remain
+    possible; `/go/rocketreynaxo` now redirects to the plain OnlyFans profile without logging.
+  - Kept: `sponsor_clicks_rocketreynaxo_oaf` click history and all 10 campaign images under
+    `public/sponsors/rocketreynaxo/`.
+  - Historical campaign: grid #3 on home, search, every category, every state, and every city;
+    nearby #4 in each city and #3 in fallback; fifth sponsored search suggestion.
+    Destination: `https://onlyfans.com/rocketreynaxo/c58`; tags: `Asian MILF`, `Busty`, `Curvy`.
 <!-- END:nextjs-agent-rules -->
